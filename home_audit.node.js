@@ -1211,17 +1211,17 @@ let validationRules = {
      * Checks that the roof_area and floor_areas are consistent with conditioned footprint areas
      */
     _check_conditioned_areas(combinedArea, thisAreaType) {
-        let footprintArea = this._int_or_zero(_homeValues.conditioned_floor_area);
+        let footprintArea = HES.TypeRules._int_or_zero(_homeValues.conditioned_floor_area);
         if (_homeValues.foundation_type_1 === 'cond_basement') {
-            footprintArea = footprintArea - this._int_or_zero(_homeValues.floor_area_1);
+            footprintArea = footprintArea - HES.TypeRules._int_or_zero(_homeValues.floor_area_1);
         }
         if (_homeValues.foundation_type_2 === 'cond_basement') {
-            footprintArea = footprintArea - this._int_or_zero(_homeValues.floor_area_2);
+            footprintArea = footprintArea - HES.TypeRules._int_or_zero(_homeValues.floor_area_2);
         }
-        if (this._int_or_zero(_homeValues.num_floor_above_grade) === 0) {
+        if (HES.TypeRules._int_or_zero(_homeValues.num_floor_above_grade) === 0) {
             return thisAreaType + " is internally inconsistent with conditioned floor area and number of conditioned floors"
         } else {
-            footprintArea = footprintArea / this._int_or_zero(_homeValues.num_floor_above_grade);
+            footprintArea = footprintArea / HES.TypeRules._int_or_zero(_homeValues.num_floor_above_grade);
             if (footprintArea < combinedArea * .95) { // Allow 5% error
                 return thisAreaType + " is internally inconsistent with conditioned floor area and number of conditioned floors"
             }
