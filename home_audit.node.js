@@ -682,7 +682,7 @@ let validationRules = {
             if(footprintArea > 300) {
                 footprintArea = 300;
             }
-            return new Validation(HES.TypeRules._int(value, 0, footprintArea), BLOCKER);
+            return new Validation(HES.TypeRules._float(value, 0, footprintArea), BLOCKER);
         }
     },
     skylight_method: function(value) {
