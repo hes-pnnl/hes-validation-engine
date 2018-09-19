@@ -190,8 +190,9 @@ module.exports = function (homeValues) {
     }
     for (let system of ['1', '2']) {
         if (homeValues['heating_fuel_'+system] !== '' &&
-            ['', 'none', null, 'baseboard'].indexOf(homeValues['heating_type_'+system]) === -1)
-        {
+            ['', 'none', null, 'baseboard', 'wood_stove'].indexOf(homeValues['heating_type_'+system]) === -1 &&
+            (homeValues['heating_fuel_'+system] !== 'electric' && homeValues['heating_type_'+system] !== 'central_furnace')
+        ){
             requiredFields.push('heating_efficiency_method_'+system);
             if(homeValues['heating_efficiency_method_'+system] === 'user') {
                 requiredFields.push('heating_efficiency_'+system);
@@ -281,8 +282,7 @@ module.exports = function (homeValues) {
             'improvement_installation_start_date',
             'improvement_installation_completion_date',
             'contractor_business_name',
-            'contractor_zip_code',
-            'is_income_eligible_program',
+            'contractor_zip_code'
         );
     }
 
