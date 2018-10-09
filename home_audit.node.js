@@ -3,7 +3,7 @@
  */
 
 require('./required_fields.node');
-let typeRules = require('./type_rules');
+require('./type_rules');
 
 const BLOCKER = 'blocker';
 const ERROR = 'error';
