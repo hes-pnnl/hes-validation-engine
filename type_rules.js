@@ -5,7 +5,7 @@ var typeRules = {
      * @param {float=} min
      * @param {float=} max
      */
-    _int = function(value, min, max) {
+    _int(value, min, max) {
         if (value != parseInt(value)) {
             return value + " is not a whole number."
         }
@@ -19,7 +19,7 @@ var typeRules = {
      * @param {float=} min
      * @param {float=} max
      */
-    _float = function(value, min, max) {
+    _float(value, min, max) {
         if (value != parseFloat(value)) {
             return value + " is not a number."
         }
@@ -31,7 +31,7 @@ var typeRules = {
     /**
      * @param {*} value
      */
-    _zip = function(value) {
+    _zip(value) {
         if (!(/(^\d{5}$)/.test(value))) {
             return value + " is not a valid zip-code."
         }
@@ -40,7 +40,7 @@ var typeRules = {
     /**
      * @param {*} value
      */
-    _bool = function(value) {
+    _bool(value) {
         if ((typeof(value) !== typeof(true)) && (value !== "true") && (value !== "false")) {
             return value + " is not a boolean.";
         }
@@ -51,7 +51,7 @@ var typeRules = {
      * @param {int=} length
      * @param {string[]=} options
      */
-    _string = function(value, length, options) {
+    _string(value, length, options) {
         if (undefined !== length && value.length > length) {
             return "Value must be less than " + length + " characters.";
         }
@@ -65,7 +65,7 @@ var typeRules = {
     /**
      * @param {int} value
      */
-    _percent = function(value) {
+    _percent(value) {
         if (parseInt(value) > 100) {
             return "Sum of fraction values may not exceed 100%"
         } else if (parseInt(value) < 100) {
@@ -76,7 +76,7 @@ var typeRules = {
     /**
      * @param {float} value
      */
-    _fraction = function(value) {
+    _fraction(value) {
         if (value > 1) {
             return "Sum of fraction values may not exceed 100%"
         } else if (value < 1) {
@@ -90,7 +90,7 @@ var typeRules = {
      * @param {int|null} min Minimum valid date as ms since Unix epoch
      * @param {int|null} max Maximum valid date as ms since Unix epoch
      */
-    _date = function(value, min, max) {
+    _date(value, min, max) {
         // First check for the pattern
         if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(value)) {
             return value + " is not a valid date";
@@ -129,7 +129,7 @@ var typeRules = {
     /*
      * Return integer value if value is entered and numeric, else make zero
      */
-    _int_or_zero = function(value) {
+    _int_or_zero(value) {
         if (isNaN(parseInt(value))) {
             return 0;
         } else {
