@@ -1,4 +1,4 @@
-HES.TypeRules = {
+typeRules = {
 
     /**
      * @param {*} value
