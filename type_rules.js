@@ -1,11 +1,11 @@
 HES.TypeRules = {
-    
+
     /**
      * @param {*} value
      * @param {float=} min
      * @param {float=} max
      */
-    _int(value, min, max) {
+    _int: function(value, min, max) {
         if (value != parseInt(value)) {
             return value + " is not a whole number."
         }
@@ -19,7 +19,7 @@ HES.TypeRules = {
      * @param {float=} min
      * @param {float=} max
      */
-    _float(value, min, max) {
+    _float: function(value, min, max) {
         if (value != parseFloat(value)) {
             return value + " is not a number."
         }
@@ -31,7 +31,7 @@ HES.TypeRules = {
     /**
      * @param {*} value
      */
-    _zip(value) {
+    _zip: function(value) {
         if (!(/(^\d{5}$)/.test(value))) {
             return value + " is not a valid zip-code."
         }
@@ -40,7 +40,7 @@ HES.TypeRules = {
     /**
      * @param {*} value
      */
-    _bool(value) {
+    _bool: function(value) {
         if ((typeof(value) !== typeof(true)) && (value !== "true") && (value !== "false")) {
             return value + " is not a boolean.";
         }
@@ -51,7 +51,7 @@ HES.TypeRules = {
      * @param {int=} length
      * @param {string[]=} options
      */
-    _string(value, length, options) {
+    _string: function(value, length, options) {
         if (undefined !== length && value.length > length) {
             return "Value must be less than " + length + " characters.";
         }
@@ -65,7 +65,7 @@ HES.TypeRules = {
     /**
      * @param {int} value
      */
-    _percent(value) {
+    _percent: function(value) {
         if (parseInt(value) > 100) {
             return "Sum of fraction values may not exceed 100%"
         } else if (parseInt(value) < 100) {
@@ -76,7 +76,7 @@ HES.TypeRules = {
     /**
      * @param {float} value
      */
-    _fraction(value) {
+    _fraction: function(value) {
         if (value > 1) {
             return "Sum of fraction values may not exceed 100%"
         } else if (value < 1) {
@@ -90,7 +90,7 @@ HES.TypeRules = {
      * @param {int|null} min Minimum valid date as ms since Unix epoch
      * @param {int|null} max Maximum valid date as ms since Unix epoch
      */
-    _date(value, min, max) {
+    _date: function(value, min, max) {
         // First check for the pattern
         if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(value)) {
             return value + " is not a valid date";
@@ -129,7 +129,7 @@ HES.TypeRules = {
     /*
      * Return integer value if value is entered and numeric, else make zero
      */
-    _int_or_zero(value) {
+    _int_or_zero: function(value) {
         if (isNaN(parseInt(value))) {
             return 0;
         } else {
