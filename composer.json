@@ -1,7 +1,0 @@
-{
-    "name": "pnnl/hes-validation-engine",
-    "version": "1.0.0",
-    "autoload": {
-        "psr-4": { "HESValidationEngine\\": "src" }
-    }
-}
