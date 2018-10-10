@@ -18,7 +18,7 @@ global.HESValidationEngine = {
         result[HESValidationEngine.ERROR] = {};
         result[HESValidationEngine.MANDATORY] = {};
         let requiredFields = require('./required_fields.node')(homeValues);
-        let validationRules = HESValidationEngine.ValidationRules;
+        let validationRules = require('./home_audit.node');
         for (var fieldName in requiredFields) {
             //Because we have two validation rules for one user input, here we check for potential duplicate messages
             if (undefined === homeValues[fieldName] || '' === homeValues[fieldName] || null === homeValues[fieldName]) {
