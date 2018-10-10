@@ -1,4 +1,4 @@
-window.TypeRules = {
+Validation.TypeRules = {
 
     /**
      * @param {*} value
