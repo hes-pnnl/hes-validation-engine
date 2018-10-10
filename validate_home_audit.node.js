@@ -9,7 +9,7 @@ function validate_home_audit(homeValues) {
     result[BLOCKER] = {};
     result[ERROR] = {};
     result[MANDATORY] = {};
-    let requiredFields = require('../field-messages/required_fields.node')(homeValues);
+    let requiredFields = require('./required_fields.node')(homeValues);
     for (var fieldName in requiredFields) {
         //Because we have two validation rules for one user input, here we check for potential duplicate messages
         if (undefined === homeValues[fieldName] || '' === homeValues[fieldName] || null === homeValues[fieldName]) {
