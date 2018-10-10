@@ -1,7 +1,7 @@
 /**
  * home_audit.node.js - Defines the validation functions used to validate a home audit for the HES GUI.
  */
-TypeRules = require('./type_rules');
+TypeRules = require('./type_rules.node');
 
 const BLOCKER = HESValidationEngine.BLOCKER;
 const ERROR = HESValidationEngine.ERROR;
