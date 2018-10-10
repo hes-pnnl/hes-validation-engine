@@ -434,7 +434,7 @@ Validation.prototype.getType = function() {
  * @param {string} value The value of the field
  */
 
-let validationRules = {
+HESValidationEngine.ValidationRules = {
 
     /*
      * building
