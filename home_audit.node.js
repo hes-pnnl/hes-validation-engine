@@ -6,9 +6,9 @@ let TypeRules = require('./type_rules.node');
 
 let _homeValues;
 
-BLOCKER = 'blocker';
-ERROR = 'error';
-MANDATORY = 'mandatory';
+const BLOCKER = 'blocker';
+const ERROR = 'error';
+const MANDATORY = 'mandatory';
 
 const stateArray = [
     '',
