@@ -541,8 +541,8 @@ let validationRules = {
             let combinedAreaCheck = this._check_combined_area();
             //Check that roof area is not less than floor area
             if (!combinedAreaCheck) {
-                let combinedRoofArea = this._get_combined_roof_area();
-                let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "Roof area");
+                let combinedRoofArea = this._get_combined_roof_area(_homeValues);
+                let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "Roof area", _homeValues);
                 //Check that combined areas are consistent with conditioned floor areas
                 if (checkConditionedAreas) {
                     return new Validation(checkConditionedAreas, ERROR);
@@ -621,8 +621,8 @@ let validationRules = {
             let combinedAreaCheck = this._check_combined_area();
             //Check that floor area is not greater than roof area
             if (!combinedAreaCheck) {
-                let combinedFloorArea = this._get_combined_floor_area();
-                let checkConditionedAreas = this._check_conditioned_areas(combinedFloorArea, "Floor area");
+                let combinedFloorArea = this._get_combined_floor_area(_homeValues);
+                let checkConditionedAreas = this._check_conditioned_areas(combinedFloorArea, "Floor area", _homeValues);
                 //Check that combined areas are consistent with conditioned floor areas
                 if (checkConditionedAreas) {
                     return new Validation(checkConditionedAreas, ERROR);
@@ -674,7 +674,7 @@ let validationRules = {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
             }
-            let footprintArea = this._get_footprint_area();
+            let footprintArea = this._get_footprint_area(_homeValues);
             //Skylights have API max of 300
             if(footprintArea > 300) {
                 footprintArea = 300;
@@ -700,7 +700,7 @@ let validationRules = {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
             }
-            let footprintArea = this._get_footprint_area();
+            let footprintArea = this._get_footprint_area(_homeValues);
             //Skylights have API max of 300
             if(footprintArea > 300) {
                 footprintArea = 300;
@@ -724,7 +724,7 @@ let validationRules = {
      * zone_window
      */
     window_area_front: function(value, _homeValues) {
-        let wall_area = this._get_wall_area();
+        let wall_area = this._get_wall_area(_homeValues);
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
         return new Validation(TypeRules._float(value, 0, wall_area), ERROR);
     },
@@ -738,7 +738,7 @@ let validationRules = {
         return this._window_area(value, false);
     },
     _window_area: function(value, isFront) {
-        let wall_area = this._get_wall_area();
+        let wall_area = this._get_wall_area(_homeValues);
         if (wall_area) {
             //Windows have API max area of 999
             //TODO: Clarify that this really should be the maximum (documentation has less than calculated wall area)
@@ -1168,7 +1168,7 @@ let validationRules = {
      * Gets wall length for window area validations
      */
     _get_wall_length: function() {
-        let area = this._get_footprint_area();
+        let area = this._get_footprint_area(_homeValues);
         if (area) {
             //Assume floor dimensions area 5x3
             return parseInt((Math.sqrt((3 * area) / 5)) * (5 / 3));
@@ -1195,8 +1195,8 @@ let validationRules = {
      * Checks that the combined roof_area is not less than the combined floor_area
      */
     _check_combined_area: function() {
-        let combinedRoofArea = this._get_combined_roof_area();
-        let combinedFloorArea = this._get_combined_floor_area();
+        let combinedRoofArea = this._get_combined_roof_area(_homeValues);
+        let combinedFloorArea = this._get_combined_floor_area(_homeValues);
         if (combinedRoofArea < combinedFloorArea * .95) { // Allow 5% error
             return "The roof does not cover the floor";
         } else {
