@@ -1143,7 +1143,7 @@ let validationRules = {
     /*
      * Gets footprint area for skylight area validations
      */
-    _get_footprint_area(_homeValues) {
+    _get_footprint_area: function(_homeValues) {
         if (_homeValues.conditioned_floor_area === '') {
             return false;
         }
@@ -1153,21 +1153,21 @@ let validationRules = {
     /*
      * Get combined floor area
      */
-    _get_combined_floor_area(_homeValues) {
+    _get_combined_floor_area: function(_homeValues) {
         return TypeRules._int_or_zero(_homeValues.floor_area_1) + TypeRules._int_or_zero(_homeValues.floor_area_2);
     },
 
     /*
      * Get combined roof area
      */
-    _get_combined_roof_area(_homeValues) {
+    _get_combined_roof_area: function(_homeValues) {
         return TypeRules._int_or_zero(_homeValues.roof_area_1) + TypeRules._int_or_zero(_homeValues.roof_area_2);
     },
 
     /*
      * Gets wall length for window area validations
      */
-    _get_wall_length() {
+    _get_wall_length: function() {
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
@@ -1180,7 +1180,7 @@ let validationRules = {
     /*
      * Gets wall area for window area validations
      */
-    _get_wall_area(_homeValues) {
+    _get_wall_area: function(_homeValues) {
         let length = this._get_wall_length();
         let height = parseInt(_homeValues.floor_to_ceiling_height) || false;
         let stories = parseInt(_homeValues.num_floor_above_grade) || false;
@@ -1194,7 +1194,7 @@ let validationRules = {
     /*
      * Checks that the combined roof_area is not less than the combined floor_area
      */
-    _check_combined_area() {
+    _check_combined_area: function() {
         let combinedRoofArea = this._get_combined_roof_area();
         let combinedFloorArea = this._get_combined_floor_area();
         if (combinedRoofArea < combinedFloorArea * .95) { // Allow 5% error
@@ -1207,7 +1207,7 @@ let validationRules = {
     /*
      * Checks that the roof_area and floor_areas are consistent with conditioned footprint areas
      */
-    _check_conditioned_areas(combinedArea, thisAreaType, _homeValues) {
+    _check_conditioned_areas: function(combinedArea, thisAreaType, _homeValues) {
         let footprintArea = TypeRules._int_or_zero(_homeValues.conditioned_floor_area);
         if (_homeValues.foundation_type_1 === 'cond_basement') {
             footprintArea = footprintArea - TypeRules._int_or_zero(_homeValues.floor_area_1);
