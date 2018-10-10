@@ -1231,9 +1231,7 @@ let validationRules = {
 let global = global || window;
 
 global.HESValidationEngine = {
-    // Pass homeValues into the scope of this file so that validation rules can reference it
-    // without us having to explicitly pass it to every function
-    _homeValues = homeValues;
+
     /**
      * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
      * corresponding form fields.
@@ -1241,6 +1239,9 @@ global.HESValidationEngine = {
      * validation rules were violated, an empty object is returned.
      */
     validate_home_audit: function(homeValues) {
+        // Pass homeValues into the scope of this file so that validation rules can reference it
+        // without us having to explicitly pass it to every function
+        _homeValues = homeValues;
         let result = {};
         result[BLOCKER] = {};
         result[ERROR] = {};
