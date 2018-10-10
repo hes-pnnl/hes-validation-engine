@@ -1269,6 +1269,7 @@ global.HESValidationEngine = {
             if (value === null || value === undefined || value.length === 0) {
                 continue;
             }
+            console.log(typeof(validationRules[fieldName]));
             if (typeof(validationRules[fieldName]) !== 'function') {
                 console.error("Missing a validation rule for field " + fieldName);
                 continue;
