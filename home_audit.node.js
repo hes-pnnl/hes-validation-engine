@@ -441,32 +441,32 @@ let validationRules = {
      * building
      */
     building_id: function(value, _homeValues) {
-        return new Validation(TypeRules._int(value), ERROR);
+        return new Validation(TypeRules._int(value, _homeValues), ERROR);
     },
     assessor_id: function(value, _homeValues) {
-        return new Validation(TypeRules._string(value), ERROR);
+        return new Validation(TypeRules._string(value, _homeValues), ERROR);
     },
 
     /*
      * address_validate
      */
     address: function(value, _homeValues) {
-        return new Validation(TypeRules._string(value), ERROR);
+        return new Validation(TypeRules._string(value, _homeValues), ERROR);
     },
     city: function(value, _homeValues) {
-        return new Validation(TypeRules._string(value), ERROR);
+        return new Validation(TypeRules._string(value, _homeValues), ERROR);
     },
     state: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 2, stateArray), ERROR);
     },
     zip_code: function(value, _homeValues) {
-        return new Validation(TypeRules._zip(value), ERROR);
+        return new Validation(TypeRules._zip(value, _homeValues), ERROR);
     },
     assessment_type: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, assessmentTypes), BLOCKER);
     },
     external_building_id: function(value, _homeValues) {
-        return new Validation(TypeRules._string(value), ERROR);
+        return new Validation(TypeRules._string(value, _homeValues), ERROR);
     },
     building_id_holder: function(value, _homeValues) {
         //This is just a homeValue holder so we can check if this is a new assessment
@@ -530,10 +530,10 @@ let validationRules = {
      * zone_roof
      */
     roof_area_1: function(value, _homeValues) {
-        return this._roof_area(value);
+        return this._roof_area(value, _homeValues);
     },
     roof_area_2: function(value, _homeValues) {
-        return this._roof_area(value);
+        return this._roof_area(value, _homeValues);
     },
     _roof_area: function(value, _homeValues) {
         //Check that roof area is within legal bounds per API
@@ -557,50 +557,50 @@ let validationRules = {
     },
 
     roof_assembly_code_1: function(value, _homeValues) {
-        return this._roof_assembly_code(value);
+        return this._roof_assembly_code(value, _homeValues);
     },
     roof_assembly_code_2: function(value, _homeValues) {
-        return this._roof_assembly_code(value);
+        return this._roof_assembly_code(value, _homeValues);
     },
     _roof_assembly_code: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, roofAssemblyCode), BLOCKER);
     },
 
     roof_color_1: function(value, _homeValues) {
-        return this._roof_color(value);
+        return this._roof_color(value, _homeValues);
     },
     roof_color_2: function(value, _homeValues) {
-        return this._roof_color(value);
+        return this._roof_color(value, _homeValues);
     },
     _roof_color: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, roofColor), BLOCKER);
     },
 
     roof_absorptance_1: function(value, _homeValues) {
-        return this._roof_absorptance(value);
+        return this._roof_absorptance(value, _homeValues);
     },
     roof_absorptance_2: function(value, _homeValues) {
-        return this._roof_absorptance(value);
+        return this._roof_absorptance(value, _homeValues);
     },
     _roof_absorptance: function(value, _homeValues) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     },
 
     roof_type_1: function(value, _homeValues) {
-        return this._roof_type(value);
+        return this._roof_type(value, _homeValues);
     },
     roof_type_2: function(value, _homeValues) {
-        return this._roof_type(value);
+        return this._roof_type(value, _homeValues);
     },
     _roof_type: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, roofType), BLOCKER);
     },
 
     ceiling_assembly_code_1: function(value, _homeValues) {
-        return this._ceiling_assembly_code(value);
+        return this._ceiling_assembly_code(value, _homeValues);
     },
     ceiling_assembly_code_2: function(value, _homeValues) {
-        return this._ceiling_assembly_code(value);
+        return this._ceiling_assembly_code(value, _homeValues);
     },
     _ceiling_assembly_code: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, ceilingAssemblyCode), BLOCKER);
@@ -610,10 +610,10 @@ let validationRules = {
      * zone_floor
      */
     floor_area_1: function(value, _homeValues) {
-        return this._floor_area(value);
+        return this._floor_area(value, _homeValues);
     },
     floor_area_2: function(value, _homeValues) {
-        return this._floor_area(value);
+        return this._floor_area(value, _homeValues);
     },
     _floor_area: function(value, _homeValues) {
         //Check that floor area is within legal bounds per API
@@ -637,30 +637,30 @@ let validationRules = {
     },
 
     foundation_type_1: function(value, _homeValues) {
-        return this._foundation_type(value);
+        return this._foundation_type(value, _homeValues);
     },
     foundation_type_2: function(value, _homeValues) {
-        return this._foundation_type(value);
+        return this._foundation_type(value, _homeValues);
     },
     _foundation_type: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, foundationType), BLOCKER);
     },
 
     foundation_insulation_level_1: function(value, _homeValues) {
-        return this._foundation_insulation_level(value);
+        return this._foundation_insulation_level(value, _homeValues);
     },
     foundation_insulation_level_2: function(value, _homeValues) {
-        return this._foundation_insulation_level(value);
+        return this._foundation_insulation_level(value, _homeValues);
     },
     _foundation_insulation_level: function(value, _homeValues) {
         return new Validation(TypeRules._int(value, 0, 19), BLOCKER);
     },
 
     floor_assembly_code_1: function(value, _homeValues) {
-        return this._floor_assembly_code(value);
+        return this._floor_assembly_code(value, _homeValues);
     },
     floor_assembly_code_2: function(value, _homeValues) {
-        return this._floor_assembly_code(value);
+        return this._floor_assembly_code(value, _homeValues);
     },
     _floor_assembly_code: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, floorAssemblyCode), BLOCKER);
@@ -670,7 +670,7 @@ let validationRules = {
      * zone_skylight
      */
     skylight_area: function(value, _homeValues) {
-        if(parseInt(value) !== 0) {
+        if(parseInt(value, _homeValues) !== 0) {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
             }
@@ -696,7 +696,7 @@ let validationRules = {
     },
 
     skylight_area_2: function(value, _homeValues) {
-        if(parseInt(value) !== 0) {
+        if(parseInt(value, _homeValues) !== 0) {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
             }
@@ -737,7 +737,7 @@ let validationRules = {
     window_area_left: function(value, _homeValues) {
         return this._window_area(value, false);
     },
-    _window_area: function(value, isFront) {
+    _window_area: function(value, isFront, _homeValues) {
         let wall_area = this._get_wall_area(_homeValues);
         if (wall_area) {
             //Windows have API max area of 999
@@ -752,64 +752,64 @@ let validationRules = {
     },
 
     window_method_front: function(value, _homeValues) {
-        return this._window_method(value);
+        return this._window_method(value, _homeValues);
     },
     window_method_back: function(value, _homeValues) {
-        return this._window_method(value);
+        return this._window_method(value, _homeValues);
     },
     window_method_right: function(value, _homeValues) {
-        return this._window_method(value);
+        return this._window_method(value, _homeValues);
     },
     window_method_left: function(value, _homeValues) {
-        return this._window_method(value);
+        return this._window_method(value, _homeValues);
     },
     _window_method: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
 
     window_code_front: function(value, _homeValues) {
-        return this._window_code(value);
+        return this._window_code(value, _homeValues);
     },
     window_code_back: function(value, _homeValues) {
-        return this._window_code(value);
+        return this._window_code(value, _homeValues);
     },
     window_code_right: function(value, _homeValues) {
-        return this._window_code(value);
+        return this._window_code(value, _homeValues);
     },
     window_code_left: function(value, _homeValues) {
-        return this._window_code(value);
+        return this._window_code(value, _homeValues);
     },
     _window_code: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER);
     },
 
     window_u_value_front: function(value, _homeValues) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, _homeValues);
     },
     window_u_value_back: function(value, _homeValues) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, _homeValues);
     },
     window_u_value_right: function(value, _homeValues) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, _homeValues);
     },
     window_u_value_left: function(value, _homeValues) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, _homeValues);
     },
     _window_u_value: function(value, _homeValues) {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
     },
 
     window_shgc_front: function(value, _homeValues) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, _homeValues);
     },
     window_shgc_back: function(value, _homeValues) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, _homeValues);
     },
     window_shgc_right: function(value, _homeValues) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, _homeValues);
     },
     window_shgc_left: function(value, _homeValues) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, _homeValues);
     },
     _window_shgc: function(value, _homeValues) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
@@ -819,16 +819,16 @@ let validationRules = {
      * zone_wall
      */
     wall_assembly_code_front: function(value, _homeValues) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, _homeValues);
     },
     wall_assembly_code_back: function(value, _homeValues) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, _homeValues);
     },
     wall_assembly_code_right: function(value, _homeValues) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, _homeValues);
     },
     wall_assembly_code_left: function(value, _homeValues) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, _homeValues);
     },
     _wall_assembly_code: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, wallAssemblyCode), BLOCKER);
@@ -851,39 +851,39 @@ let validationRules = {
      * hvac_heating
      */
     heating_type_1: function(value, _homeValues) {
-        return this._heating_type(value);
+        return this._heating_type(value, _homeValues);
     },
     heating_type_2: function(value, _homeValues) {
-        return this._heating_type(value);
+        return this._heating_type(value, _homeValues);
     },
     _heating_type: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 100, heatingTypeOptions), BLOCKER);
     },
     heating_fuel_1: function(value, _homeValues) {
-        return this._heating_fuel(value);
+        return this._heating_fuel(value, _homeValues);
     },
     heating_fuel_2: function(value, _homeValues) {
-        return this._heating_fuel(value);
+        return this._heating_fuel(value, _homeValues);
     },
     _heating_fuel: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 100, heatingFuelOptions), BLOCKER);
     },
 
     heating_efficiency_method_1: function(value, _homeValues) {
-        return this._heating_efficiency_method(value);
+        return this._heating_efficiency_method(value, _homeValues);
     },
     heating_efficiency_method_2: function(value, _homeValues) {
-        return this._heating_efficiency_method(value);
+        return this._heating_efficiency_method(value, _homeValues);
     },
     _heating_efficiency_method: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
 
     heating_year_1: function(value, _homeValues) {
-        return this._heating_year(value);
+        return this._heating_year(value, _homeValues);
     },
     heating_year_2: function(value, _homeValues) {
-        return this._heating_year(value);
+        return this._heating_year(value, _homeValues);
     },
     _heating_year: function(value, _homeValues) {
         return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
@@ -915,40 +915,40 @@ let validationRules = {
      * hvac_cooling
      */
     cooling_type_1: function(value, _homeValues) {
-        return this._cooling_type(value);
+        return this._cooling_type(value, _homeValues);
     },
     cooling_type_2: function(value, _homeValues) {
-        return this._cooling_type(value);
+        return this._cooling_type(value, _homeValues);
     },
     _cooling_type: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 100, coolingTypeOptions), BLOCKER);
     },
 
     cooling_efficiency_method_1: function(value, _homeValues) {
-        return this._cooling_efficiency_method(value);
+        return this._cooling_efficiency_method(value, _homeValues);
     },
     cooling_efficiency_method_2: function(value, _homeValues) {
-        return this._cooling_efficiency_method(value);
+        return this._cooling_efficiency_method(value, _homeValues);
     },
     _cooling_efficiency_method: function(value, _homeValues) {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
 
     cooling_year_1: function(value, _homeValues) {
-        return this._cooling_year(value);
+        return this._cooling_year(value, _homeValues);
     },
     cooling_year_2: function(value, _homeValues) {
-        return this._cooling_year(value);
+        return this._cooling_year(value, _homeValues);
     },
     _cooling_year: function(value, _homeValues) {
         return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
     },
 
     cooling_efficiency_1: function(value, _homeValues) {
-        return this._cooling_efficiency(value);
+        return this._cooling_efficiency(value, _homeValues);
     },
     cooling_efficiency_2: function(value, _homeValues) {
-        return this._cooling_efficiency(value);
+        return this._cooling_efficiency(value, _homeValues);
     },
     _cooling_efficiency: function(value, _homeValues) {
         return new Validation(TypeRules._float(value, 8, 40), BLOCKER);
@@ -958,25 +958,25 @@ let validationRules = {
      * hvac_distribution
      */
     duct_location_1_1: function(value, _homeValues) {
-        return this._duct_location(value);
+        return this._duct_location(value, _homeValues);
     },
     duct_location_2_1: function(value, _homeValues) {
-        return this._duct_location(value);
+        return this._duct_location(value, _homeValues);
     },
     duct_location_3_1: function(value, _homeValues) {
-        return this._duct_location(value);
+        return this._duct_location(value, _homeValues);
     },
     duct_location_1_2: function(value, _homeValues) {
-        return this._duct_location(value);
+        return this._duct_location(value, _homeValues);
     },
     duct_location_2_2: function(value, _homeValues) {
-        return this._duct_location(value);
+        return this._duct_location(value, _homeValues);
     },
     duct_location_3_2: function(value, _homeValues) {
-        return this._duct_location(value);
+        return this._duct_location(value, _homeValues);
     },
     _duct_location: function(value, _homeValues) {
-        if (ductType.indexOf(value) > -1) {
+        if (ductType.indexOf(value, _homeValues) > -1) {
             let ductTypes = ['cond_space'];
             let roofTypes = [_homeValues.roof_type_1, _homeValues.roof_type_2, ];
             let foundTypes = [_homeValues.foundation_type_1, _homeValues.foundation_type_2];
@@ -990,7 +990,7 @@ let validationRules = {
                     ductTypes.push(type);
                 }
             });
-            if (ductType.indexOf(value) === -1) {
+            if (ductType.indexOf(value, _homeValues) === -1) {
                 return new Validation(value + ' was defined for this duct location, but the home definition does not contain any such space.', ERROR);
             }
         } else {
@@ -1027,44 +1027,44 @@ let validationRules = {
     },
 
     duct_insulated_1_1: function(value, _homeValues) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, _homeValues);
     },
     duct_insulated_2_1: function(value, _homeValues) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, _homeValues);
     },
     duct_insulated_3_1: function(value, _homeValues) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, _homeValues);
     },
     duct_insulated_1_2: function(value, _homeValues) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, _homeValues);
     },
     duct_insulated_2_2: function(value, _homeValues) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, _homeValues);
     },
     duct_insulated_3_2: function(value, _homeValues) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, _homeValues);
     },
     _duct_insulated: function(value, _homeValues) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
 
     duct_sealed_1_1: function(value, _homeValues) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, _homeValues);
     },
     duct_sealed_2_1: function(value, _homeValues) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, _homeValues);
     },
     duct_sealed_3_1: function(value, _homeValues) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, _homeValues);
     },
     duct_sealed_1_2: function(value, _homeValues) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, _homeValues);
     },
     duct_sealed_2_2: function(value, _homeValues) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, _homeValues);
     },
     duct_sealed_3_2: function(value, _homeValues) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, _homeValues);
     },
     _duct_sealed: function(value, _homeValues) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
@@ -1085,7 +1085,7 @@ let validationRules = {
     hot_water_year: function(value, _homeValues) {
         return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
     },
-    hot_water_energy_factor(value) {
+    hot_water_energy_factor(value, _homeValues) {
         let min, max;
 
         if (_homeValues.hot_water_type === 'storage') {
@@ -1120,19 +1120,19 @@ let validationRules = {
      * HPwES
      */
     improvement_installation_start_date: function(value, _homeValues) {
-        return new Validation(TypeRules._date(value), ERROR);
+        return new Validation(TypeRules._date(value, _homeValues), ERROR);
     },
     improvement_installation_completion_date: function(value, _homeValues) {
-        return new Validation(TypeRules._date(value), ERROR);
+        return new Validation(TypeRules._date(value, _homeValues), ERROR);
     },
     contractor_business_name: function(value, _homeValues) {
-        return new Validation(TypeRules._string(value), ERROR);
+        return new Validation(TypeRules._string(value, _homeValues), ERROR);
     },
     contractor_zip_code: function(value, _homeValues) {
-        return new Validation(TypeRules._zip(value), ERROR);
+        return new Validation(TypeRules._zip(value, _homeValues), ERROR);
     },
     is_income_eligible_program: function(value, _homeValues) {
-        return new Validation(TypeRules._bool(value), ERROR);
+        return new Validation(TypeRules._bool(value, _homeValues), ERROR);
     },
 
 /*
