@@ -2,7 +2,7 @@
     "name": "hes-validation-engine",
     "version": "1.0.0",
     "description": "Validation Engine for HEScore Project",
-    "main": "validate_home_audit.node.js",
+    "main": "home_audit.node.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
