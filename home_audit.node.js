@@ -442,35 +442,35 @@ let validationRules = {
     /*
      * building
      */
-    building_id: function(value) {
+    building_id(value) {
         return new Validation(TypeRules._int(value), ERROR);
     },
-    assessor_id: function(value) {
+    assessor_id(value) {
         return new Validation(TypeRules._string(value), ERROR);
     },
 
     /*
      * address_validate
      */
-    address: function(value) {
+    address(value) {
         return new Validation(TypeRules._string(value), ERROR);
     },
-    city: function(value) {
+    city(value) {
         return new Validation(TypeRules._string(value), ERROR);
     },
-    state: function(value) {
+    state(value) {
         return new Validation(TypeRules._string(value, 2, stateArray), ERROR);
     },
-    zip_code: function(value) {
+    zip_code(value) {
         return new Validation(TypeRules._zip(value), ERROR);
     },
-    assessment_type: function(value) {
+    assessment_type(value) {
         return new Validation(TypeRules._string(value, 20, assessmentTypes), BLOCKER);
     },
-    external_building_id: function(value) {
+    external_building_id(value) {
         return new Validation(TypeRules._string(value), ERROR);
     },
-    building_id_holder: function(value) {
+    building_id_holder(value) {
         //This is just a homeValue holder so we can check if this is a new assessment
         //No validation required for this field
     },
@@ -478,66 +478,66 @@ let validationRules = {
     /*
      * about
      */
-    assessment_date: function(value) {
+    assessment_date(value) {
         return new Validation(TypeRules._date(value, Date.parse('2010-01-01'), Date.now()), BLOCKER);
     },
-    comments: function(value) {
+    comments(value) {
         return new Validation(TypeRules._string(value, 256), BLOCKER);
     },
     //The following two functions are associated with current Walls page
-    shape: function(value) {
+    shape(value) {
         return new Validation(TypeRules._string(value, 20, ['rectangle', 'town_house']), BLOCKER);
     },
-    town_house_walls: function(value) {
+    town_house_walls(value) {
         return new Validation(TypeRules._string(value, 20, ['back_front', 'back_right_front', 'back_front_left']), BLOCKER);
     },
-    year_built: function(value) {
+    year_built(value) {
         return new Validation(TypeRules._int(value, 1600, (new Date()).getFullYear()), BLOCKER);
     },
-    number_bedrooms: function(value) {
+    number_bedrooms(value) {
         return new Validation(TypeRules._int(value, 1, 10), BLOCKER);
     },
-    num_floor_above_grade: function(value) {
+    num_floor_above_grade(value) {
         return new Validation(TypeRules._int(value, 1, 4), BLOCKER);
     },
-    floor_to_ceiling_height: function(value) {
+    floor_to_ceiling_height(value) {
         return new Validation(TypeRules._int(value, 6, 12), BLOCKER);
     },
-    conditioned_floor_area: function(value) {
+    conditioned_floor_area(value) {
         return new Validation(TypeRules._int(value, 250, 25000), BLOCKER);
     },
-    orientation: function(value) {
+    orientation(value) {
         return new Validation(TypeRules._string(value, 20, orientationArray), BLOCKER);
     },
-    blower_door_test: function(value) {
+    blower_door_test(value) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
-    air_sealing_present: function(value) {
+    air_sealing_present(value) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
-    envelope_leakage: function(value) {
+    envelope_leakage(value) {
         return new Validation(TypeRules._int(value, 0, 25000), BLOCKER);
     },
 
     /*
      * zone
      */
-    wall_construction_same: function(value) {
+    wall_construction_same(value) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
-    window_construction_same: function(value) {
+    window_construction_same(value) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     /*
      * zone_roof
      */
-    roof_area_1: function(value) {
+    roof_area_1(value) {
         return this._roof_area(value);
     },
-    roof_area_2: function(value) {
+    roof_area_2(value) {
         return this._roof_area(value);
     },
-    _roof_area: function(value) {
+    _roof_area(value) {
         //Check that roof area is within legal bounds per API
         if (TypeRules._int(value, 1, 25000) === null) {
             let combinedAreaCheck = this._check_combined_area();
@@ -558,66 +558,66 @@ let validationRules = {
         }
     },
 
-    roof_assembly_code_1: function(value) {
+    roof_assembly_code_1(value) {
         return this._roof_assembly_code(value);
     },
-    roof_assembly_code_2: function(value) {
+    roof_assembly_code_2(value) {
         return this._roof_assembly_code(value);
     },
-    _roof_assembly_code: function(value) {
+    _roof_assembly_code(value) {
         return new Validation(TypeRules._string(value, 20, roofAssemblyCode), BLOCKER);
     },
 
-    roof_color_1: function(value) {
+    roof_color_1(value) {
         return this._roof_color(value);
     },
-    roof_color_2: function(value) {
+    roof_color_2(value) {
         return this._roof_color(value);
     },
-    _roof_color: function(value) {
+    _roof_color(value) {
         return new Validation(TypeRules._string(value, 20, roofColor), BLOCKER);
     },
 
-    roof_absorptance_1: function(value) {
+    roof_absorptance_1(value) {
         return this._roof_absorptance(value);
     },
-    roof_absorptance_2: function(value) {
+    roof_absorptance_2(value) {
         return this._roof_absorptance(value);
     },
-    _roof_absorptance: function(value) {
+    _roof_absorptance(value) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     },
 
-    roof_type_1: function(value) {
+    roof_type_1(value) {
         return this._roof_type(value);
     },
-    roof_type_2: function(value) {
+    roof_type_2(value) {
         return this._roof_type(value);
     },
-    _roof_type: function(value) {
+    _roof_type(value) {
         return new Validation(TypeRules._string(value, 20, roofType), BLOCKER);
     },
 
-    ceiling_assembly_code_1: function(value) {
+    ceiling_assembly_code_1(value) {
         return this._ceiling_assembly_code(value);
     },
-    ceiling_assembly_code_2: function(value) {
+    ceiling_assembly_code_2(value) {
         return this._ceiling_assembly_code(value);
     },
-    _ceiling_assembly_code: function(value) {
+    _ceiling_assembly_code(value) {
         return new Validation(TypeRules._string(value, 20, ceilingAssemblyCode), BLOCKER);
     },
 
     /*
      * zone_floor
      */
-    floor_area_1: function(value) {
+    floor_area_1(value) {
         return this._floor_area(value);
     },
-    floor_area_2: function(value) {
+    floor_area_2(value) {
         return this._floor_area(value);
     },
-    _floor_area: function(value) {
+    _floor_area(value) {
         //Check that floor area is within legal bounds per API
         if (TypeRules._int(value, 1, 25000) === null) {
             let combinedAreaCheck = this._check_combined_area();
@@ -638,40 +638,40 @@ let validationRules = {
         }
     },
 
-    foundation_type_1: function(value) {
+    foundation_type_1(value) {
         return this._foundation_type(value);
     },
-    foundation_type_2: function(value) {
+    foundation_type_2(value) {
         return this._foundation_type(value);
     },
-    _foundation_type: function(value) {
+    _foundation_type(value) {
         return new Validation(TypeRules._string(value, 20, foundationType), BLOCKER);
     },
 
-    foundation_insulation_level_1: function(value) {
+    foundation_insulation_level_1(value) {
         return this._foundation_insulation_level(value);
     },
-    foundation_insulation_level_2: function(value) {
+    foundation_insulation_level_2(value) {
         return this._foundation_insulation_level(value);
     },
-    _foundation_insulation_level: function(value) {
+    _foundation_insulation_level(value) {
         return new Validation(TypeRules._int(value, 0, 19), BLOCKER);
     },
 
-    floor_assembly_code_1: function(value) {
+    floor_assembly_code_1(value) {
         return this._floor_assembly_code(value);
     },
-    floor_assembly_code_2: function(value) {
+    floor_assembly_code_2(value) {
         return this._floor_assembly_code(value);
     },
-    _floor_assembly_code: function(value) {
+    _floor_assembly_code(value) {
         return new Validation(TypeRules._string(value, 20, floorAssemblyCode), BLOCKER);
     },
 
     /*
      * zone_skylight
      */
-    skylight_area: function(value) {
+    skylight_area(value) {
         if(parseInt(value) !== 0) {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
@@ -684,20 +684,20 @@ let validationRules = {
             return new Validation(TypeRules._float(value, 0, footprintArea), BLOCKER);
         }
     },
-    skylight_method: function(value) {
+    skylight_method(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
-    skylight_code: function(value) {
+    skylight_code(value) {
         return new Validation(TypeRules._string(value, 20, windowAndSkylightCode, BLOCKER));
     },
-    skylight_u_value: function(value) {
+    skylight_u_value(value) {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
     },
-    skylight_shgc: function(value) {
+    skylight_shgc(value) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     },
 
-    skylight_area_2: function(value) {
+    skylight_area_2(value) {
         if(parseInt(value) !== 0) {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
@@ -710,36 +710,36 @@ let validationRules = {
             return new Validation(TypeRules._int(value, 0, footprintArea), BLOCKER);
         }
     },
-    skylight_method_2: function(value) {
+    skylight_method_2(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
-    skylight_code_2: function(value) {
+    skylight_code_2(value) {
         return new Validation(TypeRules._string(value, 20, windowAndSkylightCode, BLOCKER));
     },
-    skylight_u_value_2: function(value) {
+    skylight_u_value_2(value) {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
     },
-    skylight_shgc_2: function(value) {
+    skylight_shgc_2(value) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     },
     /*
      * zone_window
      */
-    window_area_front: function(value) {
+    window_area_front(value) {
         let wall_area = this._get_wall_area();
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
         return new Validation(TypeRules._float(value, 0, wall_area), ERROR);
     },
-    window_area_back: function(value) {
+    window_area_back(value) {
         return this._window_area(value, false);
     },
-    window_area_right: function(value) {
+    window_area_right(value) {
         return this._window_area(value, false);
     },
-    window_area_left: function(value) {
+    window_area_left(value) {
         return this._window_area(value, false);
     },
-    _window_area: function(value, isFront) {
+    _window_area(value, isFront) {
         let wall_area = this._get_wall_area();
         if (wall_area) {
             //Windows have API max area of 999
@@ -753,151 +753,151 @@ let validationRules = {
         }
     },
 
-    window_method_front: function(value) {
+    window_method_front(value) {
         return this._window_method(value);
     },
-    window_method_back: function(value) {
+    window_method_back(value) {
         return this._window_method(value);
     },
-    window_method_right: function(value) {
+    window_method_right(value) {
         return this._window_method(value);
     },
-    window_method_left: function(value) {
+    window_method_left(value) {
         return this._window_method(value);
     },
-    _window_method: function(value) {
+    _window_method(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
 
-    window_code_front: function(value) {
+    window_code_front(value) {
         return this._window_code(value);
     },
-    window_code_back: function(value) {
+    window_code_back(value) {
         return this._window_code(value);
     },
-    window_code_right: function(value) {
+    window_code_right(value) {
         return this._window_code(value);
     },
-    window_code_left: function(value) {
+    window_code_left(value) {
         return this._window_code(value);
     },
-    _window_code: function(value) {
+    _window_code(value) {
         return new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER);
     },
 
-    window_u_value_front: function(value) {
+    window_u_value_front(value) {
         return this._window_u_value(value);
     },
-    window_u_value_back: function(value) {
+    window_u_value_back(value) {
         return this._window_u_value(value);
     },
-    window_u_value_right: function(value) {
+    window_u_value_right(value) {
         return this._window_u_value(value);
     },
-    window_u_value_left: function(value) {
+    window_u_value_left(value) {
         return this._window_u_value(value);
     },
-    _window_u_value: function(value) {
+    _window_u_value(value) {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
     },
 
-    window_shgc_front: function(value) {
+    window_shgc_front(value) {
         return this._window_shgc(value);
     },
-    window_shgc_back: function(value) {
+    window_shgc_back(value) {
         return this._window_shgc(value);
     },
-    window_shgc_right: function(value) {
+    window_shgc_right(value) {
         return this._window_shgc(value);
     },
-    window_shgc_left: function(value) {
+    window_shgc_left(value) {
         return this._window_shgc(value);
     },
-    _window_shgc: function(value) {
+    _window_shgc(value) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     },
 
     /*
      * zone_wall
      */
-    wall_assembly_code_front: function(value) {
+    wall_assembly_code_front(value) {
         return this._wall_assembly_code(value);
     },
-    wall_assembly_code_back: function(value) {
+    wall_assembly_code_back(value) {
         return this._wall_assembly_code(value);
     },
-    wall_assembly_code_right: function(value) {
+    wall_assembly_code_right(value) {
         return this._wall_assembly_code(value);
     },
-    wall_assembly_code_left: function(value) {
+    wall_assembly_code_left(value) {
         return this._wall_assembly_code(value);
     },
-    _wall_assembly_code: function(value) {
+    _wall_assembly_code(value) {
         return new Validation(TypeRules._string(value, 20, wallAssemblyCode), BLOCKER);
     },
 
     /*
      * hvac
      */
-    hvac_fraction_1: function(value) {
+    hvac_fraction_1(value) {
         return this._hvac_fraction();
     },
-    hvac_fraction_2: function(value) {
+    hvac_fraction_2(value) {
         return this._hvac_fraction();
     },
-    _hvac_fraction: function() {
+    _hvac_fraction() {
         return new Validation(TypeRules._fraction(parseFloat(_homeValues.hvac_fraction_1) + parseFloat(_homeValues.hvac_fraction_2)), BLOCKER);
     },
 
     /*
      * hvac_heating
      */
-    heating_type_1: function(value) {
+    heating_type_1(value) {
         return this._heating_type(value);
     },
-    heating_type_2: function(value) {
+    heating_type_2(value) {
         return this._heating_type(value);
     },
-    _heating_type: function(value) {
+    _heating_type(value) {
         return new Validation(TypeRules._string(value, 100, heatingTypeOptions), BLOCKER);
     },
-    heating_fuel_1: function(value) {
+    heating_fuel_1(value) {
         return this._heating_fuel(value);
     },
-    heating_fuel_2: function(value) {
+    heating_fuel_2(value) {
         return this._heating_fuel(value);
     },
-    _heating_fuel: function(value) {
+    _heating_fuel(value) {
         return new Validation(TypeRules._string(value, 100, heatingFuelOptions), BLOCKER);
     },
 
-    heating_efficiency_method_1: function(value) {
+    heating_efficiency_method_1(value) {
         return this._heating_efficiency_method(value);
     },
-    heating_efficiency_method_2: function(value) {
+    heating_efficiency_method_2(value) {
         return this._heating_efficiency_method(value);
     },
-    _heating_efficiency_method: function(value) {
+    _heating_efficiency_method(value) {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
 
-    heating_year_1: function(value) {
+    heating_year_1(value) {
         return this._heating_year(value);
     },
-    heating_year_2: function(value) {
+    heating_year_2(value) {
         return this._heating_year(value);
     },
-    _heating_year: function(value) {
+    _heating_year(value) {
         return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
     },
 
-    heating_efficiency_1: function(value) {
+    heating_efficiency_1(value) {
         return this._heating_efficiency(_homeValues.heating_type_1, value);
     },
-    heating_efficiency_2: function(value) {
+    heating_efficiency_2(value) {
         return this._heating_efficiency(_homeValues.heating_type_2, value);
     },
-    _heating_efficiency: function(type, value) {
+    _heating_efficiency(type, value) {
         let min, max;
 
         if (type === 'central_furnace' || type === 'wall_furnace' || type === 'boiler') {
@@ -916,68 +916,68 @@ let validationRules = {
     /*
      * hvac_cooling
      */
-    cooling_type_1: function(value) {
+    cooling_type_1(value) {
         return this._cooling_type(value);
     },
-    cooling_type_2: function(value) {
+    cooling_type_2(value) {
         return this._cooling_type(value);
     },
-    _cooling_type: function(value) {
+    _cooling_type(value) {
         return new Validation(TypeRules._string(value, 100, coolingTypeOptions), BLOCKER);
     },
 
-    cooling_efficiency_method_1: function(value) {
+    cooling_efficiency_method_1(value) {
         return this._cooling_efficiency_method(value);
     },
-    cooling_efficiency_method_2: function(value) {
+    cooling_efficiency_method_2(value) {
         return this._cooling_efficiency_method(value);
     },
-    _cooling_efficiency_method: function(value) {
+    _cooling_efficiency_method(value) {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
 
-    cooling_year_1: function(value) {
+    cooling_year_1(value) {
         return this._cooling_year(value);
     },
-    cooling_year_2: function(value) {
+    cooling_year_2(value) {
         return this._cooling_year(value);
     },
-    _cooling_year: function(value) {
+    _cooling_year(value) {
         return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
     },
 
-    cooling_efficiency_1: function(value) {
+    cooling_efficiency_1(value) {
         return this._cooling_efficiency(value);
     },
-    cooling_efficiency_2: function(value) {
+    cooling_efficiency_2(value) {
         return this._cooling_efficiency(value);
     },
-    _cooling_efficiency: function(value) {
+    _cooling_efficiency(value) {
         return new Validation(TypeRules._float(value, 8, 40), BLOCKER);
     },
 
     /*
      * hvac_distribution
      */
-    duct_location_1_1: function(value) {
+    duct_location_1_1(value) {
         return this._duct_location(value);
     },
-    duct_location_2_1: function(value) {
+    duct_location_2_1(value) {
         return this._duct_location(value);
     },
-    duct_location_3_1: function(value) {
+    duct_location_3_1(value) {
         return this._duct_location(value);
     },
-    duct_location_1_2: function(value) {
+    duct_location_1_2(value) {
         return this._duct_location(value);
     },
-    duct_location_2_2: function(value) {
+    duct_location_2_2(value) {
         return this._duct_location(value);
     },
-    duct_location_3_2: function(value) {
+    duct_location_3_2(value) {
         return this._duct_location(value);
     },
-    _duct_location: function(value) {
+    _duct_location(value) {
         if (ductType.indexOf(value) > -1) {
             let ductTypes = ['cond_space'];
             let roofTypes = [_homeValues.roof_type_1.roof_type_2, ];
@@ -1000,25 +1000,25 @@ let validationRules = {
         }
     },
 
-    duct_fraction_1_1: function(value) {
+    duct_fraction_1_1(value) {
         return this._duct_fraction('1');
     },
-    duct_fraction_2_1: function(value) {
+    duct_fraction_2_1(value) {
         return this._duct_fraction('1');
     },
-    duct_fraction_3_1: function(value) {
+    duct_fraction_3_1(value) {
         return this._duct_fraction('1');
     },
-    duct_fraction_1_2: function(value) {
+    duct_fraction_1_2(value) {
         return this._duct_fraction('2');
     },
-    duct_fraction_2_2: function(value) {
+    duct_fraction_2_2(value) {
         return this._duct_fraction('2');
     },
-    duct_fraction_3_2: function(value) {
+    duct_fraction_3_2(value) {
         return this._duct_fraction('2');
     },
-    _duct_fraction: function(c) {
+    _duct_fraction(c) {
         if (c === '1') {
             return new Validation(TypeRules._percent((parseInt(_homeValues.duct_fraction_1_1) || 0) + (parseInt(_homeValues.duct_fraction_2_1) || 0) + (parseInt(_homeValues.duct_fraction_3_1) || 0)), BLOCKER);
         } else if (c === '2') {
@@ -1028,63 +1028,63 @@ let validationRules = {
         }
     },
 
-    duct_insulated_1_1: function(value) {
+    duct_insulated_1_1(value) {
         return this._duct_insulated(value);
     },
-    duct_insulated_2_1: function(value) {
+    duct_insulated_2_1(value) {
         return this._duct_insulated(value);
     },
-    duct_insulated_3_1: function(value) {
+    duct_insulated_3_1(value) {
         return this._duct_insulated(value);
     },
-    duct_insulated_1_2: function(value) {
+    duct_insulated_1_2(value) {
         return this._duct_insulated(value);
     },
-    duct_insulated_2_2: function(value) {
+    duct_insulated_2_2(value) {
         return this._duct_insulated(value);
     },
-    duct_insulated_3_2: function(value) {
+    duct_insulated_3_2(value) {
         return this._duct_insulated(value);
     },
-    _duct_insulated: function(value) {
+    _duct_insulated(value) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
 
-    duct_sealed_1_1: function(value) {
+    duct_sealed_1_1(value) {
         return this._duct_sealed(value);
     },
-    duct_sealed_2_1: function(value) {
+    duct_sealed_2_1(value) {
         return this._duct_sealed(value);
     },
-    duct_sealed_3_1: function(value) {
+    duct_sealed_3_1(value) {
         return this._duct_sealed(value);
     },
-    duct_sealed_1_2: function(value) {
+    duct_sealed_1_2(value) {
         return this._duct_sealed(value);
     },
-    duct_sealed_2_2: function(value) {
+    duct_sealed_2_2(value) {
         return this._duct_sealed(value);
     },
-    duct_sealed_3_2: function(value) {
+    duct_sealed_3_2(value) {
         return this._duct_sealed(value);
     },
-    _duct_sealed: function(value) {
+    _duct_sealed(value) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
 
     /*
      * systems_hot_water
      */
-    hot_water_type: function(value) {
+    hot_water_type(value) {
         return new Validation(TypeRules._string(value, 20, hotWaterType), BLOCKER);
     },
-    hot_water_fuel: function(value) {
+    hot_water_fuel(value) {
         return new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
     },
-    hot_water_efficiency_method: function(value) {
+    hot_water_efficiency_method(value) {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
-    hot_water_year: function(value) {
+    hot_water_year(value) {
         return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
     },
     hot_water_energy_factor(value) {
@@ -1102,38 +1102,38 @@ let validationRules = {
     /*
      * systems_solar_electric
      */
-    solar_electric_capacity_known: function(value) {
+    solar_electric_capacity_known(value) {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
-    solar_electric_system_capacity: function(value) {
+    solar_electric_system_capacity(value) {
         return new Validation(TypeRules._float(value, 0.05, 100), BLOCKER);
     },
-    solar_electric_num_panels: function(value) {
+    solar_electric_num_panels(value) {
         return new Validation(TypeRules._int(value, 1, 100), BLOCKER);
     },
-    solar_electric_year: function(value) {
+    solar_electric_year(value) {
         return new Validation(TypeRules._int(value, 2000, (new Date()).getFullYear()), BLOCKER);
     },
-    solar_electric_array_azimuth: function(value) {
+    solar_electric_array_azimuth(value) {
         return new Validation(TypeRules._string(value, 20, orientationArray), BLOCKER);
     },
 
     /*
      * HPwES
      */
-    improvement_installation_start_date: function(value) {
+    improvement_installation_start_date(value) {
         return new Validation(TypeRules._date(value), ERROR);
     },
-    improvement_installation_completion_date: function(value) {
+    improvement_installation_completion_date(value) {
         return new Validation(TypeRules._date(value), ERROR);
     },
-    contractor_business_name: function(value) {
+    contractor_business_name(value) {
         return new Validation(TypeRules._string(value), ERROR);
     },
-    contractor_zip_code: function(value) {
+    contractor_zip_code(value) {
         return new Validation(TypeRules._zip(value), ERROR);
     },
-    is_income_eligible_program: function(value) {
+    is_income_eligible_program(value) {
         return new Validation(TypeRules._bool(value), ERROR);
     },
 
@@ -1145,7 +1145,7 @@ let validationRules = {
     /*
      * Gets footprint area for skylight area validations
      */
-    _get_footprint_area: function() {
+    _get_footprint_area() {
         if (_homeValues.conditioned_floor_area === '') {
             return false;
         }
@@ -1155,21 +1155,21 @@ let validationRules = {
     /*
      * Get combined floor area
      */
-    _get_combined_floor_area: function() {
+    _get_combined_floor_area() {
         return TypeRules._int_or_zero(_homeValues.floor_area_1) + TypeRules._int_or_zero(_homeValues.floor_area_2);
     },
 
     /*
      * Get combined roof area
      */
-    _get_combined_roof_area: function() {
+    _get_combined_roof_area() {
         return TypeRules._int_or_zero(_homeValues.roof_area_1) + TypeRules._int_or_zero(_homeValues.roof_area_2);
     },
 
     /*
      * Gets wall length for window area validations
      */
-    _get_wall_length: function() {
+    _get_wall_length() {
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
@@ -1182,7 +1182,7 @@ let validationRules = {
     /*
      * Gets wall area for window area validations
      */
-    _get_wall_area: function() {
+    _get_wall_area() {
         let length = this._get_wall_length();
         let height = parseInt(_homeValues.floor_to_ceiling_height) || false;
         let stories = parseInt(_homeValues.num_floor_above_grade) || false;
@@ -1196,7 +1196,7 @@ let validationRules = {
     /*
      * Checks that the combined roof_area is not less than the combined floor_area
      */
-    _check_combined_area: function() {
+    _check_combined_area() {
         let combinedRoofArea = this._get_combined_roof_area();
         let combinedFloorArea = this._get_combined_floor_area();
         if (combinedRoofArea < combinedFloorArea * .95) { // Allow 5% error
@@ -1209,7 +1209,7 @@ let validationRules = {
     /*
      * Checks that the roof_area and floor_areas are consistent with conditioned footprint areas
      */
-    _check_conditioned_areas: function(combinedArea, thisAreaType) {
+    _check_conditioned_areas(combinedArea, thisAreaType) {
         let footprintArea = TypeRules._int_or_zero(_homeValues.conditioned_floor_area);
         if (_homeValues.foundation_type_1 === 'cond_basement') {
             footprintArea = footprintArea - TypeRules._int_or_zero(_homeValues.floor_area_1);
