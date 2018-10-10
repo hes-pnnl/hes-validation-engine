@@ -4,7 +4,7 @@
  * @param {string} message The validation message
  * @param {string} type The type of validation (BLOCKER, ERROR, MANDATORY)
  */
-Validation: function(message, type) {
+function Validation(message, type) {
    this.message = message;
    this.type = type;
 }
