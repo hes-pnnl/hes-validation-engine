@@ -54,4 +54,4 @@ global.HESValidationEngine = {
     }
 }
 
-module.exports = validate_home_audit;
+module.exports = HESValidationEngine.validate_home_audit;
