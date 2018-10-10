@@ -14,9 +14,9 @@ global.HESValidationEngine = {
      */
     validate_home_audit: function(homeValues) {
         let result = {};
-        result[BLOCKER] = {};
-        result[ERROR] = {};
-        result[MANDATORY] = {};
+        result[HESValidationEngine.BLOCKER] = {};
+        result[HESValidationEngine.ERROR] = {};
+        result[HESValidationEngine.MANDATORY] = {};
         let requiredFields = require('./required_fields.node')(homeValues);
         for (var fieldName in requiredFields) {
             //Because we have two validation rules for one user input, here we check for potential duplicate messages
@@ -31,7 +31,7 @@ global.HESValidationEngine = {
                 } else if (fieldName === 'hot_water_type' && homeValues['hot_water_fuel'] === '') {
                     // Do nothing ... avoid duplicate messages
                 } else {
-                    result[MANDATORY][fieldName] = requiredFields[fieldName];
+                    result[HESValidationEngine.MANDATORY][fieldName] = requiredFields[fieldName];
                 }
             }
         }
