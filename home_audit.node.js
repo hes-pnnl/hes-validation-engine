@@ -4,7 +4,7 @@
 
 let TypeRules = require('./type_rules.node');
 
-let _homeValues = homeValues;
+let _homeValues;
 
 BLOCKER = 'blocker';
 ERROR = 'error';
@@ -1231,7 +1231,9 @@ let validationRules = {
 let global = global || window;
 
 global.HESValidationEngine = {
-
+    // Pass homeValues into the scope of this file so that validation rules can reference it
+    // without us having to explicitly pass it to every function
+    _homeValues = homeValues;
     /**
      * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
      * corresponding form fields.
@@ -1240,9 +1242,9 @@ global.HESValidationEngine = {
      */
     validate_home_audit: function(homeValues) {
         let result = {};
-        result[HESValidationEngine.BLOCKER] = {};
-        result[HESValidationEngine.ERROR] = {};
-        result[HESValidationEngine.MANDATORY] = {};
+        result[BLOCKER] = {};
+        result[ERROR] = {};
+        result[MANDATORY] = {};
         let requiredFields = require('./required_fields.node')(homeValues);
         let validationRules = require('./home_audit.node');
         for (var fieldName in requiredFields) {
@@ -1258,7 +1260,7 @@ global.HESValidationEngine = {
                 } else if (fieldName === 'hot_water_type' && homeValues['hot_water_fuel'] === '') {
                     // Do nothing ... avoid duplicate messages
                 } else {
-                    result[HESValidationEngine.MANDATORY][fieldName] = requiredFields[fieldName];
+                    result[MANDATORY][fieldName] = requiredFields[fieldName];
                 }
             }
         }
