@@ -2,9 +2,9 @@ let global = global || window;
 
 global.HESValidationEngine = {
 
-    BLOCKER = 'blocker',
-    ERROR = 'error',
-    MANDATORY = 'mandatory',
+    BLOCKER : 'blocker',
+    ERROR : 'error',
+    MANDATORY : 'mandatory',
 
     /**
      * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
