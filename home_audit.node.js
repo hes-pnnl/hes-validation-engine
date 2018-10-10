@@ -538,7 +538,7 @@ let validationRules = {
     _roof_area: function(value, _homeValues) {
         //Check that roof area is within legal bounds per API
         if (TypeRules._int(value, 1, 25000) === null) {
-            let combinedAreaCheck = this._check_combined_area();
+            let combinedAreaCheck = this._check_combined_area(_homeValues);
             //Check that roof area is not less than floor area
             if (!combinedAreaCheck) {
                 let combinedRoofArea = this._get_combined_roof_area(_homeValues);
@@ -618,7 +618,7 @@ let validationRules = {
     _floor_area: function(value, _homeValues) {
         //Check that floor area is within legal bounds per API
         if (TypeRules._int(value, 1, 25000) === null) {
-            let combinedAreaCheck = this._check_combined_area();
+            let combinedAreaCheck = this._check_combined_area(_homeValues);
             //Check that floor area is not greater than roof area
             if (!combinedAreaCheck) {
                 let combinedFloorArea = this._get_combined_floor_area(_homeValues);
@@ -1167,7 +1167,7 @@ let validationRules = {
     /*
      * Gets wall length for window area validations
      */
-    _get_wall_length: function() {
+    _get_wall_length: function(_homeValues) {
         let area = this._get_footprint_area(_homeValues);
         if (area) {
             //Assume floor dimensions area 5x3
@@ -1181,7 +1181,7 @@ let validationRules = {
      * Gets wall area for window area validations
      */
     _get_wall_area: function(_homeValues) {
-        let length = this._get_wall_length();
+        let length = this._get_wall_length(_homeValues);
         let height = parseInt(_homeValues.floor_to_ceiling_height) || false;
         let stories = parseInt(_homeValues.num_floor_above_grade) || false;
         if (length && height && stories) {
@@ -1194,7 +1194,7 @@ let validationRules = {
     /*
      * Checks that the combined roof_area is not less than the combined floor_area
      */
-    _check_combined_area: function() {
+    _check_combined_area: function(_homeValues) {
         let combinedRoofArea = this._get_combined_roof_area(_homeValues);
         let combinedFloorArea = this._get_combined_floor_area(_homeValues);
         if (combinedRoofArea < combinedFloorArea * .95) { // Allow 5% error
