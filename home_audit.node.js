@@ -3,6 +3,7 @@
  */
 
 let TypeRules = require('./type_rules.node');
+require('./validation.node');
 
 let _homeValues;
 
@@ -413,23 +414,6 @@ const hotWaterType = [
 /***************
  * VALIDATIONS *
  ***************/
-
-/**
- * Our Validation class holds a message and a type
- *
- * @param {string} message The validation message
- * @param {string} type The type of validation (BLOCKER, ERROR, MANDATORY)
- */
-function Validation(message, type) {
-    this.message = message;
-    this.type = type;
-}
-Validation.prototype.getMessage = function() {
-    return this.message;
-};
-Validation.prototype.getType = function() {
-    return this.type;
-};
 
 /**
  * Each validation rule has the same name as the "name" attribute of the associated form input.
@@ -1231,10 +1215,12 @@ let validationRules = {
 /**
  * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
  * corresponding form fields.
+ * @param {Object} additionalRules (Optional) Object of functions. Additonal Validation Rules to be
+ * added to present rules.
  * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
  * validation rules were violated, an empty object is returned.
  */
-function validate_home_audit (homeValues) {
+function validate_home_audit (homeValues, additionalRules = null) {
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
     _homeValues = homeValues;
