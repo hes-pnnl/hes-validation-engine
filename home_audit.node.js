@@ -670,7 +670,7 @@ let validationRules = {
      * zone_skylight
      */
     skylight_area: function(value, _homeValues) {
-        if(parseInt(value, _homeValues) !== 0) {
+        if(parseInt(value) !== 0) {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
             }
@@ -696,7 +696,7 @@ let validationRules = {
     },
 
     skylight_area_2: function(value, _homeValues) {
-        if(parseInt(value, _homeValues) !== 0) {
+        if(parseInt(value) !== 0) {
             if(_homeValues.conditioned_floor_area === '') {
                 return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
             }
