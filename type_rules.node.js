@@ -1,4 +1,4 @@
-Validation.TypeRules = {
+var TypeRules = {
 
     /**
      * @param {*} value
