@@ -3,9 +3,9 @@
  */
 TypeRules = require('./type_rules');
 
-const BLOCKER = 'blocker';
-const ERROR = 'error';
-const MANDATORY = 'mandatory';
+const BLOCKER = HESValidationEngine.BLOCKER;
+const ERROR = HESValidationEngine.ERROR;
+const MANDATORY = HESValidationEngine.MANDATORY;
 
 const stateArray = [
     '',
