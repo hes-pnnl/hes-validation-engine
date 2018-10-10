@@ -1,4 +1,4 @@
-TypeRules = {
+let TypeRules = {
 
     /**
      * @param {*} value
