@@ -1,4 +1,4 @@
-var TypeRules = {
+TypeRules = {
 
     /**
      * @param {*} value
@@ -137,3 +137,5 @@ var TypeRules = {
         }
     },
 };
+
+module.exports = TypeRules;
