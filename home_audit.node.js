@@ -3,7 +3,7 @@
  */
 
 let TypeRules = require('./type_rules.node');
-require('./validation.node');
+let Validation = require('./validation.node');
 
 let _homeValues;
 

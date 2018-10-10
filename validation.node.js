@@ -4,7 +4,7 @@
  * @param {string} message The validation message
  * @param {string} type The type of validation (BLOCKER, ERROR, MANDATORY)
  */
-function Validation(message, type) {
+Validation: function(message, type) {
    this.message = message;
    this.type = type;
 }
@@ -16,3 +16,5 @@ Validation.prototype.getMessage = function() {
 Validation.prototype.getType = function() {
    return this.type;
 };
+
+module.exports = Validation;
