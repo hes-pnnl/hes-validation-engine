@@ -26,6 +26,8 @@ module.exports = function (homeValues) {
         window_construction_same : mandatoryMessage
     };
 
+    let positions = [];
+
     //////////////////////////////////////////////////////////////////////////////
     // Add any fields that are required due to the values of other fields       //
     //////////////////////////////////////////////////////////////////////////////
@@ -60,11 +62,11 @@ module.exports = function (homeValues) {
 
             // The "cool_color" option for roof color requires an additional "absorptance" value to be set
             if (homeValues['roof_color_' + roofNumber] === 'cool_color') {
-                requiredFields['roof_absorptance_' + roofNumber] = 'Roof absortance is required when Roof Color is "Cool"';
+                requiredFields['roof_absorptance_' + roofNumber] = 'Roof absortance is required when Roof Color is Cool';
             }
             // If "cath_ceiling" is selected, we do not need "ceiling_insulation"
             if (homeValues['roof_type_' + roofNumber] !== 'cath_ceiling') {
-                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling Code is required if Roof Type is not "Cathedral Ceiling"';
+                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling Code is required if Roof Type is not Cathedral Ceiling';
             }
         }
     }
@@ -93,30 +95,27 @@ module.exports = function (homeValues) {
         requiredFields['town_house_walls'] = 'Position is required if home is a Townhouse or Duplex';
     }
     //If wall construction is same on all sides, only require one side
-    let mandatoryWallMessage = 'Wall assemly is a mandatory wall field';
-    if (homeValues['wall_construction_same'] === '1') {
+    let mandatoryWallMessage = 'Wall assembly is a mandatory wall field';
+    if (homeValues['wall_construction_same'] === '1' || homeValues['wall_construction_same'] === 1) {
         requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
         //otherwise check them based on position
-    } else if (homeValues['wall_construction_same'] === '0') {
+    } else if (homeValues['wall_construction_same'] === '0' || homeValues['wall_construction_same'] === 0) {
         if (homeValues['shape'] === 'rectangle') {
-            requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
-            requiredFields['wall_assembly_code_back'] = mandatoryWallMessage;
-            requiredFields['wall_assembly_code_right'] = mandatoryWallMessage;
-            requiredFields['wall_assembly_code_left'] = mandatoryWallMessage;
+            positions = ['front', 'back', 'right', 'left'];
         } else {
-            if (homeValues['town_house_walls'] === 'back_front') {
-                requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
-                requiredFields['wall_assembly_code_back'] = mandatoryWallMessage;
-            } else if (homeValues['town_house_walls'] === 'back_front_left') {
-                requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
-                requiredFields['wall_assembly_code_back'] = mandatoryWallMessage;
-                requiredFields['wall_assembly_code_left'] = mandatoryWallMessage;
-            } else if (homeValues['town_house_walls'] === 'back_right_front') {
-                requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
-                requiredFields['wall_assembly_code_back'] = mandatoryWallMessage;
-                requiredFields['wall_assembly_code_right'] = mandatoryWallMessage;
+            if(homeValues['town_house_walls']) {
+                positions = homeValues['town_house_walls'].split('_');
             }
         }
+        for (let position of positions) {
+            requiredFields['wall_assembly_code_'+position] = mandatoryWallMessage;
+        }
+    }
+
+    //Require window area per required walls
+    positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
+    for (let position of positions) {
+        requiredFields['window_area_'+position] = 'Window area '+position+' is required';
     }
 
     /*
@@ -133,37 +132,24 @@ module.exports = function (homeValues) {
             requiredFields['skylight_shgc'] = 'Field is required if skylight specs unknown';
         }
     }
-    //If height entered, require window area
-    if (homeValues['floor_to_ceiling_height'] !== '') {
-        for (let position of ['front', 'back', 'right', 'left']) {
-            requiredFields['window_area_'+position] = 'Window area is required';
-        }
-    }
+
     //Check if window construction is same on all sides and require appropriate elements
     //If window specs are known, require U-Factor and SHGC, else require assembly code
     let mandatoryWindowMessage = 'This is a required window field';
     let windowSpecsKnownMessage = 'Window specs are required if known';
     let windowSpecsUnknownMessage = 'Required if window specs unknown';
-    if (homeValues['window_construction_same'] === '1') {
-        requiredFields['window_method_front'] = mandatoryWindowMessage;
-        if (homeValues['window_method_front'] === 'code') {
-            requiredFields['window_code_front'] = windowSpecsKnownMessage;
-        } else if (homeValues['window_method_front'] === 'custom') {
-            requiredFields['window_u_value_front'] = windowSpecsUnknownMessage;
-            requiredFields['window_shgc_front'] = windowSpecsUnknownMessage;
-        }
-    } else if (homeValues['window_construction_same'] === '0') {
-        requiredFields['window_method_front'] = mandatoryWindowMessage;
-        requiredFields['window_method_back'] = mandatoryWindowMessage;
-        requiredFields['window_method_right'] = mandatoryWindowMessage;
-        requiredFields['window_method_left'] = mandatoryWindowMessage;
-        for (let position of ['front', 'back', 'right', 'left']) {
-            if (homeValues['window_method_'+position] === 'code') {
-                requiredFields['window_code_'+position] = windowSpecsKnownMessage;
-            } else if (homeValues['window_method_'+position] === 'custom') {
-                requiredFields['window_u_value_'+position] = windowSpecsUnknownMessage;
-                requiredFields['window_shgc_'+position] = windowSpecsUnknownMessage;
-            }
+    if (homeValues['window_construction_same'] === '1' || homeValues['window_construction_same'] === 1) {
+        positions = ['front'];
+    } else if (homeValues['window_construction_same'] === '0' || homeValues['window_construction_same'] === 0) {
+        positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
+    }
+    for (let position of positions) {
+        requiredFields['window_method_'+position] = mandatoryWindowMessage;
+        if (homeValues['window_method_'+position] === 'code') {
+            requiredFields['window_code_'+position] = windowSpecsKnownMessage;
+        } else if (homeValues['window_method_'+position] === 'custom') {
+            requiredFields['window_u_value_'+position] = windowSpecsUnknownMessage;
+            requiredFields['window_shgc_'+position] = windowSpecsUnknownMessage;
         }
     }
 
@@ -175,8 +161,8 @@ module.exports = function (homeValues) {
         requiredFields['heating_type_2', 'heating_fuel_2', 'cooling_type_2'] = 'This is a required system field';
     }
     for (let system of ['1', '2']) {
-        if (homeValues['heating_fuel_'+system] !== '' &&
-            ['', 'none', null, 'baseboard', 'wood_stove'].indexOf(homeValues['heating_type_'+system]) === -1 &&
+        if ([null, undefined, ''].indexOf(homeValues['heating_fuel_'+system]) === -1 &&
+            ['', 'none', null, undefined, 'baseboard', 'wood_stove'].indexOf(homeValues['heating_type_'+system]) === -1 &&
             !(homeValues['heating_fuel_'+system] === 'electric' && homeValues['heating_type_'+system] === 'central_furnace')
         ){
             requiredFields['heating_efficiency_method_'+system] = 'Field is required when Heating Type has variable efficiency';
@@ -215,7 +201,7 @@ module.exports = function (homeValues) {
         }
     }
     for (let system of ['1', '2']) {
-        if (homeValues['cooling_type_'+system] !== '' && homeValues['cooling_type_'+system] !== 'none' && homeValues['cooling_type_'+system] !== null) {
+        if (['', 'none', null, undefined].indexOf(homeValues['cooling_type_'+system]) === -1) {
             requiredFields['cooling_efficiency_method_'+system] = 'Field is required when Cooling Type has variable efficiency';
             if(homeValues['cooling_efficiency_method_'+system] === 'user') {
                 requiredFields['cooling_efficiency_'+system] = 'Cooling Efficiency is required when known';
@@ -228,7 +214,7 @@ module.exports = function (homeValues) {
     /*
      * Hot Water
      */
-    if (homeValues['hot_water_type'] !== 'indirect' && homeValues['hot_water_type'] !== 'tankless_coil' && homeValues['hot_water_type'] !== '') {
+    if (['', 'tankless_coil', 'indirect', null, undefined].indexOf(homeValues['hot_water_type']) === -1) {
         requiredFields['hot_water_fuel'] = 'Required for non-boiler water heaters';
         requiredFields['hot_water_efficiency_method'] = 'Required for non-boiler water heaters';
         if (homeValues['hot_water_efficiency_method'] === 'user') {
