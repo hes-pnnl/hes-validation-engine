@@ -1239,7 +1239,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
                  * (that is, the user selecting "None").  In this scenario, heating_fuel_ is not required.
                  * Further, if both are empty, we do not need to see the validation message for both.
                  */
-            } else if (fieldName === 'hot_water_type' && homeValues['hot_water_fuel'] === '') {
+            } else if (homeValues['hot_water_type'] && homeValues['hot_water_fuel'] === '') {
                 // Do nothing ... avoid duplicate messages
             } else {
                 result[MANDATORY][fieldName] = requiredFields[fieldName];
