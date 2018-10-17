@@ -964,8 +964,8 @@ let validationRules = {
     _duct_location: function(value) {
         if (ductType.indexOf(value) > -1) {
             let ductTypes = ['cond_space'];
-            let roofTypes = [_homeValues.roof_type_1.roof_type_2, ];
-            let foundTypes = [_homeValues.foundation_type_1.foundation_type_2];
+            let roofTypes = [_homeValues.roof_type_1, _homeValues.roof_type_2];
+            let foundTypes = [_homeValues.foundation_type_1, _homeValues.foundation_type_2];
             roofTypes.forEach(function(type) {
                 if (type === 'vented_attic') {
                     ductTypes.push('uncond_attic');
