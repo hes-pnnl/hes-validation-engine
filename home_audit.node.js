@@ -837,9 +837,15 @@ let validationRules = {
      * hvac_heating
      */
     heating_type_1: function(value) {
+        if(value === 'none' && _homeValues.cooling_type_1 === 'none') {
+            return new Validation('Heating Type is required if there is no Cooling Type', ERROR);
+        }
         return this._heating_type(value);
     },
     heating_type_2: function(value) {
+        if(value === 'none' && _homeValues.cooling_type_2 === 'none') {
+            return new Validation('Heating Type is required if there is no Cooling Type', ERROR);
+        }
         return this._heating_type(value);
     },
     _heating_type: function(value) {
@@ -901,9 +907,15 @@ let validationRules = {
      * hvac_cooling
      */
     cooling_type_1: function(value) {
+        if(value === 'none' && _homeValues.heating_type_1 === 'none') {
+            return new Validation('Cooling Type is required if there is no Heating Type', ERROR);
+        }
         return this._cooling_type(value);
     },
     cooling_type_2: function(value) {
+        if(value === 'none' && _homeValues.heating_type_2 === 'none') {
+            return new Validation('Cooling Type is required if there is no Heating Type', ERROR);
+        }
         return this._cooling_type(value);
     },
     _cooling_type: function(value) {
