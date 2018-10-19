@@ -198,6 +198,8 @@ module.exports = function (homeValues) {
                     }
                 }
             }
+        } elseif(homeValues['heating_type_'+system] === 'none') {
+            requiredFields['cooling_type_'+system] = 'Cooling Type is required when there is no Heating Type';
         }
     }
     for (let system of ['1', '2']) {
@@ -208,6 +210,8 @@ module.exports = function (homeValues) {
             } else if(homeValues['cooling_efficiency_method_'+system] === 'shipment_weighted') {
                 requiredFields['cooling_year_'+system] = 'Year Installed is required when efficincy value is unknown';
             }
+        } elseif(homeValues['cooling_type_'+system] === 'none') {
+            requiredFields['heating_type_'+system] = 'Heating Type is required when there is no Cooling Type';
         }
     }
 
