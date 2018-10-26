@@ -872,13 +872,10 @@ let validationRules = {
     },
 
     heating_year_1: function(value) {
-        return this._heating_year(value);
+        return this._installation_year(value, 1970);
     },
     heating_year_2: function(value) {
-        return this._heating_year(value);
-    },
-    _heating_year: function(value) {
-        return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
+        return this._installation_year(value, 1970);
     },
 
     heating_efficiency_1: function(value) {
@@ -933,13 +930,10 @@ let validationRules = {
     },
 
     cooling_year_1: function(value) {
-        return this._cooling_year(value);
+        return this._installation_year(value, 1970);
     },
     cooling_year_2: function(value) {
-        return this._cooling_year(value);
-    },
-    _cooling_year: function(value) {
-        return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
+        return this._installation_year(value, 1970);
     },
 
     cooling_efficiency_1: function(value) {
@@ -1081,7 +1075,7 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
     hot_water_year: function(value) {
-        return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
+        return this._installation_year(value, 1972);
     },
     hot_water_energy_factor(value) {
         let min, max;
@@ -1138,6 +1132,19 @@ let validationRules = {
  ***********************
  */
 
+    /**
+     * Validation for installation years
+     * @param {int} minYear the minimum year the API will accept
+     * @param {int} value the entered year
+     * @return {Validation}
+     */
+    _installation_year: function(value, minYear) {
+        if(parseInt(value) >= minYear) {
+            return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+        } else {
+            return new Validation(TypeRules._int(value, minYear, (new Date()).getFullYear()), BLOCKER);
+        }
+    },
     /*
      * Gets footprint area for skylight area validations
      */
