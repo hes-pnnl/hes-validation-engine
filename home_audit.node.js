@@ -1135,6 +1135,8 @@ let validationRules = {
     /**
      * Validation for installation years
      * @param {int} minYear the minimum year the API will accept
+     * @param {int} value the entered year
+     * @return {Validation}
      */
     _installation_year: function(value, minYear) {
         if(parseInt(value) >= minYear) {
