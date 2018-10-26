@@ -878,7 +878,13 @@ let validationRules = {
         return this._heating_year(value);
     },
     _heating_year: function(value) {
-        return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
+        let isNotApiSafe = new Validation(TypeRules._int(value, 1970, (new Date()).getFullYear()), BLOCKER);
+        if(!isNotApiSafe) {
+            //Check if fits bounds for home
+            new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+        } else {
+            return isNotApiSafe;
+        }
     },
 
     heating_efficiency_1: function(value) {
@@ -939,7 +945,12 @@ let validationRules = {
         return this._cooling_year(value);
     },
     _cooling_year: function(value) {
-        return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
+        let isNotApiSafe = new Validation(TypeRules._int(value, 1970, (new Date()).getFullYear()), BLOCKER);
+        if(!isNotApiSafe) {
+            new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+        } else {
+            return isNotApiSafe;
+        }
     },
 
     cooling_efficiency_1: function(value) {
@@ -1081,7 +1092,12 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
     hot_water_year: function(value) {
-        return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), BLOCKER);
+        let isNotApiSafe = new Validation(TypeRules._int(value, 1972, (new Date()).getFullYear()), BLOCKER);
+        if(!isNotApiSafe) {
+            new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+        } else {
+            return isNotApiSafe;
+        }
     },
     hot_water_energy_factor(value) {
         let min, max;
