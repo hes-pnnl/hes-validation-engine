@@ -878,12 +878,10 @@ let validationRules = {
         return this._heating_year(value);
     },
     _heating_year: function(value) {
-        let isNotApiSafe = new Validation(TypeRules._int(value, 1970, (new Date()).getFullYear()), BLOCKER);
-        if(!isNotApiSafe) {
-            //Check if fits bounds for home
-            new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+        if(parseInt(value) > 1970) {
+            return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
         } else {
-            return isNotApiSafe;
+            return new Validation(TypeRules._int(value, 1970, (new Date()).getFullYear()), BLOCKER);
         }
     },
 
@@ -945,11 +943,10 @@ let validationRules = {
         return this._cooling_year(value);
     },
     _cooling_year: function(value) {
-        let isNotApiSafe = new Validation(TypeRules._int(value, 1970, (new Date()).getFullYear()), BLOCKER);
-        if(!isNotApiSafe) {
-            new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+        if(parseInt(value) > 1970) {
+            return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
         } else {
-            return isNotApiSafe;
+            return new Validation(TypeRules._int(value, 1970, (new Date()).getFullYear()), BLOCKER);
         }
     },
 
@@ -1092,11 +1089,10 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
     hot_water_year: function(value) {
-        let isNotApiSafe = new Validation(TypeRules._int(value, 1972, (new Date()).getFullYear()), BLOCKER);
-        if(!isNotApiSafe) {
-            new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+        if(parseInt(value) > 1972) {
+            return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
         } else {
-            return isNotApiSafe;
+            return new Validation(TypeRules._int(value, 1972, (new Date()).getFullYear()), BLOCKER);
         }
     },
     hot_water_energy_factor(value) {
