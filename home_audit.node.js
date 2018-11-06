@@ -1281,12 +1281,10 @@ function validate_home_audit (homeValues, additionalRules = null) {
 /**
  * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
  * corresponding form fields.
- * @param {Object} additionalRules (Optional) Object of functions. Additonal Validation Rules to be
- * added to present rules.
  * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
  * validation rules were violated, an empty object is returned.
  */
-function validate_address (homeValues, additionalRules = null) {
+function validate_address (homeValues) {
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
     _homeValues = homeValues;
