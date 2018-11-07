@@ -1227,15 +1227,8 @@ let validationRules = {
     }
 };
 
-/**
- * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
- * corresponding form fields.
- * @param {Object} additionalRules (Optional) Object of functions. Additonal Validation Rules to be
- * added to present rules.
- * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
- * validation rules were violated, an empty object is returned.
- */
-function validate_home_audit (homeValues, additionalRules = null) {
+function get_validation_messages (homeValues, requiredFields) {
+  
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
     _homeValues = homeValues;
@@ -1243,7 +1236,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
     result[BLOCKER] = {};
     result[ERROR] = {};
     result[MANDATORY] = {};
-    let requiredFields = require('./required_fields.node')(homeValues);
+
     for (var fieldName in requiredFields) {
         //Because we have two validation rules for one user input, here we check for potential duplicate messages
         if (undefined === homeValues[fieldName] || '' === homeValues[fieldName] || null === homeValues[fieldName]) {
@@ -1281,17 +1274,26 @@ function validate_home_audit (homeValues, additionalRules = null) {
 /**
  * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
  * corresponding form fields.
+ * @param {Object} additionalRules (Optional) Object of functions. Additonal Validation Rules to be
+ * added to present rules.
+ * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
+ * validation rules were violated, an empty object is returned.
+ */
+function validate_home_audit (homeValues, additionalRules = null) {
+    // Pass homeValues into the scope of this file so that validation rules can reference it
+    // without us having to explicitly pass it to every function
+    let requiredFields = require('./required_fields.node')(homeValues);
+
+    return get_validation_messages(homeValues, requiredFields);
+}
+
+/**
+ * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
+ * corresponding form fields.
  * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
  * validation rules were violated, an empty object is returned.
  */
 function validate_address (homeValues) {
-    // Pass homeValues into the scope of this file so that validation rules can reference it
-    // without us having to explicitly pass it to every function
-    _homeValues = homeValues;
-    let result = {};
-    result[BLOCKER] = {};
-    result[ERROR] = {};
-    result[MANDATORY] = {};
     let mandatoryMessage = "Missing value for mandatory field";
     // Define values that are always required
     let requiredFields = {
@@ -1301,27 +1303,7 @@ function validate_address (homeValues) {
         zip_code : mandatoryMessage,
         assessment_type : mandatoryMessage,
     };
-    for (var fieldName in requiredFields) {
-        //Because we have two validation rules for one user input, here we check for potential duplicate messages
-        if (undefined === homeValues[fieldName] || '' === homeValues[fieldName] || null === homeValues[fieldName]) {
-            result[MANDATORY][fieldName] = requiredFields[fieldName];
-        }
-    }
-    for (let [fieldName, value] of Object.entries(homeValues)) {
-        if (value === null || value === undefined || value.length === 0) {
-            continue;
-        }
-        if (typeof(validationRules[fieldName]) !== 'function') {
-            continue;
-        }
-        let validationResult = validationRules[fieldName](value);
-        if (undefined !== validationResult) {
-            if (undefined !== validationResult['message']) {
-                result[validationResult['type']][fieldName] = validationResult['message'];
-            }
-        }
-    }
-    return result;
+    return get_validation_messages(homeValues, requiredFields);
 }
 
 module.exports = {validate_home_audit, validate_address};
