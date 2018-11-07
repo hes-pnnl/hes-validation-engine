@@ -11,5 +11,5 @@ let validate_address = hes_validation_engine.validate_address;
 let validate_home_audit = hes_validation_engine.validate_home_audit;
 
 const obj = JSON.parse(process.argv[2]);
-let result = Object.assign(validate_address(obj), validate_home_audit(obj))
+const result = Object.assign(validate_address(obj), validate_home_audit(obj));
 console.log(JSON.stringify(result));
