@@ -1227,10 +1227,11 @@ let validationRules = {
     }
 };
 
-function get_validation_messages (homeValues, requiredFields) {
+function get_validation_messages (homeValues, requiredFields, additionalRules) {
   
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
+    validationRules = additionalRules ? Object.assign(validationRules, additionalRules) : validationRules;
     _homeValues = homeValues;
     let result = {};
     result[BLOCKER] = {};
@@ -1284,7 +1285,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
     // without us having to explicitly pass it to every function
     let requiredFields = require('./required_fields.node')(homeValues);
 
-    return get_validation_messages(homeValues, requiredFields);
+    return get_validation_messages(homeValues, requiredFields, additionalRules);
 }
 
 /**
