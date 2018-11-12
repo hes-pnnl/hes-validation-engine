@@ -31,14 +31,7 @@ module.exports = function (homeValues) {
     //////////////////////////////////////////////////////////////////////////////
     // Add any fields that are required due to the values of other fields       //
     //////////////////////////////////////////////////////////////////////////////
-
-    if (homeValues['building_id_holder'] === '-1') {
-        requiredFields['address'] = mandatoryMessage;
-        requiredFields['city'] = mandatoryMessage;
-        requiredFields['state'] = mandatoryMessage;
-        requiredFields['zip_code'] = mandatoryMessage;
-        requiredFields['assessment_type'] = mandatoryMessage;
-    }
+    
     /*
      * About conitional validations
      */

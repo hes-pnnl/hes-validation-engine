@@ -454,10 +454,6 @@ let validationRules = {
     external_building_id: function(value) {
         return new Validation(TypeRules._string(value), ERROR);
     },
-    building_id_holder: function(value) {
-        //This is just a homeValue holder so we can check if this is a new assessment
-        //No validation required for this field
-    },
 
     /*
      * about
@@ -1231,23 +1227,17 @@ let validationRules = {
     }
 };
 
-/**
- * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
- * corresponding form fields.
- * @param {Object} additionalRules (Optional) Object of functions. Additonal Validation Rules to be
- * added to present rules.
- * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
- * validation rules were violated, an empty object is returned.
- */
-function validate_home_audit (homeValues, additionalRules = null) {
+function get_validation_messages (homeValues, requiredFields, additionalRules) {
+  
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
+    validationRules = additionalRules ? Object.assign(validationRules, additionalRules) : validationRules;
     _homeValues = homeValues;
     let result = {};
     result[BLOCKER] = {};
     result[ERROR] = {};
     result[MANDATORY] = {};
-    let requiredFields = require('./required_fields.node')(homeValues);
+
     for (var fieldName in requiredFields) {
         //Because we have two validation rules for one user input, here we check for potential duplicate messages
         if (undefined === homeValues[fieldName] || '' === homeValues[fieldName] || null === homeValues[fieldName]) {
@@ -1282,4 +1272,39 @@ function validate_home_audit (homeValues, additionalRules = null) {
     return result;
 }
 
-module.exports = validate_home_audit;
+/**
+ * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
+ * corresponding form fields.
+ * @param {Object} additionalRules (Optional) Object of functions. Additonal Validation Rules to be
+ * added to present rules.
+ * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
+ * validation rules were violated, an empty object is returned.
+ */
+function validate_home_audit (homeValues, additionalRules = null) {
+    // Pass homeValues into the scope of this file so that validation rules can reference it
+    // without us having to explicitly pass it to every function
+    let requiredFields = require('./required_fields.node')(homeValues);
+
+    return get_validation_messages(homeValues, requiredFields, additionalRules);
+}
+
+/**
+ * @param {Object} homeValues Key/value pairs. The keys should be identical to the "name" attributes of the
+ * corresponding form fields.
+ * @returns {Object} Keys are the same as in homeValues. Values are error strings. In the event that no
+ * validation rules were violated, an empty object is returned.
+ */
+function validate_address (homeValues) {
+    let mandatoryMessage = "Missing value for mandatory field";
+    // Define values that are always required
+    let requiredFields = {
+        address : mandatoryMessage,
+        city : mandatoryMessage,
+        state : mandatoryMessage,
+        zip_code : mandatoryMessage,
+        assessment_type : mandatoryMessage,
+    };
+    return get_validation_messages(homeValues, requiredFields);
+}
+
+module.exports = {validate_home_audit, validate_address};
