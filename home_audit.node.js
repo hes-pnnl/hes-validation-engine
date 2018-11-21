@@ -524,7 +524,7 @@ let validationRules = {
             //Check that roof area is not less than floor area
             if (!combinedAreaCheck) {
                 let combinedRoofArea = this._get_combined_roof_area();
-                let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "Roof area");
+                let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "roof area");
                 //Check that combined areas are consistent with conditioned floor areas
                 if (checkConditionedAreas) {
                     return new Validation(checkConditionedAreas, ERROR);
@@ -604,7 +604,7 @@ let validationRules = {
             //Check that floor area is not greater than roof area
             if (!combinedAreaCheck) {
                 let combinedFloorArea = this._get_combined_floor_area();
-                let checkConditionedAreas = this._check_conditioned_areas(combinedFloorArea, "Floor area");
+                let checkConditionedAreas = this._check_conditioned_areas(combinedFloorArea, "floor area");
                 //Check that combined areas are consistent with conditioned floor areas
                 if (checkConditionedAreas) {
                     return new Validation(checkConditionedAreas, ERROR);
@@ -1148,7 +1148,14 @@ let validationRules = {
         if (_homeValues.conditioned_floor_area === '') {
             return false;
         }
-        return parseInt(parseInt(_homeValues.conditioned_floor_area) / parseInt(_homeValues.num_floor_above_grade));
+        let footprintArea = _homeValues.conditioned_floor_area;
+        if (_homeValues.foundation_type_1 === 'cond_basement') {
+            footprintArea = footprintArea - TypeRules._int_or_zero(_homeValues.floor_area_1);
+        }
+        if (_homeValues.foundation_type_2 === 'cond_basement') {
+            footprintArea = footprintArea - TypeRules._int_or_zero(_homeValues.floor_area_2);
+        }
+        return parseInt(footprintArea / parseInt(_homeValues.num_floor_above_grade));
     },
 
     /*
@@ -1198,7 +1205,7 @@ let validationRules = {
     _check_combined_area: function() {
         let combinedRoofArea = this._get_combined_roof_area();
         let combinedFloorArea = this._get_combined_floor_area();
-        if (combinedRoofArea < combinedFloorArea * .95) { // Allow 5% error
+        if (combinedRoofArea <= combinedFloorArea * .95) { // Allow 5% error
             return "The roof does not cover the floor";
         } else {
             return false;
@@ -1209,19 +1216,12 @@ let validationRules = {
      * Checks that the roof_area and floor_areas are consistent with conditioned footprint areas
      */
     _check_conditioned_areas: function(combinedArea, thisAreaType) {
-        let footprintArea = TypeRules._int_or_zero(_homeValues.conditioned_floor_area);
-        if (_homeValues.foundation_type_1 === 'cond_basement') {
-            footprintArea = footprintArea - TypeRules._int_or_zero(_homeValues.floor_area_1);
-        }
-        if (_homeValues.foundation_type_2 === 'cond_basement') {
-            footprintArea = footprintArea - TypeRules._int_or_zero(_homeValues.floor_area_2);
-        }
+        let footprintArea = this._get_footprint_area();
         if (TypeRules._int_or_zero(_homeValues.num_floor_above_grade) === 0) {
-            return thisAreaType + " is internally inconsistent with conditioned floor area and number of conditioned floors"
+            return "This home’s minumum footprint is unknown.  Please enter number of stories.";
         } else {
-            footprintArea = footprintArea / TypeRules._int_or_zero(_homeValues.num_floor_above_grade);
-            if (footprintArea < combinedArea * .95) { // Allow 5% error
-                return thisAreaType + " is internally inconsistent with conditioned floor area and number of conditioned floors"
+            if (footprintArea * .95 >= combinedArea) { // Allow 5% error
+                return "This home’s minimum footprint is approximately "+footprintArea+"sqft, but you have only specified "+combinedArea+"sqft of total "+thisAreaType+". Please adjust any incorrect values. *The footprint is calculated as (<total area> - <conditioned basement area>) / <number of floors>";
             }
         }
     }
