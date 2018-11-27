@@ -164,42 +164,37 @@ module.exports = function (homeValues) {
             } else if(homeValues['heating_efficiency_method_'+system] === 'shipment_weighted') {
                 requiredFields['heating_year_'+system] = 'Installation year is required when efficiency value is unknown';
             }
-            //Require ducts for heating/cooling types with ducts
-            if (homeValues['heating_type_'+system] === 'central_furnace' ||
-                homeValues['heating_type_'+system] === 'heat_pump' ||
-                homeValues['heating_type_'+system] === 'gchp' ||
-                homeValues['cooling_type'+system] === 'central_furnace' ||
-                homeValues['cooling_type'+system] === 'gchp' ||
-                homeValues['cooling_type'+system] === 'split_dx')
-            {
-                requiredFields['duct_fraction_1_'+system] = 'Duct percetange is required when they exist';
-                let ductPercent = (parseInt(homeValues['duct_fraction_1_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_2_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_3_'+system]) || 0 );
-                if(ductPercent === 100) {
-                    //Do nothing
-                } else if((parseInt(homeValues['duct_fraction_1_'+system]) > 0) && (parseInt(homeValues['duct_fraction_2_'+system]) > 0) && ductPercent < 100) {
-                    requiredFields['duct_fraction_3_'+system] = 'Duct percetange is required when they exist';
-                } else if(parseInt(homeValues['duct_fraction_1_'+system]) > 0 && ductPercent < 100) {
-                    requiredFields['duct_fraction_2_'+system] = 'Duct percetange is required when they exist';
-                }
-                for (let duct of ['1', '2', '3']) {
-                    //If duct percentage entered, require rest of ducts
-                    let mandatoryDuctMessage = 'This is a mandatory duct field';
-                    if(parseInt(homeValues['duct_fraction_'+duct+'_'+system]) > 0){
-                        requiredFields['duct_location_'+duct+'_'+system] = mandatoryDuctMessage;
-                        requiredFields['duct_insulated_'+duct+'_'+system] = mandatoryDuctMessage;
-                        requiredFields['duct_sealed_'+duct+'_'+system] = mandatoryDuctMessage;
-                    }
-                }
-            }
         }
-    }
-    for (let system of ['1', '2']) {
         if (['', 'none', null, undefined].indexOf(homeValues['cooling_type_'+system]) === -1) {
             requiredFields['cooling_efficiency_method_'+system] = 'Field is required when Cooling Type has variable efficiency';
             if(homeValues['cooling_efficiency_method_'+system] === 'user') {
                 requiredFields['cooling_efficiency_'+system] = 'Cooling Efficiency is required when known';
             } else if(homeValues['cooling_efficiency_method_'+system] === 'shipment_weighted') {
                 requiredFields['cooling_year_'+system] = 'Year Installed is required when efficincy value is unknown';
+            }
+        }
+        //Require ducts for heating/cooling types with ducts
+        let ductTypes = ['central_furnace', 'heat_pump', 'gchp', 'split_dx'];
+        if (ductTypes.indexOf(homeValues['heating_type_'+system]) > -1  ||
+            ductTypes.indexOf(homeValues['cooling_type_'+system]) > -1)
+        {
+            requiredFields['duct_fraction_1_'+system] = 'Duct percentange is required when they exist';
+            let ductPercent = (parseInt(homeValues['duct_fraction_1_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_2_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_3_'+system]) || 0 );
+            if(ductPercent === 100) {
+                //Do nothing
+            } else if((parseInt(homeValues['duct_fraction_1_'+system]) > 0) && (parseInt(homeValues['duct_fraction_2_'+system]) > 0) && ductPercent < 100) {
+                requiredFields['duct_fraction_3_'+system] = 'Duct percetange is required when they exist';
+            } else if(parseInt(homeValues['duct_fraction_1_'+system]) > 0 && ductPercent < 100) {
+                requiredFields['duct_fraction_2_'+system] = 'Duct percetange is required when they exist';
+            }
+            for (let duct of ['1', '2', '3']) {
+                //If duct percentage entered, require rest of ducts
+                let mandatoryDuctMessage = 'This is a mandatory duct field';
+                if(parseInt(homeValues['duct_fraction_'+duct+'_'+system]) > 0){
+                    requiredFields['duct_location_'+duct+'_'+system] = mandatoryDuctMessage;
+                    requiredFields['duct_insulated_'+duct+'_'+system] = mandatoryDuctMessage;
+                    requiredFields['duct_sealed_'+duct+'_'+system] = mandatoryDuctMessage;
+                }
             }
         }
     }
