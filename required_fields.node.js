@@ -206,7 +206,7 @@ module.exports = function (homeValues) {
         requiredFields['hot_water_fuel'] = 'Required for non-boiler water heaters';
         requiredFields['hot_water_efficiency_method'] = 'Required for non-boiler water heaters';
         if (homeValues['hot_water_efficiency_method'] === 'user') {
-            requiredFields['hot_water_energy_factor'] = 'Energy Factor is required when known';
+            requiredFields['hot_water_energy_factor'] = mandatoryMessage;
         } else if (homeValues['hot_water_efficiency_method'] === 'shipment_weighted') {
             requiredFields['hot_water_year'] = 'Year Installed is required when engergy factor is unknown';
         }
