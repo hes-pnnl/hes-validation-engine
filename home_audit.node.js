@@ -652,17 +652,12 @@ let validationRules = {
      * zone_skylight
      */
     skylight_area: function(value) {
-        if(parseInt(value) !== 0) {
-            if(_homeValues.conditioned_floor_area === '') {
-                return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
-            }
-            let footprintArea = this._get_footprint_area();
-            //Skylights have API max of 300
-            if(footprintArea > 300) {
-                footprintArea = 300;
-            }
-            return new Validation(TypeRules._float(value, 0, footprintArea), BLOCKER);
+        let footprintArea = this._get_footprint_area();
+        //Skylights have API max of 300
+        if(value > 300) {
+           return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
         }
+        return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
     },
     skylight_method: function(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
@@ -706,9 +701,8 @@ let validationRules = {
      * zone_window
      */
     window_area_front: function(value) {
-        let wall_area = this._get_wall_area();
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
-        return new Validation(TypeRules._float(value, 0, wall_area), ERROR);
+        return this._window_area(value, false);
     },
     window_area_back: function(value) {
         return this._window_area(value, false);
@@ -723,13 +717,12 @@ let validationRules = {
         let wall_area = this._get_wall_area();
         if (wall_area) {
             //Windows have API max area of 999
-            //TODO: Clarify that this really should be the maximum (documentation has less than calculated wall area)
-            if (wall_area > 999) {
-                wall_area = 999;
+            if (value > 999) {
+              return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
             }
-            return new Validation(TypeRules._float(value, 0, wall_area), BLOCKER);
+            return new Validation(TypeRules._float(value, 0, wall_area), ERROR);
         } else {
-            return new Validation("Must enter Conditioned floor area, Interior floor-to-ceiling height, and stories above ground level", ERROR);
+            return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
         }
     },
 
