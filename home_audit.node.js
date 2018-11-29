@@ -836,16 +836,16 @@ let validationRules = {
      * hvac_heating
      */
     _heating_and_cooling_types: function(value, num, heatingOrCooling) {
-    	const opp = heatingOrCooling === HEATING ? COOLING : HEATING;
-    	const oppUpper = opp.charAt(0).toUpperCase() + opp.slice(1);
-    	const currUpper = heatingOrCooling.charAt(0).toUpperCase() + heatingOrCooling.slice(1);
-    	if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[opp+'_type_'+num]) > -1) {
-    		if(value !== _homeValues[opp+'_type_'+num] && _homeValues[opp+'_type_'+num] !== 'none' && value !== 'none') {
-    			return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
-    		}
-    	} else if(value === 'none' && _homeValues[opp+'_type_'+num] === 'none') {
-    		let message = currUpper + ' Type is required if there is no ' + oppUpper + ' Type';
-    		return new Validation(message, ERROR);
+        const opp = heatingOrCooling === HEATING ? COOLING : HEATING;
+        const oppUpper = opp.charAt(0).toUpperCase() + opp.slice(1);
+        const currUpper = heatingOrCooling.charAt(0).toUpperCase() + heatingOrCooling.slice(1);
+        if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[opp+'_type_'+num]) > -1) {
+            if(value !== _homeValues[opp+'_type_'+num] && _homeValues[opp+'_type_'+num] !== 'none' && value !== 'none') {
+                return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
+            }
+        } else if(value === 'none' && _homeValues[opp+'_type_'+num] === 'none') {
+            let message = currUpper + ' Type is required if there is no ' + oppUpper + ' Type';
+            return new Validation(message, ERROR);
         }
         const validTypeOptions = heatingOrCooling === HEATING ? heatingTypeOptions : coolingTypeOptions;
         return new Validation(TypeRules._string(value, 100, validTypeOptions), BLOCKER);
