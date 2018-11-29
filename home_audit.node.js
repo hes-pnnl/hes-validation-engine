@@ -653,11 +653,11 @@ let validationRules = {
      */
     skylight_area: function(value) {
         let footprintArea = this._get_footprint_area();
-        //Skylights have API max of 300
-        if(value > 300) {
-           return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
+        if(footprintArea) {
+            return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
         }
-        return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
+        //Skylights have API max of 300
+        return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
     },
     skylight_method: function(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
@@ -673,17 +673,12 @@ let validationRules = {
     },
 
     skylight_area_2: function(value) {
-        if(parseInt(value) !== 0) {
-            if(_homeValues.conditioned_floor_area === '') {
-                return new Validation("Cannot validate the Skylight Area without Conditioned Floor Area and Stories above ground level", ERROR);
-            }
-            let footprintArea = this._get_footprint_area();
-            //Skylights have API max of 300
-            if(footprintArea > 300) {
-                footprintArea = 300;
-            }
-            return new Validation(TypeRules._int(value, 0, footprintArea), BLOCKER);
+        let footprintArea = this._get_footprint_area();
+        if(footprintArea) {
+            return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
         }
+        //Skylights have API max of 300
+        return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
     },
     skylight_method_2: function(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
@@ -716,14 +711,10 @@ let validationRules = {
     _window_area: function(value, isFront) {
         let wall_area = this._get_wall_area();
         if (wall_area) {
-            //Windows have API max area of 999
-            if (value > 999) {
-              return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
-            }
             return new Validation(TypeRules._float(value, 0, wall_area), ERROR);
-        } else {
-            return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
         }
+        //Windows have API max area of 999
+        return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
     },
 
     window_method_front: function(value) {
@@ -1066,7 +1057,7 @@ let validationRules = {
     hot_water_year: function(value) {
         return this._installation_year(value, 1972);
     },
-    hot_water_energy_factor(value) {
+    hot_water_energy_factor: function(value) {
         let min, max;
 
         if (_homeValues.hot_water_type === 'storage') {
