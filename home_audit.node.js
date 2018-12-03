@@ -11,8 +11,8 @@ const BLOCKER = 'blocker';
 const ERROR = 'error';
 const MANDATORY = 'mandatory';
 
-const HEATING = 'heating';
-const COOLING = 'cooling';
+const HEATING = 'Heating';
+const COOLING = 'Cooling';
 
 const stateArray = [
     '',
@@ -837,8 +837,7 @@ let validationRules = {
      */
     _heating_and_cooling_types: function(value, num, heatingOrCooling) {
         const opp = heatingOrCooling === HEATING ? COOLING : HEATING;
-        const oppUpper = opp.charAt(0).toUpperCase() + opp.slice(1);
-        const currUpper = heatingOrCooling.charAt(0).toUpperCase() + heatingOrCooling.slice(1);
+        const oppLower = opp.charAt(0).toLowerCase() + opp.slice(1);
         if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[opp+'_type_'+num]) > -1) {
             if(value !== _homeValues[opp+'_type_'+num] && _homeValues[opp+'_type_'+num] !== 'none' && value !== 'none') {
                 return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
