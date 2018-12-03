@@ -673,12 +673,7 @@ let validationRules = {
     },
 
     skylight_area_2: function(value) {
-        let footprintArea = this._get_footprint_area();
-        if(footprintArea) {
-            return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
-        }
-        //Skylights have API max of 300
-        return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
+        return this.skylight_area(value);
     },
     skylight_method_2: function(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
