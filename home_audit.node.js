@@ -11,6 +11,9 @@ const BLOCKER = 'blocker';
 const ERROR = 'error';
 const MANDATORY = 'mandatory';
 
+const HEATING = 'Heating';
+const COOLING = 'Cooling';
+
 const stateArray = [
     '',
     'AL',
@@ -815,21 +818,28 @@ let validationRules = {
     /*
      * hvac_heating
      */
-    heating_type_1: function(value) {
-        if(value === 'none' && _homeValues.cooling_type_1 === 'none') {
-            return new Validation('Heating Type is required if there is no Cooling Type', ERROR);
+    _heating_and_cooling_types: function(value, num, heatingOrCooling) {
+        const oppSystem = heatingOrCooling === HEATING ? COOLING : HEATING;
+        const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
+        if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
+            if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
+                return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
+            }
+        } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
+            let message = heatingOrCooling + ' Type is required if there is no ' + oppSystem + ' Type';
+            return new Validation(message, ERROR);
         }
-        return this._heating_type(value);
+        const validTypeOptions = heatingOrCooling === HEATING ? heatingTypeOptions : coolingTypeOptions;
+        return new Validation(TypeRules._string(value, 100, validTypeOptions), BLOCKER);
+    },
+
+    heating_type_1: function(value) {
+        return this._heating_and_cooling_types(value, 1, HEATING);
     },
     heating_type_2: function(value) {
-        if(value === 'none' && _homeValues.cooling_type_2 === 'none') {
-            return new Validation('Heating Type is required if there is no Cooling Type', ERROR);
-        }
-        return this._heating_type(value);
+        return this._heating_and_cooling_types(value, 2, HEATING);
     },
-    _heating_type: function(value) {
-        return new Validation(TypeRules._string(value, 100, heatingTypeOptions), BLOCKER);
-    },
+
     heating_fuel_1: function(value) {
         return this._heating_fuel(value);
     },
@@ -883,19 +893,10 @@ let validationRules = {
      * hvac_cooling
      */
     cooling_type_1: function(value) {
-        if(value === 'none' && _homeValues.heating_type_1 === 'none') {
-            return new Validation('Cooling Type is required if there is no Heating Type', ERROR);
-        }
-        return this._cooling_type(value);
+        return this._heating_and_cooling_types(value, 1, COOLING);
     },
     cooling_type_2: function(value) {
-        if(value === 'none' && _homeValues.heating_type_2 === 'none') {
-            return new Validation('Cooling Type is required if there is no Heating Type', ERROR);
-        }
-        return this._cooling_type(value);
-    },
-    _cooling_type: function(value) {
-        return new Validation(TypeRules._string(value, 100, coolingTypeOptions), BLOCKER);
+        return this._heating_and_cooling_types(value, 2, COOLING);
     },
 
     cooling_efficiency_method_1: function(value) {
