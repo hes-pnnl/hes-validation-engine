@@ -653,7 +653,7 @@ let validationRules = {
      */
     skylight_area: function(value) {
         let footprintArea = this._get_footprint_area();
-        if(value > 300) {
+        if(value > 300 || value < 0) {
             //Skylights have API max of 300
             return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
         }
@@ -707,7 +707,7 @@ let validationRules = {
     },
     _window_area: function(value, isFront) {
         let wall_area = this._get_wall_area();
-        if (value > 999) {
+        if (value > 999 || value < 0) {
             //Windows have API max area of 999
             return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
         }
