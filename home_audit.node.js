@@ -836,14 +836,14 @@ let validationRules = {
      * hvac_heating
      */
     _heating_and_cooling_types: function(value, num, heatingOrCooling) {
-        const opp = heatingOrCooling === HEATING ? COOLING : HEATING;
-        const oppLower = opp.charAt(0).toLowerCase() + opp.slice(1);
-        if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[opp+'_type_'+num]) > -1) {
-            if(value !== _homeValues[opp+'_type_'+num] && _homeValues[opp+'_type_'+num] !== 'none' && value !== 'none') {
+        const oppSystem = heatingOrCooling === HEATING ? COOLING : HEATING;
+        const oppLower = oppSystem.charAt(0).toLowerCase() + opp.slice(1);
+        if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
+            if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
                 return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
             }
-        } else if(value === 'none' && _homeValues[opp+'_type_'+num] === 'none') {
-            let message = currUpper + ' Type is required if there is no ' + oppUpper + ' Type';
+        } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
+            let message = currUpper + ' Type is required if there is no ' + oppSystem + ' Type';
             return new Validation(message, ERROR);
         }
         const validTypeOptions = heatingOrCooling === HEATING ? heatingTypeOptions : coolingTypeOptions;
