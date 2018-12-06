@@ -23,7 +23,8 @@ module.exports = function (homeValues) {
         roof_area_1 : mandatoryMessage,
         floor_area_1 : mandatoryMessage,
         wall_construction_same : mandatoryMessage,
-        window_construction_same : mandatoryMessage
+        window_construction_same : mandatoryMessage,
+        skylight_area : mandatoryMessage
     };
 
     let positions = [];
