@@ -209,7 +209,7 @@ module.exports = function (homeValues) {
         if (homeValues['hot_water_efficiency_method'] === 'user') {
             requiredFields['hot_water_energy_factor'] = mandatoryMessage;
         } else if (homeValues['hot_water_efficiency_method'] === 'shipment_weighted') {
-            requiredFields['hot_water_year'] = 'Year Installed is required when engergy factor is unknown';
+            requiredFields['hot_water_year'] = 'Year Installed is required when energy factor is unknown';
         }
     }
 
