@@ -487,6 +487,10 @@ let validationRules = {
         return new Validation(TypeRules._int(value, 6, 12), BLOCKER);
     },
     conditioned_floor_area: function(value) {
+        const checkFootprint = this._check_footprint();
+        if(checkFootprint['message']) {
+            return new checkFootprint;
+        }
         return new Validation(TypeRules._int(value, 250, 25000), BLOCKER);
     },
     orientation: function(value) {
@@ -616,6 +620,10 @@ let validationRules = {
                 return new Validation(combinedAreaCheck, ERROR);
             }
         } else {
+            const checkFootprint = this._check_footprint();
+            if(checkFootprint['message']) {
+                return new checkFootprint;
+            }
             //This is a blocker case and will prevent saving
             return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
         }
@@ -1157,6 +1165,13 @@ let validationRules = {
         }
         return parseInt(footprintArea / parseInt(_homeValues.num_floor_above_grade));
     },
+    
+    _check_footprint: function() {
+        const footprint = this._get_footprint_area();
+        if(footprint < 250) {
+            return new Validation('Home footprint must be greater than 250 sq ft', BLOCKER);
+        }
+    }
 
     /*
      * Get combined floor area
