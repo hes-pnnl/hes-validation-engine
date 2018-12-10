@@ -640,13 +640,24 @@ let validationRules = {
     },
 
     foundation_insulation_level_1: function(value) {
+        return this._foundation_insulation_level(value, 1);
+    },
+    foundation_insulation_level_2: function(value, 2) {
         return this._foundation_insulation_level(value);
     },
-    foundation_insulation_level_2: function(value) {
-        return this._foundation_insulation_level(value);
-    },
-    _foundation_insulation_level: function(value) {
-        return new Validation(TypeRules._int(value, 0, 19), BLOCKER);
+    _foundation_insulation_level: function(value, num) {
+        const outsideApiBounds = TypeRules._int(value, 0, 19);
+        if(outsideApiBounds) {
+            return new Validation(outsideApiBounds, BLOCKER);
+        } else if(_homeValues['foundation_type_'+num] === 'slab_on_grade') {
+            if([0, 5].indexOf(value) === -1) {
+                return new Validation('Insulation must be R-0 or R-5 for Slab on Grade Foundation');
+            }
+        } else {
+            if([0, 11, 19].indexOf(value) === -1) {
+                return new Validation('Insulation must be R-0, R-11, or R-19 for current foundation type');
+            }
+        }
     },
 
     floor_assembly_code_1: function(value) {
