@@ -1077,6 +1077,12 @@ let validationRules = {
     /*
      * systems_hot_water
      */
+    hot_water_category: function(value) {
+        if([_homeValues['heating_type_1'], _homeValues['heating_type_2'], _homeValues['cooling_type_1'], _homeValues['cooling_type_2']].indexOf('boiler') === -1 && value === 'combined') {
+            return new Validation("Must have a boiler for combined hot water category", ERROR);
+        }
+        return new Validation(TypeRules._string(value, 20, ['unit', 'combined']), BLOCKER);
+    },
     hot_water_type: function(value) {
         return new Validation(TypeRules._string(value, 20, hotWaterType), BLOCKER);
     },
