@@ -697,25 +697,28 @@ let validationRules = {
      */
     window_area_front: function(value) {
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_front_back();
+        return this._window_area_front_back(value, wallArea);
     },
     window_area_back: function(value) {
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_front_back();
+        return this._window_area_front_back(value, wallArea);
     },
     window_area_right: function(value) {
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_left_right();
+        return this._window_area_left_right(value, wallArea);
     },
     window_area_left: function(value) {
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_left_right();
+        return this._window_area_left_right(value, wallArea);
     },
-    _window_area: function(value, isFront) {
-        let wall_area = this._get_wall_area();
+    _window_area: function(value, wallArea) {
         if (value > 999 || value < 0) {
             //Windows have API max area of 999
             return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
         }
-        if (wall_area) {
-            return new Validation(TypeRules._float(value, 0, wall_area), ERROR);
+        if (wallArea) {
+            return new Validation(TypeRules._float(value, 0, wallArea), ERROR);
         }
     },
 
@@ -1170,23 +1173,52 @@ let validationRules = {
     },
 
     /*
-     * Gets wall length for window area validations
+     * Gets the first wall dimension for window area validations
      */
-    _get_wall_length: function() {
+    _get_wall_dimension_1: function() {
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
-            return parseInt((Math.sqrt((3 * area) / 5)) * (5 / 3));
+            return parseInt((Math.sqrt((3 * area) / 5));
+        } else {
+            return false;
+        }
+    },
+    
+    /*
+     * Gets the second wall dimension for window area validations
+     */
+    _get_wall_dimension_2: function() {
+        let dimension1 = this._get_wall_dimension_1();
+        if (dimension1) {
+            //Assume floor dimensions area 5x3
+            return dimension1 * (5 / 3));
         } else {
             return false;
         }
     },
 
     /*
-     * Gets wall area for window area validations
+     * Gets wall area for front/back window area validations
      */
-    _get_wall_area: function() {
-        let length = this._get_wall_length();
+    _get_wall_area_front_back: function() {
+        let length = this._get_wall_dimension_1();
+        return this._get_wall_area(length);
+    },
+    
+    /*
+     * Gets wall area for left/right window area validations
+     */
+    _get_wall_area_left_right: function() {
+        let length = this._get_wall_dimension_1();
+        return this._get_wall_area(length);
+    },
+    
+    /*
+     * Gets wall area
+     * @param {int} length
+     */
+    _get_wall_area: function(length) {
         let height = parseInt(_homeValues.floor_to_ceiling_height) || false;
         let stories = parseInt(_homeValues.num_floor_above_grade) || false;
         if (length && height && stories) {
