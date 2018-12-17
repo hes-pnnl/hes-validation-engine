@@ -1188,7 +1188,7 @@ let validationRules = {
         if(footprint < 250) {
             return new Validation('Home footprint must be greater than 250 sq ft', BLOCKER);
         }
-    }
+    },
 
     /*
      * Get combined floor area
