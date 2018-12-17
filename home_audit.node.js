@@ -1211,7 +1211,7 @@ let validationRules = {
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
-            return parseInt((Math.sqrt((3 * area) / 5));
+            return parseInt((Math.sqrt((3 * area) / 5)));
         } else {
             return false;
         }
