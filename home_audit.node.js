@@ -717,19 +717,19 @@ let validationRules = {
     window_area_front: function(value) {
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
         let wallArea = this._get_wall_area_front_back();
-        return this._window_area_front_back(value, wallArea);
+        return this._window_area(value, wallArea);
     },
     window_area_back: function(value) {
         let wallArea = this._get_wall_area_front_back();
-        return this._window_area_front_back(value, wallArea);
+        return this._window_area(value, wallArea);
     },
     window_area_right: function(value) {
         let wallArea = this._get_wall_area_left_right();
-        return this._window_area_left_right(value, wallArea);
+        return this._window_area(value, wallArea);
     },
     window_area_left: function(value) {
         let wallArea = this._get_wall_area_left_right();
-        return this._window_area_left_right(value, wallArea);
+        return this._window_area(value, wallArea);
     },
     _window_area: function(value, wallArea) {
         if (value > 999 || value < 0) {
