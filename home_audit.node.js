@@ -650,11 +650,11 @@ let validationRules = {
         if(outsideApiBounds) {
             return new Validation(outsideApiBounds, BLOCKER);
         } else if(_homeValues['foundation_type_'+num] === 'slab_on_grade') {
-            if([0, 5].indexOf(value) === -1) {
+            if([0, 5].indexOf(parseInt(value)) === -1) {
                 return new Validation('Insulation must be R-0 or R-5 for Slab on Grade Foundation', ERROR);
             }
         } else {
-            if([0, 11, 19].indexOf(value) === -1) {
+            if([0, 11, 19].indexOf(parseInt(value)) === -1) {
                 return new Validation('Insulation must be R-0, R-11, or R-19 for current foundation type', ERROR);
             }
         }
