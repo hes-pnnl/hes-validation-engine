@@ -488,8 +488,8 @@ let validationRules = {
     },
     conditioned_floor_area: function(value) {
         const checkFootprint = this._check_footprint();
-        if(checkFootprint['message']) {
-            return new checkFootprint;
+        if(checkFootprint) {
+            return new Validation(checkFootprint, BLOCKER);
         }
         return new Validation(TypeRules._int(value, 250, 25000), BLOCKER);
     },
@@ -621,8 +621,8 @@ let validationRules = {
             }
         } else {
             const checkFootprint = this._check_footprint();
-            if(checkFootprint['message']) {
-                return new checkFootprint;
+            if(checkFootprint) {
+                return new new Validation(checkFootprint, BLOCKER);
             }
             //This is a blocker case and will prevent saving
             return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
@@ -1186,7 +1186,7 @@ let validationRules = {
     _check_footprint: function() {
         const footprint = this._get_footprint_area();
         if(footprint < 250) {
-            return new Validation('Home footprint must be greater than 250 sq ft', BLOCKER);
+            return 'Home footprint must be greater than 250 sq ft';
         }
     },
 
