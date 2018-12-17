@@ -1224,7 +1224,7 @@ let validationRules = {
         let dimension1 = this._get_wall_dimension_1();
         if (dimension1) {
             //Assume floor dimensions area 5x3
-            return dimension1 * (5 / 3));
+            return dimension1 * (5 / 3);
         } else {
             return false;
         }
