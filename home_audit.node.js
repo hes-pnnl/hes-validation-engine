@@ -642,8 +642,8 @@ let validationRules = {
     foundation_insulation_level_1: function(value) {
         return this._foundation_insulation_level(value, 1);
     },
-    foundation_insulation_level_2: function(value, 2) {
-        return this._foundation_insulation_level(value);
+    foundation_insulation_level_2: function(value) {
+        return this._foundation_insulation_level(value, 2);
     },
     _foundation_insulation_level: function(value, num) {
         const outsideApiBounds = TypeRules._int(value, 0, 19);
