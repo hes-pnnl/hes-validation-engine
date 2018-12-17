@@ -487,6 +487,10 @@ let validationRules = {
         return new Validation(TypeRules._int(value, 6, 12), BLOCKER);
     },
     conditioned_floor_area: function(value) {
+        const checkFootprint = this._check_footprint();
+        if(checkFootprint['message']) {
+            return new checkFootprint;
+        }
         return new Validation(TypeRules._int(value, 250, 25000), BLOCKER);
     },
     orientation: function(value) {
@@ -616,6 +620,10 @@ let validationRules = {
                 return new Validation(combinedAreaCheck, ERROR);
             }
         } else {
+            const checkFootprint = this._check_footprint();
+            if(checkFootprint['message']) {
+                return new checkFootprint;
+            }
             //This is a blocker case and will prevent saving
             return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
         }
@@ -632,13 +640,24 @@ let validationRules = {
     },
 
     foundation_insulation_level_1: function(value) {
+        return this._foundation_insulation_level(value, 1);
+    },
+    foundation_insulation_level_2: function(value, 2) {
         return this._foundation_insulation_level(value);
     },
-    foundation_insulation_level_2: function(value) {
-        return this._foundation_insulation_level(value);
-    },
-    _foundation_insulation_level: function(value) {
-        return new Validation(TypeRules._int(value, 0, 19), BLOCKER);
+    _foundation_insulation_level: function(value, num) {
+        const outsideApiBounds = TypeRules._int(value, 0, 19);
+        if(outsideApiBounds) {
+            return new Validation(outsideApiBounds, BLOCKER);
+        } else if(_homeValues['foundation_type_'+num] === 'slab_on_grade') {
+            if([0, 5].indexOf(value) === -1) {
+                return new Validation('Insulation must be R-0 or R-5 for Slab on Grade Foundation');
+            }
+        } else {
+            if([0, 11, 19].indexOf(value) === -1) {
+                return new Validation('Insulation must be R-0, R-11, or R-19 for current foundation type');
+            }
+        }
     },
 
     floor_assembly_code_1: function(value) {
@@ -697,25 +716,28 @@ let validationRules = {
      */
     window_area_front: function(value) {
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_front_back();
+        return this._window_area_front_back(value, wallArea);
     },
     window_area_back: function(value) {
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_front_back();
+        return this._window_area_front_back(value, wallArea);
     },
     window_area_right: function(value) {
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_left_right();
+        return this._window_area_left_right(value, wallArea);
     },
     window_area_left: function(value) {
-        return this._window_area(value, false);
+        let wallArea = this._get_wall_area_left_right();
+        return this._window_area_left_right(value, wallArea);
     },
-    _window_area: function(value, isFront) {
-        let wall_area = this._get_wall_area();
+    _window_area: function(value, wallArea) {
         if (value > 999 || value < 0) {
             //Windows have API max area of 999
             return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
         }
-        if (wall_area) {
-            return new Validation(TypeRules._float(value, 0, wall_area), ERROR);
+        if (wallArea) {
+            return new Validation(TypeRules._float(value, 0, wallArea), ERROR);
         }
     },
 
@@ -820,14 +842,24 @@ let validationRules = {
      */
     _heating_and_cooling_types: function(value, num, heatingOrCooling) {
         const oppSystem = heatingOrCooling === HEATING ? COOLING : HEATING;
+        const currLower = heatingOrCooling.charAt(0).toLowerCase() + heatingOrCooling.slice(1);
         const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
         if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
             if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
                 return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
             }
+            if(['gchp', 'mini_split'].indexOf(value) > -1 && _homeValues[currLower+'_efficiency_method_'+num] === 'shipment_weighted') {
+                return new Validation('Invalid Efficiency Method for GCHP and Mini-Split Types', ERROR);
+            }
         } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
             let message = heatingOrCooling + ' Type is required if there is no ' + oppSystem + ' Type';
             return new Validation(message, ERROR);
+        }
+        if(heatingOrCooling === HEATING) {
+            if ((value === 'wood_stove' && ['cord_wood', 'pellet_wood'].indexOf(_homeValues['heating_fuel_'+num]) === -1) ||
+                (value !== 'wood_stove' && ['cord_wood', 'pellet_wood'].indexOf(_homeValues['heating_fuel_'+num]) > -1)) {
+                return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
+            }
         }
         const validTypeOptions = heatingOrCooling === HEATING ? heatingTypeOptions : coolingTypeOptions;
         return new Validation(TypeRules._string(value, 100, validTypeOptions), BLOCKER);
@@ -1045,6 +1077,12 @@ let validationRules = {
     /*
      * systems_hot_water
      */
+    hot_water_category: function(value) {
+        if([_homeValues['heating_type_1'], _homeValues['heating_type_2'], _homeValues['cooling_type_1'], _homeValues['cooling_type_2']].indexOf('boiler') === -1 && value === 'combined') {
+            return new Validation("Must have a boiler for combined hot water category", ERROR);
+        }
+        return new Validation(TypeRules._string(value, 20, ['unit', 'combined']), BLOCKER);
+    },
     hot_water_type: function(value) {
         return new Validation(TypeRules._string(value, 20, hotWaterType), BLOCKER);
     },
@@ -1052,6 +1090,9 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
     },
     hot_water_efficiency_method: function(value) {
+        if(['heat_pump', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
+            return new Validation('Invalid Efficiency Method for entered Hot Water Type');
+        }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
     hot_water_year: function(value) {
@@ -1141,6 +1182,13 @@ let validationRules = {
         }
         return parseInt(footprintArea / parseInt(_homeValues.num_floor_above_grade));
     },
+    
+    _check_footprint: function() {
+        const footprint = this._get_footprint_area();
+        if(footprint < 250) {
+            return new Validation('Home footprint must be greater than 250 sq ft', BLOCKER);
+        }
+    }
 
     /*
      * Get combined floor area
@@ -1157,23 +1205,52 @@ let validationRules = {
     },
 
     /*
-     * Gets wall length for window area validations
+     * Gets the first wall dimension for window area validations
      */
-    _get_wall_length: function() {
+    _get_wall_dimension_1: function() {
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
-            return parseInt((Math.sqrt((3 * area) / 5)) * (5 / 3));
+            return parseInt((Math.sqrt((3 * area) / 5));
+        } else {
+            return false;
+        }
+    },
+    
+    /*
+     * Gets the second wall dimension for window area validations
+     */
+    _get_wall_dimension_2: function() {
+        let dimension1 = this._get_wall_dimension_1();
+        if (dimension1) {
+            //Assume floor dimensions area 5x3
+            return dimension1 * (5 / 3));
         } else {
             return false;
         }
     },
 
     /*
-     * Gets wall area for window area validations
+     * Gets wall area for front/back window area validations
      */
-    _get_wall_area: function() {
-        let length = this._get_wall_length();
+    _get_wall_area_front_back: function() {
+        let length = this._get_wall_dimension_1();
+        return this._get_wall_area(length);
+    },
+    
+    /*
+     * Gets wall area for left/right window area validations
+     */
+    _get_wall_area_left_right: function() {
+        let length = this._get_wall_dimension_1();
+        return this._get_wall_area(length);
+    },
+    
+    /*
+     * Gets wall area
+     * @param {int} length
+     */
+    _get_wall_area: function(length) {
         let height = parseInt(_homeValues.floor_to_ceiling_height) || false;
         let stories = parseInt(_homeValues.num_floor_above_grade) || false;
         if (length && height && stories) {

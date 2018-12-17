@@ -23,7 +23,8 @@ module.exports = function (homeValues) {
         roof_area_1 : mandatoryMessage,
         floor_area_1 : mandatoryMessage,
         wall_construction_same : mandatoryMessage,
-        window_construction_same : mandatoryMessage
+        window_construction_same : mandatoryMessage,
+        skylight_area : mandatoryMessage
     };
 
     let positions = [];
@@ -208,7 +209,7 @@ module.exports = function (homeValues) {
         if (homeValues['hot_water_efficiency_method'] === 'user') {
             requiredFields['hot_water_energy_factor'] = mandatoryMessage;
         } else if (homeValues['hot_water_efficiency_method'] === 'shipment_weighted') {
-            requiredFields['hot_water_year'] = 'Year Installed is required when engergy factor is unknown';
+            requiredFields['hot_water_year'] = 'Year Installed is required when energy factor is unknown';
         }
     }
 
