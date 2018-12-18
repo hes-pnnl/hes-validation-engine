@@ -1207,7 +1207,7 @@ let validationRules = {
     /*
      * Gets the first wall dimension for window area validations
      */
-    _get_wall_dimension_1: function() {
+    _get_wall_dimension_front_back: function() {
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
@@ -1220,8 +1220,8 @@ let validationRules = {
     /*
      * Gets the second wall dimension for window area validations
      */
-    _get_wall_dimension_2: function() {
-        let dimension1 = this._get_wall_dimension_1();
+    _get_wall_dimension_left_right: function() {
+        let dimension1 = this._get_wall_dimension_front_back();
         if (dimension1) {
             //Assume floor dimensions area 5x3
             return dimension1 * (5 / 3);
@@ -1234,7 +1234,7 @@ let validationRules = {
      * Gets wall area for front/back window area validations
      */
     _get_wall_area_front_back: function() {
-        let length = this._get_wall_dimension_1();
+        let length = this._get_wall_dimension_front_back();
         return this._get_wall_area(length);
     },
     
@@ -1242,7 +1242,7 @@ let validationRules = {
      * Gets wall area for left/right window area validations
      */
     _get_wall_area_left_right: function() {
-        let length = this._get_wall_dimension_1();
+        let length = this._get_wall_dimension_left_right();
         return this._get_wall_area(length);
     },
     
