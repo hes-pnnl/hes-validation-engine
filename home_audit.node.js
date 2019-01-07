@@ -1186,7 +1186,7 @@ let validationRules = {
     _check_footprint: function() {
         const footprint = this._get_footprint_area();
         if(footprint < 250) {
-            return 'Home footprint must be greater than 250 sq ft';
+            return 'Home footprint must be greater than 250 sq ft.  Current footprint is '+footprint+' sq ft';
         }
     },
 
