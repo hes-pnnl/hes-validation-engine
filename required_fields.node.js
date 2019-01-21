@@ -220,9 +220,9 @@ module.exports = function (homeValues) {
         requiredFields['solar_electric_capacity_known'] = mandatoryPVMessage;
         requiredFields['solar_electric_year'] = mandatoryPVMessage;
         requiredFields['solar_electric_array_azimuth'] = mandatoryPVMessage;
-        if (homeValues['solar_electric_capacity_known'] === '1') {
+        if (homeValues['solar_electric_capacity_known'] === '1' || homeValues['solar_electric_capacity_known'] === 1) {
             requiredFields['solar_electric_system_capacity'] = 'System Capacity is required when known';
-        } else if (homeValues['solar_electric_capacity_known'] === '0') {
+        } else if (homeValues['solar_electric_capacity_known'] === '0' || homeValues['solar_electric_capacity_known'] === 0) {
             requiredFields['solar_electric_num_panels'] = 'Number of panels is required when system capacity is unknown';
         }
     }
