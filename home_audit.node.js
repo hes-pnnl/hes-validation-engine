@@ -1170,7 +1170,7 @@ let validationRules = {
      * Gets footprint area for skylight area validations
      */
     _get_footprint_area: function() {
-        if (_homeValues.conditioned_floor_area === '') {
+        if (TypeRules._is_empty(_homeValues.conditioned_floor_area)) {
             return false;
         }
         let footprintArea = _homeValues.conditioned_floor_area;
@@ -1302,14 +1302,14 @@ function get_validation_messages (homeValues, requiredFields, additionalRules) {
     for (var fieldName in requiredFields) {
         //Because we have two validation rules for one user input, here we check for potential duplicate messages
         if (undefined === homeValues[fieldName] || '' === homeValues[fieldName] || null === homeValues[fieldName]) {
-            if ((fieldName === 'heating_fuel_1' && (homeValues['heating_type_1'] === 'none' || homeValues['heating_type_1'] === '')) ||
-                (fieldName === 'heating_fuel_2' && (homeValues['heating_type_2'] === 'none' || homeValues['heating_type_2'] === ''))) {
+            if ((fieldName === 'heating_fuel_1' && (homeValues['heating_type_1'] === 'none' || TypeRules._is_empty(homeValues['heating_type_1']))) ||
+                (fieldName === 'heating_fuel_2' && (homeValues['heating_type_2'] === 'none' || TypeRules._is_empty(homeValues['heating_type_2'])))) {
                 /*
                  * If heating_fuel_ is not entered, we must check if heating_type_ is 'none'
                  * (that is, the user selecting "None").  In this scenario, heating_fuel_ is not required.
                  * Further, if both are empty, we do not need to see the validation message for both.
                  */
-            } else if (homeValues['hot_water_type'] && homeValues['hot_water_fuel'] === '') {
+            } else if (homeValues['hot_water_type'] && TypeRules._is_empty(homeValues['hot_water_fuel'])) {
                 // Do nothing ... avoid duplicate messages
             } else {
                 result[MANDATORY][fieldName] = requiredFields[fieldName];

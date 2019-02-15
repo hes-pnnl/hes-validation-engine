@@ -136,6 +136,16 @@ let TypeRules = {
             return parseInt(value);
         }
     },
+    
+    /*
+     * Return true if value is '', null, or undefined
+     */
+    _is_empty: function(value) {
+        if (value === '' || value === null || value === undefined) {
+            return true;
+        }
+        return false;
+    }
 };
 
 module.exports = TypeRules;
