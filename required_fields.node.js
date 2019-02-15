@@ -165,7 +165,7 @@ module.exports = function (homeValues) {
                 requiredFields['heating_year_'+system] = 'Installation year is required when efficiency value is unknown';
             }
         }
-        if (['', 'none', null, undefined].indexOf(homeValues['cooling_type_'+system]) === -1) {
+        if (['', 'none', 'dec', null, undefined].indexOf(homeValues['cooling_type_'+system]) === -1) {
             requiredFields['cooling_efficiency_method_'+system] = 'Field is required when Cooling Type has variable efficiency';
             if(homeValues['cooling_efficiency_method_'+system] === 'user') {
                 requiredFields['cooling_efficiency_'+system] = 'Cooling Efficiency is required when known';

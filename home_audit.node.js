@@ -834,7 +834,9 @@ let validationRules = {
         return this._hvac_fraction();
     },
     _hvac_fraction: function() {
-        return new Validation(TypeRules._fraction(parseFloat(_homeValues.hvac_fraction_1) + parseFloat(_homeValues.hvac_fraction_2)), BLOCKER);
+        const fraction1 = _homeValues.hvac_fraction_1 ? parseFloat(_homeValues.hvac_fraction_1) : 0;
+        const fraction2 = _homeValues.hvac_fraction_2 ? parseFloat(_homeValues.hvac_fraction_2) : 0;
+        return new Validation(TypeRules._fraction(fraction1 + fraction2), BLOCKER);
     },
 
     /*
