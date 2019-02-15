@@ -151,7 +151,9 @@ module.exports = function (homeValues) {
      */
     //If second system is heating percentage of house, require
     if (parseFloat(homeValues['hvac_fraction_2']) > 0){
-        requiredFields['heating_type_2', 'heating_fuel_2', 'cooling_type_2'] = 'This is a required system field';
+        ['heating_type_2', 'heating_fuel_2', 'cooling_type_2'].forEach(function(key) {
+            requiredFields[key] = 'This is a required system field';
+        });
     }
     for (let system of ['1', '2']) {
         if ([null, undefined, ''].indexOf(homeValues['heating_fuel_'+system]) === -1 &&
