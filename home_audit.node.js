@@ -1223,10 +1223,10 @@ let validationRules = {
      * Gets the second wall dimension for window area validations
      */
     _get_wall_dimension_front_back: function() {
-        let dimension1 = this._get_wall_dimension_front_back();
-        if (dimension1) {
+        let dimension2 = this._get_wall_dimension_left_right();
+        if (dimension2) {
             //Assume floor dimensions area 5x3
-            return dimension1 * (5 / 3);
+            return dimension2 * (5 / 3);
         } else {
             return false;
         }
