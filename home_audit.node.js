@@ -1209,7 +1209,7 @@ let validationRules = {
     /*
      * Gets the first wall dimension for window area validations
      */
-    _get_wall_dimension_front_back: function() {
+    _get_wall_dimension_left_right: function() {
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
@@ -1222,7 +1222,7 @@ let validationRules = {
     /*
      * Gets the second wall dimension for window area validations
      */
-    _get_wall_dimension_left_right: function() {
+    _get_wall_dimension_front_back: function() {
         let dimension1 = this._get_wall_dimension_front_back();
         if (dimension1) {
             //Assume floor dimensions area 5x3
@@ -1237,7 +1237,13 @@ let validationRules = {
      */
     _get_wall_area_front_back: function() {
         let length = this._get_wall_dimension_front_back();
-        return this._get_wall_area(length);
+        let height = parseInt(_homeValues.floor_to_ceiling_height) || false;
+        let stories = parseInt(_homeValues.num_floor_above_grade) || false;
+        if (length && height && stories) {
+            return parseInt((length * height - 20) * stories);
+        } else {
+            return false;
+        }
     },
     
     /*
@@ -1245,18 +1251,10 @@ let validationRules = {
      */
     _get_wall_area_left_right: function() {
         let length = this._get_wall_dimension_left_right();
-        return this._get_wall_area(length);
-    },
-    
-    /*
-     * Gets wall area
-     * @param {int} length
-     */
-    _get_wall_area: function(length) {
         let height = parseInt(_homeValues.floor_to_ceiling_height) || false;
         let stories = parseInt(_homeValues.num_floor_above_grade) || false;
         if (length && height && stories) {
-            return parseInt((length * height - 20) * stories);
+            return parseInt(length * height * stories);
         } else {
             return false;
         }
