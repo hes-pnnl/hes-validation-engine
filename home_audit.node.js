@@ -1089,11 +1089,14 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, hotWaterType), BLOCKER);
     },
     hot_water_fuel: function(value) {
+        if((_homeValues.hot_water_type === 'tankless_coil' || _homeValues.hot_water_type === 'indirect') && value) {
+            return new Validation('Fuel is only used if type is set to storage or heat pump', ERROR);
+        }
         return new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
     },
     hot_water_efficiency_method: function(value) {
         if(['heat_pump', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
-            return new Validation('Invalid Efficiency Method for entered Hot Water Type');
+            return new Validation('Invalid Efficiency Method for entered Hot Water Type', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
