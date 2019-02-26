@@ -1105,11 +1105,14 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, hotWaterType), BLOCKER);
     },
     hot_water_fuel: function(value) {
+        if((_homeValues.hot_water_type === 'tankless_coil' || _homeValues.hot_water_type === 'indirect') && value) {
+            return new Validation('Fuel is only used if type is set to storage or heat pump', ERROR);
+        }
         return new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
     },
     hot_water_efficiency_method: function(value) {
         if(['heat_pump', 'instantaneous', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
-            return new Validation('Invalid Efficiency Method for entered Hot Water Type');
+            return new Validation('Invalid Efficiency Method for entered Hot Water Type', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
@@ -1241,10 +1244,10 @@ let validationRules = {
      * Gets the second wall dimension for window area validations
      */
     _get_wall_dimension_front_back: function() {
-        let dimension1 = this._get_wall_dimension_front_back();
-        if (dimension1) {
+        let dimension2 = this._get_wall_dimension_left_right();
+        if (dimension2) {
             //Assume floor dimensions area 5x3
-            return dimension1 * (5 / 3);
+            return dimension2 * (5 / 3);
         } else {
             return false;
         }
