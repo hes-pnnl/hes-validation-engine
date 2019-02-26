@@ -684,6 +684,9 @@ let validationRules = {
             return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
         }
     },
+    skylight_solar_screen: function(value) {
+        return new Validation(TypeRules._bool(value), BLOCKER);
+    },
     skylight_method: function(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
@@ -715,16 +718,16 @@ let validationRules = {
     /*
      * zone_window
      */
-    solar_screen_front: function(value) {
+    window_solar_screen_front: function(value) {
         return new Validation(TypeRules._bool(value), BLOCKER);
     },
-    solar_screen_back: function(value) {
+    window_solar_screen_back: function(value) {
         return new Validation(TypeRules._bool(value), BLOCKER);
     },
-    solar_screen_right: function(value) {
+    window_solar_screen_right: function(value) {
         return new Validation(TypeRules._bool(value), BLOCKER);
     },
-    solar_screen_left: function(value) {
+    window_solar_screen_left: function(value) {
         return new Validation(TypeRules._bool(value), BLOCKER);
     },
     window_area_front: function(value) {
