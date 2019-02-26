@@ -715,6 +715,18 @@ let validationRules = {
     /*
      * zone_window
      */
+    solar_screen_front: function(value) {
+        return new Validation(TypeRules._bool(value), BLOCKER);
+    },
+    solar_screen_back: function(value) {
+        return new Validation(TypeRules._bool(value), BLOCKER);
+    },
+    solar_screen_right: function(value) {
+        return new Validation(TypeRules._bool(value), BLOCKER);
+    },
+    solar_screen_left: function(value) {
+        return new Validation(TypeRules._bool(value), BLOCKER);
+    },
     window_area_front: function(value) {
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
         let wallArea = this._get_wall_area_front_back();
