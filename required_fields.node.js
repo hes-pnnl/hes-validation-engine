@@ -25,7 +25,9 @@ module.exports = function (homeValues) {
         wall_construction_same : mandatoryMessage,
         window_construction_same : mandatoryMessage
     };
-
+    
+    const trueOptions = [1, '1', true];
+    const falseOptions = [0, '0', false];
     let positions = [];
 
     //////////////////////////////////////////////////////////////////////////////
@@ -36,9 +38,9 @@ module.exports = function (homeValues) {
      * About conitional validations
      */
     //If blower door test conducted, require envelope_leakage, else air_sealing_present
-    if (homeValues['blower_door_test'] === '1') {
+    if (trueOptions.indexOf(homeValues['blower_door_test']) > -1) {
         requiredFields['envelope_leakage'] = 'Air Leakage Rate is required if a Blower Door test was conducted';
-    } else if (homeValues['blower_door_test'] === '0') {
+    } else if (falseOptions.indexOf(homeValues['blower_door_test']) > -1) {
         requiredFields['air_sealing_present'] = 'This information is required if a Blower Door test was not conducted';
     }
 
@@ -89,10 +91,10 @@ module.exports = function (homeValues) {
     }
     //If wall construction is same on all sides, only require one side
     let mandatoryWallMessage = 'Wall assembly is a mandatory wall field';
-    if (homeValues['wall_construction_same'] === '1' || homeValues['wall_construction_same'] === 1) {
+    if (trueOptions.indexOf(homeValues['wall_construction_same']) > -1) {
         requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
         //otherwise check them based on position
-    } else if (homeValues['wall_construction_same'] === '0' || homeValues['wall_construction_same'] === 0) {
+    } else if (falseOptions.indexOf(homeValues['wall_construction_same']) > -1) {
         if (homeValues['shape'] === 'rectangle') {
             positions = ['front', 'back', 'right', 'left'];
         } else {
@@ -131,9 +133,9 @@ module.exports = function (homeValues) {
     let mandatoryWindowMessage = 'This is a required window field';
     let windowSpecsKnownMessage = 'Window specs are required if known';
     let windowSpecsUnknownMessage = 'Required if window specs unknown';
-    if (homeValues['window_construction_same'] === '1' || homeValues['window_construction_same'] === 1) {
+    if (trueOptions.indexOf(homeValues['window_construction_same']) > -1) {
         positions = ['front'];
-    } else if (homeValues['window_construction_same'] === '0' || homeValues['window_construction_same'] === 0) {
+    } else if (falseOptions.indexOf(homeValues['window_construction_same']) > -1) {
         positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
     }
     for (let position of positions) {
