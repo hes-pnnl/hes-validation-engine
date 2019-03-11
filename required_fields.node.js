@@ -26,8 +26,8 @@ module.exports = function (homeValues) {
         window_construction_same : mandatoryMessage
     };
     
-    const trueOptions = [1, '1', true];
-    const falseOptions = [0, '0', false];
+    const trueOptions = [1, '1', true, 'true'];
+    const falseOptions = [0, '0', false, 'false'];
     let positions = [];
 
     //////////////////////////////////////////////////////////////////////////////
