@@ -2,6 +2,22 @@
  * required_fields.node.js - Validates that required home audit fields have a value.
  */
 
+/**
+ * Casts string to matching boolean, or null if no exact match
+ * @param {string|int|bool|null} value
+ */
+function castBool(value) {
+    const trueOptions = [1, '1', true, 'true'];
+    const falseOptions = [0, '0', false, 'false'];
+    if(trueOptions.indexOf(value) > -1) {
+        return true;
+    } else if(falseOptions.indexOf(value) > -1) {
+        return false;
+    } else {
+        return null;
+    }
+}
+
 module.exports = function (homeValues) {
     let mandatoryMessage = "Missing value for mandatory field";
     // Define values that are always required
@@ -26,8 +42,6 @@ module.exports = function (homeValues) {
         window_construction_same : mandatoryMessage
     };
     
-    const trueOptions = [1, '1', true, 'true'];
-    const falseOptions = [0, '0', false, 'false'];
     let positions = [];
 
     //////////////////////////////////////////////////////////////////////////////
@@ -38,9 +52,9 @@ module.exports = function (homeValues) {
      * About conitional validations
      */
     //If blower door test conducted, require envelope_leakage, else air_sealing_present
-    if (trueOptions.indexOf(homeValues['blower_door_test']) > -1) {
+    if (castBool(homeValues['blower_door_test'])) {
         requiredFields['envelope_leakage'] = 'Air Leakage Rate is required if a Blower Door test was conducted';
-    } else if (falseOptions.indexOf(homeValues['blower_door_test']) > -1) {
+    } else if (castBool(homeValues['blower_door_test']) === false) {
         requiredFields['air_sealing_present'] = 'This information is required if a Blower Door test was not conducted';
     }
 
@@ -91,10 +105,10 @@ module.exports = function (homeValues) {
     }
     //If wall construction is same on all sides, only require one side
     let mandatoryWallMessage = 'Wall assembly is a mandatory wall field';
-    if (trueOptions.indexOf(homeValues['wall_construction_same']) > -1) {
+    if (castBool(homeValues['wall_construction_same'])) {
         requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
         //otherwise check them based on position
-    } else if (falseOptions.indexOf(homeValues['wall_construction_same']) > -1) {
+    } else if (castBool(homeValues['wall_construction_same']) === false) {
         if (homeValues['shape'] === 'rectangle') {
             positions = ['front', 'back', 'right', 'left'];
         } else {
@@ -133,9 +147,9 @@ module.exports = function (homeValues) {
     let mandatoryWindowMessage = 'This is a required window field';
     let windowSpecsKnownMessage = 'Window specs are required if known';
     let windowSpecsUnknownMessage = 'Required if window specs unknown';
-    if (trueOptions.indexOf(homeValues['window_construction_same']) > -1) {
+    if (castBool(homeValues['window_construction_same'])) {
         positions = ['front'];
-    } else if (falseOptions.indexOf(homeValues['window_construction_same']) > -1) {
+    } else if (castBool(homeValues['window_construction_same']) === false) {
         positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
     }
     for (let position of positions) {
