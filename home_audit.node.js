@@ -892,7 +892,7 @@ let validationRules = {
     },
     _heating_efficiency_method: function(value, num) {
         if(value && (_homeValues['heating_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
-            return new Validation('Efficiency method should not be set if heating type is "none" or empty', ERROR); 
+            return new Validation('Efficiency method should not be set if heating type is "none" or empty', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
@@ -937,14 +937,14 @@ let validationRules = {
     },
 
     cooling_efficiency_method_1: function(value) {
-        return this._cooling_efficiency_method(value);
+        return this._cooling_efficiency_method(value, 1);
     },
     cooling_efficiency_method_2: function(value) {
-        return this._cooling_efficiency_method(value);
+        return this._cooling_efficiency_method(value, 2);
     },
-    _cooling_efficiency_method: function(value) {
+    _cooling_efficiency_method: function(value, num) {
         if(value && (_homeValues['cooling_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
-            return new Validation('Efficiency method should not be set if cooling type is "none" or empty', ERROR); 
+            return new Validation('Efficiency method should not be set if cooling type is "none" or empty', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
