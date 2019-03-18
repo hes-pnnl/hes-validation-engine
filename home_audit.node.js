@@ -717,21 +717,25 @@ let validationRules = {
     window_area_front: function(value) {
         //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
         let wallArea = this._get_wall_area_front_back();
-        return this._window_area(value, wallArea);
+        return this._window_area(value, wallArea, 'front');
     },
     window_area_back: function(value) {
         let wallArea = this._get_wall_area_front_back();
-        return this._window_area(value, wallArea);
+        return this._window_area(value, wallArea, 'back');
     },
     window_area_right: function(value) {
         let wallArea = this._get_wall_area_left_right();
-        return this._window_area(value, wallArea);
+        return this._window_area(value, wallArea, 'right');
     },
     window_area_left: function(value) {
         let wallArea = this._get_wall_area_left_right();
-        return this._window_area(value, wallArea);
+        return this._window_area(value, wallArea, 'left');
     },
-    _window_area: function(value, wallArea) {
+    _window_area: function(value, wallArea, side) {
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
         if (value > 999 || value < 0) {
             //Windows have API max area of 999
             return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
@@ -742,66 +746,82 @@ let validationRules = {
     },
 
     window_method_front: function(value) {
-        return this._window_method(value);
+        return this._window_method(value, 'front');
     },
     window_method_back: function(value) {
-        return this._window_method(value);
+        return this._window_method(value, 'back');
     },
     window_method_right: function(value) {
-        return this._window_method(value);
+        return this._window_method(value, 'right');
     },
     window_method_left: function(value) {
-        return this._window_method(value);
+        return this._window_method(value, 'left');
     },
-    _window_method: function(value) {
+    _window_method: function(value, side) {
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
 
     window_code_front: function(value) {
-        return this._window_code(value);
+        return this._window_code(value, 'front');
     },
     window_code_back: function(value) {
-        return this._window_code(value);
+        return this._window_code(value, 'back');
     },
     window_code_right: function(value) {
-        return this._window_code(value);
+        return this._window_code(value, 'right');
     },
     window_code_left: function(value) {
-        return this._window_code(value);
+        return this._window_code(value, 'left');
     },
-    _window_code: function(value) {
+    _window_code: function(value, side) {
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
         return new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER);
     },
 
     window_u_value_front: function(value) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, 'front');
     },
     window_u_value_back: function(value) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, 'back');
     },
     window_u_value_right: function(value) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, 'right');
     },
     window_u_value_left: function(value) {
-        return this._window_u_value(value);
+        return this._window_u_value(value, 'left');
     },
-    _window_u_value: function(value) {
+    _window_u_value: function(value, side) {
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
     },
 
     window_shgc_front: function(value) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, 'front');
     },
     window_shgc_back: function(value) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, 'back');
     },
     window_shgc_right: function(value) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, 'left');
     },
     window_shgc_left: function(value) {
-        return this._window_shgc(value);
+        return this._window_shgc(value, 'left');
     },
-    _window_shgc: function(value) {
+    _window_shgc: function(value, side) {
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     },
 
@@ -809,18 +829,22 @@ let validationRules = {
      * zone_wall
      */
     wall_assembly_code_front: function(value) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, 'front');
     },
     wall_assembly_code_back: function(value) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, 'back');
     },
     wall_assembly_code_right: function(value) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, 'right');
     },
     wall_assembly_code_left: function(value) {
-        return this._wall_assembly_code(value);
+        return this._wall_assembly_code(value, 'left');
     },
-    _wall_assembly_code: function(value) {
+    _wall_assembly_code: function(value, side) {
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
         return new Validation(TypeRules._string(value, 20, wallAssemblyCode), BLOCKER);
     },
 
@@ -1163,7 +1187,20 @@ let validationRules = {
  * CONDITION FUNCTIONS
  ***********************
  */
-
+    /**
+     * Checks that entered value is on a valid wall
+     * @param value
+     * @param {string} side
+     */
+    _is_valid_wall_side: function(value, side) {
+        if(_homeValues.shape === 'town_house' && value) {
+            const validSides = _homeValues.town_house_walls ? _homeValues.town_house_walls.split('_') : [];
+            if(validSides.indexOf(side) === -1) {
+                return new Validation('Home value entered is on invalid wall.  Please only use walls '+validSides.join(', '), ERROR);
+            }
+        }
+    },
+    
     /**
      * Validation for installation years
      * @param {int} minYear the minimum year the API will accept
