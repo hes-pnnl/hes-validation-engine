@@ -1196,7 +1196,10 @@ let validationRules = {
         if(_homeValues.shape === 'town_house' && value) {
             const validSides = _homeValues.town_house_walls ? _homeValues.town_house_walls.split('_') : [];
             if(validSides.indexOf(side) === -1) {
-                return new Validation('Home value entered is on invalid wall.  Please only use walls '+validSides.join(', '), ERROR);
+                return new Validation(
+                    'Values may not be defined for common/interior walls of a townhouse. Please only set values for exterior walls: '+validSides.join(', '),
+                    ERROR
+                );
             }
         }
     },
