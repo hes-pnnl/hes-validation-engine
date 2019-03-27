@@ -382,6 +382,26 @@ const heatingFuelOptions = [
     'pellet_wood'
 ];
 
+const furnaceAndBoiler = [
+    'central_furnace',
+    'wall_furnace',
+    'boiler'
+];
+
+const heatingFuelToType = {
+    'natural_gas': furnaceAndBoiler,
+    'lpg': furnaceAndBoiler,
+    'fuel_oil': furnaceAndBoiler,
+    'electric': furnaceAndBoiler.concat([
+        'heat_pump',
+        'mini_split',
+        'gchp',
+        'baseboard'
+    ]),
+    'cord_wood': 'wood_stove',
+    'pellet_wood': 'wood_stove',
+};
+
 const coolingTypeOptions = [
     'none',
     'packaged_dx',
@@ -882,8 +902,9 @@ let validationRules = {
             return new Validation(message, ERROR);
         }
         if(heatingOrCooling === HEATING) {
-            if ((value === 'wood_stove' && ['cord_wood', 'pellet_wood'].indexOf(_homeValues['heating_fuel_'+num]) === -1) ||
-                (value !== 'wood_stove' && ['cord_wood', 'pellet_wood'].indexOf(_homeValues['heating_fuel_'+num]) > -1)) {
+            if(!_homeValues['heating_fuel_'+num]) {
+                return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
+            } else if (heatingFuelToType[_homeValues['heating_fuel_'+num]].indexOf(value) === -1) {
                 return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
             }
         }
@@ -1121,6 +1142,9 @@ let validationRules = {
     hot_water_fuel: function(value) {
         if((_homeValues.hot_water_type === 'tankless_coil' || _homeValues.hot_water_type === 'indirect') && value) {
             return new Validation('Fuel is only used if type is set to storage or heat pump', ERROR);
+        }
+        if(_homeValues.hot_water_type === 'heat_pump' && value !== 'electric') {
+            return new Validation('Fuel must be electric if type is heat pump', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
     },
