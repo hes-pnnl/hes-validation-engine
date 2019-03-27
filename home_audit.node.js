@@ -1212,7 +1212,7 @@ let validationRules = {
      */
     _installation_year: function(value, minYear) {
         if(parseInt(value) >= minYear) {
-            return new Validation(TypeRules._int(value, parseInt(_homeValues.year_built), (new Date()).getFullYear()), ERROR);
+            return new Validation(isNaN(_homeValues.year_built) ? null : TypeRules._int(value, parseInt(_homeValues.year_built)), (new Date()).getFullYear()), ERROR);
         } else {
             return new Validation(TypeRules._int(value, minYear, (new Date()).getFullYear()), BLOCKER);
         }
