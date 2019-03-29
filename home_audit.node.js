@@ -707,7 +707,7 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
     skylight_code: function(value) {
-        return new Validation(TypeRules._string(value, 20, windowAndSkylightCode, BLOCKER));
+        return new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER);
     },
     skylight_u_value: function(value) {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
@@ -723,7 +723,7 @@ let validationRules = {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
     },
     skylight_code_2: function(value) {
-        return new Validation(TypeRules._string(value, 20, windowAndSkylightCode, BLOCKER));
+        return new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER);
     },
     skylight_u_value_2: function(value) {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
