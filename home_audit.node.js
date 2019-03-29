@@ -1235,12 +1235,19 @@ let validationRules = {
      * @return {Validation}
      */
     _installation_year: function(value, minYear) {
-        if(parseInt(value) >= minYear) {
-            return new Validation(isNaN(_homeValues.year_built) ? null : TypeRules._int(value, parseInt(_homeValues.year_built)), (new Date()).getFullYear()), ERROR);
-        } else {
-            return new Validation(TypeRules._int(value, minYear, (new Date()).getFullYear()), BLOCKER);
+        const thisYear = (new Date()).getFullYear();
+        let errorLevel = BLOCKER;
+
+        // If the installation year is greater than the minimum the API can accept, and the year_built field has been
+        // set, then instead of a BLOCKER based on the API's restrictions, we create an ERROR-level validation requiring
+        // the installation not to have happened before the home was built.
+        if(value >= minYear && _homeValues.year_built > 0) {
+            minYear = _homeValues.year_built;
+            errorLevel = ERROR;
         }
+        return new Validation(TypeRules._int(value, minYear, thisYear), errorLevel);
     },
+
     /*
      * Gets footprint area for skylight area validations
      */
