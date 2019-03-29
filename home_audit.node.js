@@ -735,7 +735,6 @@ let validationRules = {
      * zone_window
      */
     window_area_front: function(value) {
-        //return TypeRules._int(value, 10, wall_area); TODO: Make this an ignorable warning
         let wallArea = this._get_wall_area_front_back();
         return this._window_area(value, wallArea, 'front');
     },
