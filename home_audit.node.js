@@ -642,7 +642,7 @@ let validationRules = {
         } else {
             const checkFootprint = this._check_footprint();
             if(checkFootprint) {
-                return new new Validation(checkFootprint, BLOCKER);
+                return new Validation(checkFootprint, BLOCKER);
             }
             //This is a blocker case and will prevent saving
             return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
