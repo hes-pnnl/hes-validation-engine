@@ -2,8 +2,8 @@ let TypeRules = {
 
     /**
      * @param {*} value
-     * @param {float=} min
-     * @param {float=} max
+     * @param {Number=} min
+     * @param {Number=} max
      */
     _int: function(value, min, max) {
         if (value != parseInt(value)) {
@@ -16,8 +16,8 @@ let TypeRules = {
 
     /**
      * @param {*} value
-     * @param {float=} min
-     * @param {float=} max
+     * @param {Number=} min
+     * @param {Number=} max
      */
     _float: function(value, min, max) {
         if (value != parseFloat(value)) {
@@ -87,8 +87,8 @@ let TypeRules = {
     /**
      * Adapted from https://stackoverflow.com/a/6178341/1288633
      * @param {*} value
-     * @param {int|null} min Minimum valid date as ms since Unix epoch
-     * @param {int|null} max Maximum valid date as ms since Unix epoch
+     * @param {int=} min Minimum valid date as ms since Unix epoch
+     * @param {int=} max Maximum valid date as ms since Unix epoch
      */
     _date: function(value, min, max) {
         // First check for the pattern
