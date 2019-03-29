@@ -831,7 +831,7 @@ let validationRules = {
         return this._window_shgc(value, 'back');
     },
     window_shgc_right: function(value) {
-        return this._window_shgc(value, 'left');
+        return this._window_shgc(value, 'right');
     },
     window_shgc_left: function(value) {
         return this._window_shgc(value, 'left');
