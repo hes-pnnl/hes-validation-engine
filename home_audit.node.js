@@ -1033,20 +1033,18 @@ let validationRules = {
     },
     _duct_location: function(value) {
         if (ductType.indexOf(value) > -1) {
-            let ductTypes = ['cond_space'];
+            let allowableDuctTypes = ['cond_space'];
             let roofTypes = [_homeValues.roof_type_1, _homeValues.roof_type_2];
             let foundTypes = [_homeValues.foundation_type_1, _homeValues.foundation_type_2];
-            roofTypes.forEach(function(type) {
-                if (type === 'vented_attic') {
-                    ductTypes.push('uncond_attic');
-                }
+            if(roofTypes.indexOf('vented_attic') > -1){
+                allowableDuctTypes.push('uncond_attic');
             });
             foundTypes.forEach(function(type) {
                 if (type === 'uncond_basement' || type === 'unvented_crawl' || type === 'vented_crawl') {
-                    ductTypes.push(type);
+                    allowableDuctTypes.push(type);
                 }
             });
-            if (ductType.indexOf(value) === -1) {
+            if (allowableDuctTypes.indexOf(value) === -1) {
                 return new Validation(value + ' was defined for this duct location, but the home definition does not contain any such space.', ERROR);
             }
         } else {
