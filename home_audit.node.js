@@ -1038,7 +1038,7 @@ let validationRules = {
             let foundTypes = [_homeValues.foundation_type_1, _homeValues.foundation_type_2];
             if(roofTypes.indexOf('vented_attic') > -1){
                 allowableDuctTypes.push('uncond_attic');
-            });
+            }
             foundTypes.forEach(function(type) {
                 if (type === 'uncond_basement' || type === 'unvented_crawl' || type === 'vented_crawl') {
                     allowableDuctTypes.push(type);
