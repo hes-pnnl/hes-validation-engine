@@ -751,16 +751,12 @@ let validationRules = {
         return this._window_area(value, wallArea, 'left');
     },
     _window_area: function(value, wallArea, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
         if (value > 999 || value < 0) {
             //Windows have API max area of 999
-            return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
+            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 999), BLOCKER));
         }
         if (wallArea) {
-            return new Validation(TypeRules._float(value, 0, wallArea), ERROR);
+            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, wallArea), ERROR));
         }
     },
 
@@ -777,11 +773,7 @@ let validationRules = {
         return this._window_method(value, 'left');
     },
     _window_method: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER));
     },
 
     window_code_front: function(value) {
@@ -797,11 +789,7 @@ let validationRules = {
         return this._window_code(value, 'left');
     },
     _window_code: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER));
     },
 
     window_u_value_front: function(value) {
@@ -817,11 +805,7 @@ let validationRules = {
         return this._window_u_value(value, 'left');
     },
     _window_u_value: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0.01, 5), BLOCKER));
     },
 
     window_shgc_front: function(value) {
@@ -837,11 +821,7 @@ let validationRules = {
         return this._window_shgc(value, 'left');
     },
     _window_shgc: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 1), BLOCKER));
     },
 
     /*
@@ -860,11 +840,7 @@ let validationRules = {
         return this._wall_assembly_code(value, 'left');
     },
     _wall_assembly_code: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._string(value, 20, wallAssemblyCode), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._string(value, 20, wallAssemblyCode), BLOCKER));
     },
 
     /*
@@ -912,27 +888,27 @@ let validationRules = {
     },
 
     heating_type_1: function(value) {
-        return this._heating_and_cooling_types(value, 1, HEATING);
+        return this._get_system_validation(value, 1, this._heating_and_cooling_types(value, 1, HEATING));
     },
     heating_type_2: function(value) {
-        return this._heating_and_cooling_types(value, 2, HEATING);
+        return this._get_system_validation(value, 2, this._heating_and_cooling_types(value, 2, HEATING));
     },
 
     heating_fuel_1: function(value) {
-        return this._heating_fuel(value);
+        return this._get_system_validation(value, 1, this._heating_fuel(value));
     },
     heating_fuel_2: function(value) {
-        return this._heating_fuel(value);
+        return this._get_system_validation(value, 2, this._heating_fuel(value));
     },
     _heating_fuel: function(value) {
         return new Validation(TypeRules._string(value, 100, heatingFuelOptions), BLOCKER);
     },
 
     heating_efficiency_method_1: function(value) {
-        return this._heating_efficiency_method(value, 1);
+        return this._get_system_validation(value, 1, this._heating_efficiency_method(value, 1));
     },
     heating_efficiency_method_2: function(value) {
-        return this._heating_efficiency_method(value, 2);
+        return this._get_system_validation(value, 2, this._heating_efficiency_method(value, 2));
     },
     _heating_efficiency_method: function(value, num) {
         if(value && (_homeValues['heating_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
@@ -942,17 +918,17 @@ let validationRules = {
     },
 
     heating_year_1: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 1, this._installation_year(value, 1970));
     },
     heating_year_2: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 2, this._installation_year(value, 1970));
     },
 
     heating_efficiency_1: function(value) {
-        return this._heating_efficiency(_homeValues.heating_type_1, value);
+        return this._get_system_validation(value, 1, this._heating_efficiency(_homeValues.heating_type_1, value));
     },
     heating_efficiency_2: function(value) {
-        return this._heating_efficiency(_homeValues.heating_type_2, value);
+        return this._get_system_validation(value, 2, this._heating_efficiency(_homeValues.heating_type_2, value));
     },
     _heating_efficiency: function(type, value) {
         let min, max;
@@ -974,17 +950,17 @@ let validationRules = {
      * hvac_cooling
      */
     cooling_type_1: function(value) {
-        return this._heating_and_cooling_types(value, 1, COOLING);
+        return this._get_system_validation(value, 1, this._heating_and_cooling_types(value, 1, COOLING));
     },
     cooling_type_2: function(value) {
-        return this._heating_and_cooling_types(value, 2, COOLING);
+        return this._get_system_validation(value, 2, this._heating_and_cooling_types(value, 2, COOLING));
     },
 
     cooling_efficiency_method_1: function(value) {
-        return this._cooling_efficiency_method(value, 1);
+        return this._get_system_validation(value, 1, this._cooling_efficiency_method(value, 1));
     },
     cooling_efficiency_method_2: function(value) {
-        return this._cooling_efficiency_method(value, 2);
+        return this._get_system_validation(value, 2, this._cooling_efficiency_method(value, 2));
     },
     _cooling_efficiency_method: function(value, num) {
         if(value && (_homeValues['cooling_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
@@ -994,17 +970,17 @@ let validationRules = {
     },
 
     cooling_year_1: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 1, this._installation_year(value, 1970));
     },
     cooling_year_2: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 2, this._installation_year(value, 1970));
     },
 
     cooling_efficiency_1: function(value) {
-        return this._cooling_efficiency(value);
+        return this._get_system_validation(value, 1, this._cooling_efficiency(value));
     },
     cooling_efficiency_2: function(value) {
-        return this._cooling_efficiency(value);
+        return this._get_system_validation(value, 2, this._cooling_efficiency(value));
     },
     _cooling_efficiency: function(value) {
         return new Validation(TypeRules._float(value, 8, 40), BLOCKER);
@@ -1014,22 +990,22 @@ let validationRules = {
      * hvac_distribution
      */
     duct_location_1_1: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 1, 1, this._duct_location(value));
     },
     duct_location_2_1: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 1, 2, this._duct_location(value));
     },
     duct_location_3_1: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 1, 3, this._duct_location(value));
     },
     duct_location_1_2: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 2, 1, this._duct_location(value));
     },
     duct_location_2_2: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 2, 2, this._duct_location(value));
     },
     duct_location_3_2: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 2, 3, this._duct_location(value));
     },
     _duct_location: function(value) {
         if (ductType.indexOf(value) > -1) {
@@ -1081,47 +1057,47 @@ let validationRules = {
     },
 
     duct_insulated_1_1: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 1, 1);
     },
     duct_insulated_2_1: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 1, 2);
     },
     duct_insulated_3_1: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 1, 3);
     },
     duct_insulated_1_2: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 2, 1);
     },
     duct_insulated_2_2: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 2, 2);
     },
     duct_insulated_3_2: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 2, 3);
     },
-    _duct_insulated: function(value) {
-        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
+    _duct_insulated: function(value, sys, duct) {
+        return this._get_duct_validation(value, sys, duct, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
     },
 
     duct_sealed_1_1: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 1, 1);
     },
     duct_sealed_2_1: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 1, 2);
     },
     duct_sealed_3_1: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 1, 3);
     },
     duct_sealed_1_2: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 2, 1);
     },
     duct_sealed_2_2: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 2, 2);
     },
     duct_sealed_3_2: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 2, 3);
     },
-    _duct_sealed: function(value) {
-        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
+    _duct_sealed: function(value, sys, duct) {
+        return this._get_duct_validation(value, sys, duct, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
     },
 
     /*
@@ -1223,6 +1199,90 @@ let validationRules = {
                 );
             }
         }
+    },
+    
+    /**
+     * Get validations for wall values, ensuring wall is valid
+     * @param value
+     * @param {string} side
+     * @param {Validation} validation
+     */
+    _get_wall_validation: function(value, side, validation) {
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if ((validation && validation['type'] !== BLOCKER)) {
+            return validation;
+        }
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
+        return validation;
+    },
+    
+    /**
+     * Checks that entered value is on a valid hvac
+     * @param value
+     * @param {int} num
+     */
+    _is_servicing_system: function(value, num) {
+        if(_homeValues['hvac_fraction_'+num] === 0 && value) {
+            return new Validation(
+                'Values may not be defined for system that do not service any area of the home. Please only set values for hvacs with hvac fraction > 0',
+                ERROR
+            );
+        }
+    },
+    
+    /**
+     * Checks that entered value is on a valid hvac
+     * @param value
+     * @param {int} sys
+     * @param {int} duct
+     */
+    _is_servicing_duct: function(value, sys, duct) {
+        if(_homeValues['duct_fraction_'+duct+'_'+sys] === 0 && value) {
+            return new Validation(
+                'Values may not be defined for ducts that do not service any area of the home. Please only set values for ducts with duct fraction > 0',
+                ERROR
+            );
+        }
+    },
+    
+    /**
+     * Get validations for wall values, ensuring wall is valid
+     * @param value
+     * @param {string} side
+     * @param {Validation} validation
+     */
+    _get_system_validation: function(value, num, validation) {
+        const invalidSystem = this._is_servicing_system(value, num);
+        if ((validation && validation['type'] !== BLOCKER)) {
+            return validation;
+        }
+        if (invalidSystem && invalidSystem['message']) {
+            return invalidSystem;
+        }
+        return validation;
+    },
+    
+    /**
+     * Get validations for wall values, ensuring wall is valid
+     * @param value
+     * @param {string} side
+     * @param {Validation} validation
+     */
+    _get_duct_validation: function(value, sys, duct, validation) {
+        const invalidSystem = this._is_servicing_system(value, sys);
+        if ((validation && validation['type'] !== BLOCKER)) {
+            return validation;
+        }
+        if (invalidSystem && invalidSystem['message']) {
+            return invalidSystem;
+        }
+        const invalidDuct = this._get_system_validation(value, sys, duct);
+        if (invalidDuct && invalidDuct['message']) {
+            return invalidDuct;
+        }
+        return validation;
     },
     
     /**
