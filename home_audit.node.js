@@ -987,8 +987,8 @@ let validationRules = {
         return this._cooling_efficiency_method(value, 2);
     },
     _cooling_efficiency_method: function(value, num) {
-        if(value && (_homeValues['cooling_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
-            return new Validation('Efficiency method should not be set if cooling type is "none" or empty', ERROR);
+        if(value && ['none', 'dec'].indexOf(_homeValues['cooling_type_'+num]) > -1  || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
+            return new Validation('Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
