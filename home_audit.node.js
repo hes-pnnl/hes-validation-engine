@@ -935,9 +935,9 @@ let validationRules = {
         return this._heating_efficiency_method(value, 2);
     },
     _heating_efficiency_method: function(value, num) {
-        const noEfficiencyMethod = ['baseboard', 'central_furnace', 'wood_stove', 'none'];
-        if(value && noEfficiencyMethod.indexOf(_homeValues['heating_type_'+num]) > -1 || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
-            return new Validation('Efficiency method should not be set if heating type is "baseboard", "central furnace", "wood stove", "none", or empty', ERROR);
+        const noEfficiencyMethod = ['baseboard', 'wood_stove', 'none'];
+        if(value && noEfficiencyMethod.indexOf(_homeValues['heating_type_'+num]) > -1 || (_homeValues['heating_type_'+num] === 'central_furnace' && _homeValues['heating_fuel_'+num] === 'electric') || TypeRules._is_empty(_homeValues['heating_type_'+num])) {
+            return new Validation('Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
     },
@@ -988,7 +988,7 @@ let validationRules = {
         return this._cooling_efficiency_method(value, 2);
     },
     _cooling_efficiency_method: function(value, num) {
-        if(value && ['none', 'dec'].indexOf(_homeValues['cooling_type_'+num]) > -1  || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
+        if(value && ['none', 'dec'].indexOf(_homeValues['cooling_type_'+num]) > -1  || TypeRules._is_empty(_homeValues['cooling_type_'+num])) {
             return new Validation('Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty', ERROR);
         }
         return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
