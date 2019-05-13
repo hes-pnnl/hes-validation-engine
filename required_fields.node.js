@@ -124,7 +124,10 @@ module.exports = function (homeValues) {
     //Require window area per required walls
     positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
     for (let position of positions) {
-        requiredFields['window_area_'+position] = 'Window area '+position+' is required';
+        // Only check for actual window positions in event of incorrect town_house_walls entry
+        if(['front', 'back', 'right', 'left'].indexOf(position) > -1) {
+            requiredFields['window_area_'+position] = 'Window area '+position+' is required';
+        }
     }
 
     /*
@@ -153,12 +156,14 @@ module.exports = function (homeValues) {
         positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
     }
     for (let position of positions) {
-        requiredFields['window_method_'+position] = mandatoryWindowMessage;
-        if (homeValues['window_method_'+position] === 'code') {
-            requiredFields['window_code_'+position] = windowSpecsKnownMessage;
-        } else if (homeValues['window_method_'+position] === 'custom') {
-            requiredFields['window_u_value_'+position] = windowSpecsUnknownMessage;
-            requiredFields['window_shgc_'+position] = windowSpecsUnknownMessage;
+        if(['front', 'back', 'right', 'left'].indexOf(position) > -1) {
+            requiredFields['window_method_'+position] = mandatoryWindowMessage;
+            if (homeValues['window_method_'+position] === 'code') {
+                requiredFields['window_code_'+position] = windowSpecsKnownMessage;
+            } else if (homeValues['window_method_'+position] === 'custom') {
+                requiredFields['window_u_value_'+position] = windowSpecsUnknownMessage;
+                requiredFields['window_shgc_'+position] = windowSpecsUnknownMessage;
+            }
         }
     }
 
