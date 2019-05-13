@@ -697,10 +697,10 @@ let validationRules = {
         let footprintArea = this._get_footprint_area();
         if(value > 300 || value < 0) {
             //Skylights have API max of 300
-            return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
+            return new Validation(TypeRules._int(value, 0, 300), BLOCKER);
         }
         if(footprintArea) {
-            return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
+            return new Validation(TypeRules._int(value, 0, footprintArea), ERROR);
         }
     },
     skylight_method: function(value) {
@@ -753,14 +753,14 @@ let validationRules = {
     _window_area: function(value, wallArea, side) {
         if (value > 999 || value < 0) {
             //Windows have API max area of 999
-            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 999), BLOCKER));
+            return this._get_wall_validation(value, side, new Validation(TypeRules._int(value, 0, 999), BLOCKER));
         }
         const invalidWall = this._is_valid_wall_side(value, side);
         if (invalidWall && invalidWall['message']) {
             return invalidWall;
         }
         if (wallArea) {
-            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, wallArea), ERROR));
+            return this._get_wall_validation(value, side, new Validation(TypeRules._int(value, 0, wallArea), ERROR));
         }
     },
 
