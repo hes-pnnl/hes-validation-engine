@@ -700,7 +700,7 @@ let validationRules = {
             return new Validation(TypeRules._int(value, 0, 300), BLOCKER);
         }
         if(footprintArea) {
-            return new Validation(TypeRules._int(value, 0, footprintArea), ERROR);
+            return new Validation(TypeRules._int(value, 0, footprintArea), BLOCKER);
         }
     },
     skylight_method: function(value) {
@@ -760,7 +760,7 @@ let validationRules = {
             return invalidWall;
         }
         if (wallArea) {
-            return this._get_wall_validation(value, side, new Validation(TypeRules._int(value, 0, wallArea), ERROR));
+            return this._get_wall_validation(value, side, new Validation(TypeRules._int(value, 0, wallArea), BLOCKER));
         }
     },
 
