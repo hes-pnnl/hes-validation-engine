@@ -755,6 +755,10 @@ let validationRules = {
             //Windows have API max area of 999
             return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 999), BLOCKER));
         }
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
         if (wallArea) {
             return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, wallArea), ERROR));
         }
@@ -863,28 +867,31 @@ let validationRules = {
      */
     _heating_and_cooling_types: function(value, num, heatingOrCooling) {
         const oppSystem = heatingOrCooling === HEATING ? COOLING : HEATING;
-        const currLower = heatingOrCooling.charAt(0).toLowerCase() + heatingOrCooling.slice(1);
-        const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
-        if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
-            if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
-                return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
-            }
-            if(['gchp', 'mini_split'].indexOf(value) > -1 && _homeValues[currLower+'_efficiency_method_'+num] === 'shipment_weighted') {
-                return new Validation('Invalid Efficiency Method for GCHP and Mini-Split Types', ERROR);
-            }
-        } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
-            let message = heatingOrCooling + ' Type is required if there is no ' + oppSystem + ' Type';
-            return new Validation(message, ERROR);
-        }
-        if(heatingOrCooling === HEATING) {
-            if(!_homeValues['heating_fuel_'+num]) {
-                return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
-            } else if (heatingFuelToType[_homeValues['heating_fuel_'+num]].indexOf(value) === -1) {
-                return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
-            }
-        }
         const validTypeOptions = heatingOrCooling === HEATING ? heatingTypeOptions : coolingTypeOptions;
-        return new Validation(TypeRules._string(value, 100, validTypeOptions), BLOCKER);
+        const blocker = new Validation(TypeRules._string(value, 100, validTypeOptions), BLOCKER);
+        if(!blocker['message']) {
+            const currLower = heatingOrCooling.charAt(0).toLowerCase() + heatingOrCooling.slice(1);
+            const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
+            if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
+                if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
+                    return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
+                }
+                if(['gchp', 'mini_split'].indexOf(value) > -1 && _homeValues[currLower+'_efficiency_method_'+num] === 'shipment_weighted') {
+                    return new Validation('Invalid Efficiency Method for GCHP and Mini-Split Types', ERROR);
+                }
+            } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
+                let message = heatingOrCooling + ' Type is required if there is no ' + oppSystem + ' Type';
+                return new Validation(message, ERROR);
+            }
+            if(heatingOrCooling === HEATING) {
+                if(!_homeValues['heating_fuel_'+num]) {
+                    return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
+                } else if (!heatingFuelToType[_homeValues['heating_fuel_'+num]]) {
+                    return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
+                }
+            }
+        }
+        return blocker;
     },
 
     heating_type_1: function(value) {
@@ -911,10 +918,11 @@ let validationRules = {
         return this._get_system_validation(value, 2, this._heating_efficiency_method(value, 2));
     },
     _heating_efficiency_method: function(value, num) {
-        if(value && (_homeValues['heating_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
+        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        if(!blocker['message'] && value && (_homeValues['heating_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
             return new Validation('Efficiency method should not be set if heating type is "none" or empty', ERROR);
         }
-        return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        return blocker;
     },
 
     heating_year_1: function(value) {
@@ -963,10 +971,11 @@ let validationRules = {
         return this._get_system_validation(value, 2, this._cooling_efficiency_method(value, 2));
     },
     _cooling_efficiency_method: function(value, num) {
-        if(value && (_homeValues['cooling_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
+        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        if(!blocker['message'] && value && (_homeValues['cooling_type_'+num] === 'none' || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
             return new Validation('Efficiency method should not be set if cooling type is "none" or empty', ERROR);
         }
-        return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        return blocker;
     },
 
     cooling_year_1: function(value) {
@@ -1104,28 +1113,33 @@ let validationRules = {
      * systems_hot_water
      */
     hot_water_category: function(value) {
-        if([_homeValues['heating_type_1'], _homeValues['heating_type_2'], _homeValues['cooling_type_1'], _homeValues['cooling_type_2']].indexOf('boiler') === -1 && value === 'combined') {
+        const blocker = new Validation(TypeRules._string(value, 20, ['unit', 'combined']), BLOCKER);
+        if(!blocker['message'] && [_homeValues['heating_type_1'], _homeValues['heating_type_2'], _homeValues['cooling_type_1'], _homeValues['cooling_type_2']].indexOf('boiler') === -1 && value === 'combined') {
             return new Validation("Must have a boiler for combined hot water category", ERROR);
         }
-        return new Validation(TypeRules._string(value, 20, ['unit', 'combined']), BLOCKER);
+        return blocker;
     },
     hot_water_type: function(value) {
         return new Validation(TypeRules._string(value, 20, hotWaterType), BLOCKER);
     },
     hot_water_fuel: function(value) {
-        if((_homeValues.hot_water_type === 'tankless_coil' || _homeValues.hot_water_type === 'indirect') && value) {
-            return new Validation('Fuel is only used if type is set to storage or heat pump', ERROR);
+        const blocker = new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
+        if(!blocker['message']) {
+            if((_homeValues.hot_water_type === 'tankless_coil' || _homeValues.hot_water_type === 'indirect') && value) {
+                return new Validation('Fuel is only used if type is set to storage or heat pump', ERROR);
+            }
+            if(_homeValues.hot_water_type === 'heat_pump' && value !== 'electric') {
+                return new Validation('Fuel must be electric if type is heat pump', ERROR);
+            }
         }
-        if(_homeValues.hot_water_type === 'heat_pump' && value !== 'electric') {
-            return new Validation('Fuel must be electric if type is heat pump', ERROR);
-        }
-        return new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
+        return blocker;
     },
     hot_water_efficiency_method: function(value) {
-        if(['heat_pump', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
+        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        if(!blocker['message'] && ['heat_pump', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
             return new Validation('Invalid Efficiency Method for entered Hot Water Type', ERROR);
         }
-        return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        return blocker;
     },
     hot_water_year: function(value) {
         return this._installation_year(value, 1972);
