@@ -201,7 +201,7 @@ module.exports = function (homeValues) {
         if (ductTypes.indexOf(homeValues['heating_type_'+system]) > -1  ||
             ductTypes.indexOf(homeValues['cooling_type_'+system]) > -1)
         {
-            requiredFields['duct_fraction_1_'+system] = 'Duct percentange is required when they exist';
+            requiredFields['duct_fraction_1_'+system] = 'Duct percentage is required when they exist';
         }
         let ductPercent = (parseInt(homeValues['duct_fraction_1_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_2_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_3_'+system]) || 0 );
         if(ductPercent === 100) {
