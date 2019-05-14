@@ -511,7 +511,7 @@ let validationRules = {
         if(checkFootprint) {
             return new Validation(checkFootprint, BLOCKER);
         }
-        return new Validation(TypeRules._float(value, 250, 25000), BLOCKER);
+        return new Validation(TypeRules._int(value, 250, 25000), BLOCKER);
     },
     orientation: function(value) {
         return new Validation(TypeRules._string(value, 20, orientationArray), BLOCKER);
@@ -561,7 +561,7 @@ let validationRules = {
             }
         } else {
             //This is a blocker case and will prevent saving
-            return new Validation(TypeRules._float(value, 1, 25000), BLOCKER);
+            return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
         }
     },
 
@@ -645,7 +645,7 @@ let validationRules = {
                 return new Validation(checkFootprint, BLOCKER);
             }
             //This is a blocker case and will prevent saving
-            return new Validation(TypeRules._float(value, 1, 25000), BLOCKER);
+            return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
         }
     },
 
@@ -700,7 +700,7 @@ let validationRules = {
             return new Validation(TypeRules._float(value, 0, 300), BLOCKER);
         }
         if(footprintArea) {
-            return new Validation(TypeRules._float(value, 0, footprintArea), ERROR);
+            return new Validation(TypeRules._float(value, 0, footprintArea), BLOCKER);
         }
     },
     skylight_method: function(value) {
@@ -753,14 +753,14 @@ let validationRules = {
     _window_area: function(value, wallArea, side) {
         if (value > 999 || value < 0) {
             //Windows have API max area of 999
-            return new Validation(TypeRules._float(value, 0, 999), BLOCKER);
+            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 999), BLOCKER));
         }
         const invalidWall = this._is_valid_wall_side(value, side);
         if (invalidWall && invalidWall['message']) {
             return invalidWall;
         }
         if (wallArea) {
-            return new Validation(TypeRules._float(value, 0, wallArea), ERROR);
+            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, wallArea), BLOCKER));
         }
     },
 
@@ -777,11 +777,7 @@ let validationRules = {
         return this._window_method(value, 'left');
     },
     _window_method: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER));
     },
 
     window_code_front: function(value) {
@@ -797,11 +793,7 @@ let validationRules = {
         return this._window_code(value, 'left');
     },
     _window_code: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._string(value, 20, windowAndSkylightCode), BLOCKER));
     },
 
     window_u_value_front: function(value) {
@@ -817,11 +809,7 @@ let validationRules = {
         return this._window_u_value(value, 'left');
     },
     _window_u_value: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0.01, 5), BLOCKER));
     },
 
     window_shgc_front: function(value) {
@@ -837,11 +825,7 @@ let validationRules = {
         return this._window_shgc(value, 'left');
     },
     _window_shgc: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 1), BLOCKER));
     },
 
     /*
@@ -860,11 +844,7 @@ let validationRules = {
         return this._wall_assembly_code(value, 'left');
     },
     _wall_assembly_code: function(value, side) {
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
-        }
-        return new Validation(TypeRules._string(value, 20, wallAssemblyCode), BLOCKER);
+        return this._get_wall_validation(value, side, new Validation(TypeRules._string(value, 20, wallAssemblyCode), BLOCKER));
     },
 
     /*
@@ -887,74 +867,80 @@ let validationRules = {
      */
     _heating_and_cooling_types: function(value, num, heatingOrCooling) {
         const oppSystem = heatingOrCooling === HEATING ? COOLING : HEATING;
-        const currLower = heatingOrCooling.charAt(0).toLowerCase() + heatingOrCooling.slice(1);
-        const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
-        if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
-            if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
-                return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
-            }
-            if(['gchp', 'mini_split'].indexOf(value) > -1 && _homeValues[currLower+'_efficiency_method_'+num] === 'shipment_weighted') {
-                return new Validation('Invalid Efficiency Method for GCHP and Mini-Split Types', ERROR);
-            }
-        } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
-            let message = heatingOrCooling + ' Type is required if there is no ' + oppSystem + ' Type';
-            return new Validation(message, ERROR);
-        }
-        if(heatingOrCooling === HEATING) {
-            if(!_homeValues['heating_fuel_'+num]) {
-                return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
-            } else if (!heatingFuelToType[_homeValues['heating_fuel_'+num]]) {
-                return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
-            }
-        }
         const validTypeOptions = heatingOrCooling === HEATING ? heatingTypeOptions : coolingTypeOptions;
-        return new Validation(TypeRules._string(value, 100, validTypeOptions), BLOCKER);
+        const blocker = new Validation(TypeRules._string(value, 100, validTypeOptions), BLOCKER);
+        if(!blocker['message']) {
+            const currLower = heatingOrCooling.charAt(0).toLowerCase() + heatingOrCooling.slice(1);
+            const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
+            if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
+                if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
+                    return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
+                }
+                if(['gchp', 'mini_split'].indexOf(value) > -1 && _homeValues[currLower+'_efficiency_method_'+num] === 'shipment_weighted') {
+                    return new Validation('Invalid Efficiency Method for GCHP and Mini-Split Types', ERROR);
+                }
+            } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
+                let message = heatingOrCooling + ' Type is required if there is no ' + oppSystem + ' Type';
+                return new Validation(message, ERROR);
+            }
+            if(heatingOrCooling === HEATING) {
+                if(!_homeValues['heating_fuel_'+num]) {
+                    return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
+                } else if (!heatingFuelToType[_homeValues['heating_fuel_'+num]]) {
+                    return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
+                }
+            }
+        }
+        return blocker;
     },
 
     heating_type_1: function(value) {
-        return this._heating_and_cooling_types(value, 1, HEATING);
+        return this._get_system_validation(value, 1, this._heating_and_cooling_types(value, 1, HEATING));
     },
     heating_type_2: function(value) {
-        return this._heating_and_cooling_types(value, 2, HEATING);
+        return this._get_system_validation(value, 2, this._heating_and_cooling_types(value, 2, HEATING));
     },
 
     heating_fuel_1: function(value) {
-        return this._heating_fuel(value);
+        return this._get_system_validation(value, 1, this._heating_fuel(value));
     },
     heating_fuel_2: function(value) {
-        return this._heating_fuel(value);
+        return this._get_system_validation(value, 2, this._heating_fuel(value));
     },
     _heating_fuel: function(value) {
         return new Validation(TypeRules._string(value, 100, heatingFuelOptions), BLOCKER);
     },
 
     heating_efficiency_method_1: function(value) {
-        return this._heating_efficiency_method(value, 1);
+        return this._get_system_validation(value, 1, this._heating_efficiency_method(value, 1));
     },
     heating_efficiency_method_2: function(value) {
-        return this._heating_efficiency_method(value, 2);
+        return this._get_system_validation(value, 2, this._heating_efficiency_method(value, 2));
     },
     _heating_efficiency_method: function(value, num) {
-        const isHeatingTypeWithoutEfficiencyMethod = ['baseboard', 'wood_stove', 'none'].indexOf(_homeValues['heating_type_'+num]) > -1;
-        const isElectricFurnace = _homeValues['heating_type_'+num] === 'central_furnace' && _homeValues['heating_fuel_'+num] === 'electric';
-        if(!TypeRules._is_empty(value) && (isHeatingTypeWithoutEfficiencyMethod || isElectricFurnace || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
-            return new Validation('Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty', ERROR);
+        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        if(!blocker['message']) {
+            const isHeatingTypeWithoutEfficiencyMethod = ['baseboard', 'wood_stove', 'none'].indexOf(_homeValues['heating_type_'+num]) > -1;
+            const isElectricFurnace = _homeValues['heating_type_'+num] === 'central_furnace' && _homeValues['heating_fuel_'+num] === 'electric';
+            if(!TypeRules._is_empty(value) && (isHeatingTypeWithoutEfficiencyMethod || isElectricFurnace || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
+                return new Validation('Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty', ERROR);
+            }
         }
-        return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        return blocker;
     },
 
     heating_year_1: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 1, this._installation_year(value, 1970));
     },
     heating_year_2: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 2, this._installation_year(value, 1970));
     },
 
     heating_efficiency_1: function(value) {
-        return this._heating_efficiency(_homeValues.heating_type_1, value);
+        return this._get_system_validation(value, 1, this._heating_efficiency(_homeValues.heating_type_1, value));
     },
     heating_efficiency_2: function(value) {
-        return this._heating_efficiency(_homeValues.heating_type_2, value);
+        return this._get_system_validation(value, 2, this._heating_efficiency(_homeValues.heating_type_2, value));
     },
     _heating_efficiency: function(type, value) {
         let min, max;
@@ -976,37 +962,40 @@ let validationRules = {
      * hvac_cooling
      */
     cooling_type_1: function(value) {
-        return this._heating_and_cooling_types(value, 1, COOLING);
+        return this._get_system_validation(value, 1, this._heating_and_cooling_types(value, 1, COOLING));
     },
     cooling_type_2: function(value) {
-        return this._heating_and_cooling_types(value, 2, COOLING);
+        return this._get_system_validation(value, 2, this._heating_and_cooling_types(value, 2, COOLING));
     },
 
     cooling_efficiency_method_1: function(value) {
-        return this._cooling_efficiency_method(value, 1);
+        return this._get_system_validation(value, 1, this._cooling_efficiency_method(value, 1));
     },
     cooling_efficiency_method_2: function(value) {
-        return this._cooling_efficiency_method(value, 2);
+        return this._get_system_validation(value, 2, this._cooling_efficiency_method(value, 2));
     },
     _cooling_efficiency_method: function(value, num) {
-        if(!TypeRules._is_empty(value) && (['none', 'dec'].indexOf(_homeValues['cooling_type_'+num]) > -1  || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
-            return new Validation('Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty', ERROR);
+        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        if(!blocker['message']) {
+            if(!TypeRules._is_empty(value) && (['none', 'dec'].indexOf(_homeValues['cooling_type_'+num]) > -1  || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
+                return new Validation('Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty', ERROR);
+            }
         }
-        return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        return blocker;
     },
 
     cooling_year_1: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 1, this._installation_year(value, 1970));
     },
     cooling_year_2: function(value) {
-        return this._installation_year(value, 1970);
+        return this._get_system_validation(value, 2, this._installation_year(value, 1970));
     },
 
     cooling_efficiency_1: function(value) {
-        return this._cooling_efficiency(value);
+        return this._get_system_validation(value, 1, this._cooling_efficiency(value));
     },
     cooling_efficiency_2: function(value) {
-        return this._cooling_efficiency(value);
+        return this._get_system_validation(value, 2, this._cooling_efficiency(value));
     },
     _cooling_efficiency: function(value) {
         return new Validation(TypeRules._float(value, 8, 40), BLOCKER);
@@ -1016,22 +1005,22 @@ let validationRules = {
      * hvac_distribution
      */
     duct_location_1_1: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 1, 1, this._duct_location(value));
     },
     duct_location_2_1: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 1, 2, this._duct_location(value));
     },
     duct_location_3_1: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 1, 3, this._duct_location(value));
     },
     duct_location_1_2: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 2, 1, this._duct_location(value));
     },
     duct_location_2_2: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 2, 2, this._duct_location(value));
     },
     duct_location_3_2: function(value) {
-        return this._duct_location(value);
+        return this._get_duct_validation(value, 2, 3, this._duct_location(value));
     },
     _duct_location: function(value) {
         if (ductType.indexOf(value) > -1) {
@@ -1083,75 +1072,80 @@ let validationRules = {
     },
 
     duct_insulated_1_1: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 1, 1);
     },
     duct_insulated_2_1: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 1, 2);
     },
     duct_insulated_3_1: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 1, 3);
     },
     duct_insulated_1_2: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 2, 1);
     },
     duct_insulated_2_2: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 2, 2);
     },
     duct_insulated_3_2: function(value) {
-        return this._duct_insulated(value);
+        return this._duct_insulated(value, 2, 3);
     },
-    _duct_insulated: function(value) {
-        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
+    _duct_insulated: function(value, sys, duct) {
+        return this._get_duct_validation(value, sys, duct, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
     },
 
     duct_sealed_1_1: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 1, 1);
     },
     duct_sealed_2_1: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 1, 2);
     },
     duct_sealed_3_1: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 1, 3);
     },
     duct_sealed_1_2: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 2, 1);
     },
     duct_sealed_2_2: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 2, 2);
     },
     duct_sealed_3_2: function(value) {
-        return this._duct_sealed(value);
+        return this._duct_sealed(value, 2, 3);
     },
-    _duct_sealed: function(value) {
-        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
+    _duct_sealed: function(value, sys, duct) {
+        return this._get_duct_validation(value, sys, duct, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
     },
 
     /*
      * systems_hot_water
      */
     hot_water_category: function(value) {
-        if([_homeValues['heating_type_1'], _homeValues['heating_type_2'], _homeValues['cooling_type_1'], _homeValues['cooling_type_2']].indexOf('boiler') === -1 && value === 'combined') {
+        const blocker = new Validation(TypeRules._string(value, 20, ['unit', 'combined']), BLOCKER);
+        if(!blocker['message'] && [_homeValues['heating_type_1'], _homeValues['heating_type_2'], _homeValues['cooling_type_1'], _homeValues['cooling_type_2']].indexOf('boiler') === -1 && value === 'combined') {
             return new Validation("Must have a boiler for combined hot water category", ERROR);
         }
-        return new Validation(TypeRules._string(value, 20, ['unit', 'combined']), BLOCKER);
+        return blocker;
     },
     hot_water_type: function(value) {
         return new Validation(TypeRules._string(value, 20, hotWaterType), BLOCKER);
     },
     hot_water_fuel: function(value) {
-        if((_homeValues.hot_water_type === 'tankless_coil' || _homeValues.hot_water_type === 'indirect') && value) {
-            return new Validation('Fuel is only used if type is set to storage or heat pump', ERROR);
+        const blocker = new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
+        if(!blocker['message']) {
+            if((_homeValues.hot_water_type === 'tankless_coil' || _homeValues.hot_water_type === 'indirect') && value) {
+                return new Validation('Fuel is only used if type is set to storage or heat pump', ERROR);
+            }
+            if(_homeValues.hot_water_type === 'heat_pump' && value !== 'electric') {
+                return new Validation('Fuel must be electric if type is heat pump', ERROR);
+            }
         }
-        if(_homeValues.hot_water_type === 'heat_pump' && value !== 'electric') {
-            return new Validation('Fuel must be electric if type is heat pump', ERROR);
-        }
-        return new Validation(TypeRules._string(value, 20, hotWaterFuel), BLOCKER);
+        return blocker;
     },
     hot_water_efficiency_method: function(value) {
-        if(['heat_pump', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
+        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        if(!blocker['message'] && ['heat_pump', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
             return new Validation('Invalid Efficiency Method for entered Hot Water Type', ERROR);
         }
-        return new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        return blocker;
     },
     hot_water_year: function(value) {
         return this._installation_year(value, 1972);
@@ -1225,6 +1219,90 @@ let validationRules = {
                 );
             }
         }
+    },
+    
+    /**
+     * Get validations for wall values, ensuring wall is valid
+     * @param value
+     * @param {string} side
+     * @param {Validation} validation
+     */
+    _get_wall_validation: function(value, side, validation) {
+        if ((validation && validation['type'] === BLOCKER)) {
+            return validation;
+        }
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
+        }
+        return validation;
+    },
+    
+    /**
+     * Checks that entered value is on a valid hvac
+     * @param value
+     * @param {int} num
+     */
+    _is_servicing_system: function(value, num) {
+        if([0, null].indexOf(_homeValues['hvac_fraction_'+num]) > -1 && !TypeRules._is_empty(value)) {
+            return new Validation(
+                'Values may not be defined for system that do not service any area of the home. Please only set values for hvacs with hvac fraction > 0',
+                ERROR
+            );
+        }
+    },
+    
+    /**
+     * Checks that entered value is on a valid hvac
+     * @param value
+     * @param {int} sys
+     * @param {int} duct
+     */
+    _is_servicing_duct: function(value, sys, duct) {
+        if([0, null].indexOf(_homeValues['duct_fraction_'+duct+'_'+sys]) > -1 && !TypeRules._is_empty(value)) {
+            return new Validation(
+                'Values may not be defined for ducts that do not service any area of the home. Please only set values for ducts with duct fraction > 0',
+                ERROR
+            );
+        }
+    },
+    
+    /**
+     * Get validations for wall values, ensuring wall is valid
+     * @param value
+     * @param {string} side
+     * @param {Validation} validation
+     */
+    _get_system_validation: function(value, num, validation) {
+        if ((validation && validation['type'] === BLOCKER)) {
+            return validation;
+        }
+        const invalidSystem = this._is_servicing_system(value, num);
+        if (invalidSystem && invalidSystem['message']) {
+            return invalidSystem;
+        }
+        return validation;
+    },
+    
+    /**
+     * Get validations for wall values, ensuring wall is valid
+     * @param value
+     * @param {string} side
+     * @param {Validation} validation
+     */
+    _get_duct_validation: function(value, sys, duct, validation) {
+        if ((validation && validation['type'] === BLOCKER)) {
+            return validation;
+        }
+        const invalidSystem = this._is_servicing_system(value, sys);
+        if (invalidSystem && invalidSystem['message']) {
+            return invalidSystem;
+        }
+        const invalidDuct = this._is_servicing_duct(value, sys, duct);
+        if (invalidDuct && invalidDuct['message']) {
+            return invalidDuct;
+        }
+        return validation;
     },
     
     /**
