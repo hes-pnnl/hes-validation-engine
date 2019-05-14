@@ -1244,7 +1244,7 @@ let validationRules = {
      * @param {int} num
      */
     _is_servicing_system: function(value, num) {
-        if(_homeValues['hvac_fraction_'+num] === 0 && !TypeRules._is_empty(value)) {
+        if([0, null].indexOf(_homeValues['hvac_fraction_'+num]) > -1 && !TypeRules._is_empty(value)) {
             return new Validation(
                 'Values may not be defined for system that do not service any area of the home. Please only set values for hvacs with hvac fraction > 0',
                 ERROR
@@ -1259,7 +1259,7 @@ let validationRules = {
      * @param {int} duct
      */
     _is_servicing_duct: function(value, sys, duct) {
-        if(_homeValues['duct_fraction_'+duct+'_'+sys] === 0 && !TypeRules._is_empty(value)) {
+        if([0, null].indexOf(_homeValues['duct_fraction_'+duct+'_'+sys]) > -1 && !TypeRules._is_empty(value)) {
             return new Validation(
                 'Values may not be defined for ducts that do not service any area of the home. Please only set values for ducts with duct fraction > 0',
                 ERROR
