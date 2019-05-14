@@ -511,7 +511,7 @@ let validationRules = {
         if(checkFootprint) {
             return new Validation(checkFootprint, BLOCKER);
         }
-        return new Validation(TypeRules._float(value, 250, 25000), BLOCKER);
+        return new Validation(TypeRules._int(value, 250, 25000), BLOCKER);
     },
     orientation: function(value) {
         return new Validation(TypeRules._string(value, 20, orientationArray), BLOCKER);
@@ -561,7 +561,7 @@ let validationRules = {
             }
         } else {
             //This is a blocker case and will prevent saving
-            return new Validation(TypeRules._float(value, 1, 25000), BLOCKER);
+            return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
         }
     },
 
@@ -645,7 +645,7 @@ let validationRules = {
                 return new Validation(checkFootprint, BLOCKER);
             }
             //This is a blocker case and will prevent saving
-            return new Validation(TypeRules._float(value, 1, 25000), BLOCKER);
+            return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
         }
     },
 
