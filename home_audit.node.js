@@ -1228,10 +1228,10 @@ let validationRules = {
      * @param {Validation} validation
      */
     _get_wall_validation: function(value, side, validation) {
-        const invalidWall = this._is_valid_wall_side(value, side);
         if ((validation && validation['type'] === BLOCKER)) {
             return validation;
         }
+        const invalidWall = this._is_valid_wall_side(value, side);
         if (invalidWall && invalidWall['message']) {
             return invalidWall;
         }
