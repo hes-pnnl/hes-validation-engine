@@ -1023,24 +1023,7 @@ let validationRules = {
         return this._get_duct_validation(value, 2, 3, this._duct_location(value));
     },
     _duct_location: function(value) {
-        if (ductType.indexOf(value) > -1) {
-            let allowableDuctTypes = ['cond_space'];
-            let roofTypes = [_homeValues.roof_type_1, _homeValues.roof_type_2];
-            let foundTypes = [_homeValues.foundation_type_1, _homeValues.foundation_type_2];
-            if(roofTypes.indexOf('vented_attic') > -1){
-                allowableDuctTypes.push('uncond_attic');
-            }
-            foundTypes.forEach(function(type) {
-                if (type === 'uncond_basement' || type === 'unvented_crawl' || type === 'vented_crawl') {
-                    allowableDuctTypes.push(type);
-                }
-            });
-            if (allowableDuctTypes.indexOf(value) === -1) {
-                return new Validation(value + ' was defined for this duct location, but the home definition does not contain any such space.', ERROR);
-            }
-        } else {
-            return new Validation(TypeRules._string(value, 20, ductType), BLOCKER);
-        }
+        return new Validation(TypeRules._string(value, 20, ductType), BLOCKER);
     },
 
     duct_fraction_1_1: function(value) {
