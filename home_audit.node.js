@@ -1211,7 +1211,7 @@ let validationRules = {
      * @param {Validation} validation
      */
     _get_wall_validation: function(value, side, validation) {
-        if ((validation && validation['type'] === BLOCKER)) {
+        if ((validation['message'] && validation['type'] === BLOCKER)) {
             return validation;
         }
         const invalidWall = this._is_valid_wall_side(value, side);
@@ -1257,7 +1257,7 @@ let validationRules = {
      * @param {Validation} validation
      */
     _get_system_validation: function(value, num, validation) {
-        if ((validation && validation['type'] === BLOCKER)) {
+        if ((validation['message'] && validation['type'] === BLOCKER)) {
             return validation;
         }
         const invalidSystem = this._is_servicing_system(value, num);
@@ -1274,7 +1274,7 @@ let validationRules = {
      * @param {Validation} validation
      */
     _get_duct_validation: function(value, sys, duct, validation) {
-        if ((validation && validation['type'] === BLOCKER)) {
+        if ((validation['message'] && validation['type'] === BLOCKER)) {
             return validation;
         }
         const invalidSystem = this._is_servicing_system(value, sys);
