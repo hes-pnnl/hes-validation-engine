@@ -2,6 +2,22 @@
  * required_fields.node.js - Validates that required home audit fields have a value.
  */
 
+/**
+ * Casts string to matching boolean, or null if no exact match
+ * @param {string|int|bool|null} value
+ */
+function castBool(value) {
+    const trueOptions = [1, '1', true, 'true'];
+    const falseOptions = [0, '0', false, 'false'];
+    if(trueOptions.indexOf(value) > -1) {
+        return true;
+    } else if(falseOptions.indexOf(value) > -1) {
+        return false;
+    } else {
+        return null;
+    }
+}
+
 module.exports = function (homeValues) {
     let mandatoryMessage = "Missing value for mandatory field";
     // Define values that are always required
@@ -25,7 +41,7 @@ module.exports = function (homeValues) {
         wall_construction_same : mandatoryMessage,
         window_construction_same : mandatoryMessage
     };
-
+    
     let positions = [];
 
     //////////////////////////////////////////////////////////////////////////////
@@ -36,9 +52,9 @@ module.exports = function (homeValues) {
      * About conitional validations
      */
     //If blower door test conducted, require envelope_leakage, else air_sealing_present
-    if (homeValues['blower_door_test'] === '1') {
+    if (castBool(homeValues['blower_door_test'])) {
         requiredFields['envelope_leakage'] = 'Air Leakage Rate is required if a Blower Door test was conducted';
-    } else if (homeValues['blower_door_test'] === '0') {
+    } else if (castBool(homeValues['blower_door_test']) === false) {
         requiredFields['air_sealing_present'] = 'This information is required if a Blower Door test was not conducted';
     }
 
@@ -89,10 +105,10 @@ module.exports = function (homeValues) {
     }
     //If wall construction is same on all sides, only require one side
     let mandatoryWallMessage = 'Wall assembly is a mandatory wall field';
-    if (homeValues['wall_construction_same'] === '1' || homeValues['wall_construction_same'] === 1) {
+    if (castBool(homeValues['wall_construction_same'])) {
         requiredFields['wall_assembly_code_front'] = mandatoryWallMessage;
         //otherwise check them based on position
-    } else if (homeValues['wall_construction_same'] === '0' || homeValues['wall_construction_same'] === 0) {
+    } else if (castBool(homeValues['wall_construction_same']) === false) {
         if (homeValues['shape'] === 'rectangle') {
             positions = ['front', 'back', 'right', 'left'];
         } else {
@@ -108,7 +124,10 @@ module.exports = function (homeValues) {
     //Require window area per required walls
     positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
     for (let position of positions) {
-        requiredFields['window_area_'+position] = 'Window area '+position+' is required';
+        // Only check for actual window positions in event of incorrect town_house_walls entry
+        if(['front', 'back', 'right', 'left'].indexOf(position) > -1) {
+            requiredFields['window_area_'+position] = 'Window area '+position+' is required';
+        }
     }
 
     /*
@@ -131,18 +150,20 @@ module.exports = function (homeValues) {
     let mandatoryWindowMessage = 'This is a required window field';
     let windowSpecsKnownMessage = 'Window specs are required if known';
     let windowSpecsUnknownMessage = 'Required if window specs unknown';
-    if (homeValues['window_construction_same'] === '1' || homeValues['window_construction_same'] === 1) {
+    if (castBool(homeValues['window_construction_same'])) {
         positions = ['front'];
-    } else if (homeValues['window_construction_same'] === '0' || homeValues['window_construction_same'] === 0) {
+    } else if (castBool(homeValues['window_construction_same']) === false) {
         positions = homeValues['town_house_walls'] ? homeValues['town_house_walls'].split('_') : ['front', 'back', 'right', 'left'];
     }
     for (let position of positions) {
-        requiredFields['window_method_'+position] = mandatoryWindowMessage;
-        if (homeValues['window_method_'+position] === 'code') {
-            requiredFields['window_code_'+position] = windowSpecsKnownMessage;
-        } else if (homeValues['window_method_'+position] === 'custom') {
-            requiredFields['window_u_value_'+position] = windowSpecsUnknownMessage;
-            requiredFields['window_shgc_'+position] = windowSpecsUnknownMessage;
+        if(['front', 'back', 'right', 'left'].indexOf(position) > -1) {
+            requiredFields['window_method_'+position] = mandatoryWindowMessage;
+            if (homeValues['window_method_'+position] === 'code') {
+                requiredFields['window_code_'+position] = windowSpecsKnownMessage;
+            } else if (homeValues['window_method_'+position] === 'custom') {
+                requiredFields['window_u_value_'+position] = windowSpecsUnknownMessage;
+                requiredFields['window_shgc_'+position] = windowSpecsUnknownMessage;
+            }
         }
     }
 
@@ -180,7 +201,7 @@ module.exports = function (homeValues) {
         if (ductTypes.indexOf(homeValues['heating_type_'+system]) > -1  ||
             ductTypes.indexOf(homeValues['cooling_type_'+system]) > -1)
         {
-            requiredFields['duct_fraction_1_'+system] = 'Duct percentange is required when they exist';
+            requiredFields['duct_fraction_1_'+system] = 'Duct percentage is required when they exist';
         }
         let ductPercent = (parseInt(homeValues['duct_fraction_1_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_2_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_3_'+system]) || 0 );
         if(ductPercent === 100) {
