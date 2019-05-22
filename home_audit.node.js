@@ -705,7 +705,7 @@ let validationRules = {
         }
     },
     skylight_solar_screen: function(value) {
-        return new Validation(TypeRules._bool(value), BLOCKER);
+        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     skylight_method: function(value) {
         return new Validation(TypeRules._string(value, 20, ['code', 'custom']), BLOCKER);
@@ -739,16 +739,16 @@ let validationRules = {
      * zone_window
      */
     window_solar_screen_front: function(value) {
-        return new Validation(TypeRules._bool(value), BLOCKER);
+        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     window_solar_screen_back: function(value) {
-        return new Validation(TypeRules._bool(value), BLOCKER);
+        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     window_solar_screen_right: function(value) {
-        return new Validation(TypeRules._bool(value), BLOCKER);
+        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     window_solar_screen_left: function(value) {
-        return new Validation(TypeRules._bool(value), BLOCKER);
+        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     window_area_front: function(value) {
         let wallArea = this._get_wall_area_front_back();
