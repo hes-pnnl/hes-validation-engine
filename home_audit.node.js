@@ -717,7 +717,7 @@ let validationRules = {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
     },
     skylight_shgc: function(value) {
-        return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
+        return new Validation(TypeRules._float(value, 0, 1, false), BLOCKER);
     },
 
     skylight_area_2: function(value) {
@@ -733,7 +733,7 @@ let validationRules = {
         return new Validation(TypeRules._float(value, 0.01, 5), BLOCKER);
     },
     skylight_shgc_2: function(value) {
-        return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
+        return new Validation(TypeRules._float(value, 0, 1, false), BLOCKER);
     },
     /*
      * zone_window
@@ -841,7 +841,7 @@ let validationRules = {
         return this._window_shgc(value, 'left');
     },
     _window_shgc: function(value, side) {
-        return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 1), BLOCKER));
+        return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 1, false), BLOCKER));
     },
 
     /*

@@ -18,12 +18,15 @@ let TypeRules = {
      * @param {*} value
      * @param {Number=} min
      * @param {Number=} max
+     * @param {bool} inclusive
      */
-    _float: function(value, min, max) {
+    _float: function(value, min, max, inclusive = true) {
         if (value != parseFloat(value)) {
             return value + " is not a number."
         }
-        if ((undefined !== min && value < min) || (undefined !== max && value > max)) {
+        if (inclusive && (undefined !== min && value < min) || (undefined !== max && value > max)) {
+            return value + " is outside the allowed range (" + min + " - " + max + ")";
+        } else if (!inclusive && (undefined !== min && value <= min) || (undefined !== max && value >= max)) {
             return value + " is outside the allowed range (" + min + " - " + max + ")";
         }
     },
