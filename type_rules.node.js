@@ -25,9 +25,9 @@ let TypeRules = {
         if (value != parseFloat(value)) {
             return value + " is not a number."
         }
-        if (inclusive && (undefined !== min && value < min) || (undefined !== max && value > max)) {
+        if (inclusive && ((undefined !== min && value < min) || (undefined !== max && value > max))) {
             return value + " is outside the allowed range (" + min + " - " + max + ")";
-        } else if (!inclusive && (undefined !== min && value <= min) || (undefined !== max && value >= max)) {
+        } else if (!inclusive && ((undefined !== min && value <= min) || (undefined !== max && value >= max))) {
             return value + " is outside the allowed range (" + min + " - " + max + ")";
         }
     },
