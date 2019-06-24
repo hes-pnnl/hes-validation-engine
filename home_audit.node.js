@@ -392,12 +392,13 @@ const heatingFuelToType = {
     'natural_gas': furnaceAndBoiler,
     'lpg': furnaceAndBoiler,
     'fuel_oil': furnaceAndBoiler,
-    'electric': furnaceAndBoiler.concat([
+    'electric': [
+        'central_furnace',
         'heat_pump',
         'mini_split',
         'gchp',
         'baseboard'
-    ]),
+    ],
     'cord_wood': ['wood_stove'],
     'pellet_wood': ['wood_stove'],
 };
