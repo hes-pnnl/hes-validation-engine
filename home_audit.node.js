@@ -1141,7 +1141,7 @@ let validationRules = {
         return blocker;
     },
     hot_water_efficiency_method: function(value) {
-        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'shipment_weighted']), BLOCKER);
+        const blocker = new Validation(TypeRules._string(value, 20, ['user', 'uef', 'shipment_weighted']), BLOCKER);
         if(!blocker['message'] && ['heat_pump', 'tankless', 'tankless_coil'].indexOf(_homeValues['hot_water_type']) > -1 && value === 'shipment_weighted') {
             return new Validation('Invalid Efficiency Method for entered Hot Water Type', ERROR);
         }
