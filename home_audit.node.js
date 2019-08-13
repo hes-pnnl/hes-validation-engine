@@ -1287,9 +1287,10 @@ let validationRules = {
     },
     
     /**
-     * Get validations for wall values, ensuring wall is valid
+     * Get validations for duct values, ensuring duct is valid
      * @param value
-     * @param {string} side
+     * @param {int} sys
+     * @param {int} duct
      * @param {Validation} validation
      */
     _get_duct_validation: function(value, sys, duct, validation) {
@@ -1304,7 +1305,30 @@ let validationRules = {
         if (invalidDuct && invalidDuct['message']) {
             return invalidDuct;
         }
+        const invalidSpace = this._duct_space_exists(value);
+        if (invalidSpace && invalidSpace['message']) {
+            return invalidSpace;
+        }
         return validation;
+    },
+    
+    /**
+     * Ensure duct is in existing space
+     * @param value
+     */
+    _duct_space_exists: function(value) {
+        const existingSpaces = [
+            _homeValues.foundation_type_1,
+            _homeValues.foundation_type_2,
+            _homeValues.roof_type_1,
+            _homeValues.roof_type_2
+        ];
+        if(existingSpaces.indexOf(value) === -1) {
+            return new Validation(
+                'Ducts may only be set with values in exisiting roof or foundation spaces',
+                ERROR
+            );
+        }
     },
     
     /**
