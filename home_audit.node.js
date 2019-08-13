@@ -1321,6 +1321,7 @@ let validationRules = {
      */
     _duct_space_exists: function(value) {
         const existingSpaces = [
+            'cond_space', // Always a valid duct option
             _homeValues.foundation_type_1,
             _homeValues.foundation_type_2,
             _homeValues.roof_type_1,
