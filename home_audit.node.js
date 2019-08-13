@@ -889,9 +889,12 @@ let validationRules = {
         if(!blocker['message']) {
             const currLower = heatingOrCooling.charAt(0).toLowerCase() + heatingOrCooling.slice(1);
             const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
-            if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1 || ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
-                if(value !== _homeValues[oppLower+'_type_'+num] && _homeValues[oppLower+'_type_'+num] !== 'none' && value !== 'none') {
-                    return new Validation('Heating and Cooling Types must match if they are heat pumps.', ERROR);
+            if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1) {
+                if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1
+                    && ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1
+                    && value !== _homeValues[oppLower+'_type_'+num])
+                {
+                    return new Validation('Heating and Cooling Types must match if they are both heat pumps.', ERROR);
                 }
                 if(['gchp', 'mini_split'].indexOf(value) > -1 && _homeValues[currLower+'_efficiency_method_'+num] === 'shipment_weighted') {
                     return new Validation('Invalid Efficiency Method for GCHP and Mini-Split Types', ERROR);
