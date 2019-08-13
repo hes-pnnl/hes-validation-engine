@@ -1043,7 +1043,11 @@ let validationRules = {
         return this._get_duct_validation(value, 2, 3, this._duct_location(value));
     },
     _duct_location: function(value) {
-        return new Validation(TypeRules._string(value, 20, ductType), BLOCKER);
+        const invalidSpace = new Validation(TypeRules._string(value, 20, ductType), BLOCKER);
+        if (invalidSpace && invalidSpace['message']) {
+            return invalidSpace;
+        }
+        return this._duct_space_exists(value);
     },
 
     duct_fraction_1_1: function(value) {
@@ -1297,7 +1301,7 @@ let validationRules = {
      * @param {Validation} validation
      */
     _get_duct_validation: function(value, sys, duct, validation) {
-        if ((validation['message'] && validation['type'] === BLOCKER)) {
+        if ((validation && validation['message'] && validation['type'] === BLOCKER)) {
             return validation;
         }
         const invalidSystem = this._is_servicing_system(value, sys);
@@ -1308,10 +1312,6 @@ let validationRules = {
         if (invalidDuct && invalidDuct['message']) {
             return invalidDuct;
         }
-        const invalidSpace = this._duct_space_exists(value);
-        if (invalidSpace && invalidSpace['message']) {
-            return invalidSpace;
-        }
         return validation;
     },
     
@@ -1320,14 +1320,20 @@ let validationRules = {
      * @param value
      */
     _duct_space_exists: function(value) {
-        const existingSpaces = [
-            'cond_space', // Always a valid duct option
-            _homeValues.foundation_type_1,
-            _homeValues.foundation_type_2,
-            _homeValues.roof_type_1,
-            _homeValues.roof_type_2
-        ];
-        if(existingSpaces.indexOf(value) === -1) {
+        const ductLocations = ['cond_space', /* Always a valid duct option */];
+        if (_homeValues.foundation_type_1 === 'uncond_basement' || _homeValues.foundation_type_2 === 'uncond_basement') {
+            ductLocations.push('uncond_basement');
+        }
+        if (_homeValues.foundation_type_1 === 'vented_crawl' || _homeValues.foundation_type_2 === 'vented_crawl') {
+            ductLocations.push('vented_crawl');
+        }
+        if (_homeValues.foundation_type_1 === 'unvented_crawl' || _homeValues.foundation_type_2 === 'unvented_crawl') {
+            ductLocations.push('unvented_crawl');
+        }
+        if (_homeValues.roof_type_1 === 'vented_attic' || _homeValues.roof_type_2 === 'vented_attic') {
+            ductLocations.push('uncond_attic');
+        }
+        if(ductLocations.indexOf(value) === -1) {
             return new Validation(
                 'Ducts may only be set with values in exisiting roof or foundation spaces',
                 ERROR
