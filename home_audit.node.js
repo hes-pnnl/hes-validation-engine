@@ -397,7 +397,8 @@ const heatingFuelToType = {
         'heat_pump',
         'mini_split',
         'gchp',
-        'baseboard'
+        'baseboard',
+        'boiler'
     ],
     'cord_wood': ['wood_stove'],
     'pellet_wood': ['wood_stove'],
@@ -889,17 +890,7 @@ let validationRules = {
         if(!blocker['message']) {
             const currLower = heatingOrCooling.charAt(0).toLowerCase() + heatingOrCooling.slice(1);
             const oppLower = oppSystem.charAt(0).toLowerCase() + oppSystem.slice(1);
-            if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1) {
-                if(['heat_pump', 'gchp', 'mini_split'].indexOf(value) > -1
-                    && ['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1
-                    && value !== _homeValues[oppLower+'_type_'+num])
-                {
-                    return new Validation('Heating and Cooling Types must match if they are both heat pumps.', ERROR);
-                }
-                if(['gchp', 'mini_split'].indexOf(value) > -1 && _homeValues[currLower+'_efficiency_method_'+num] === 'shipment_weighted') {
-                    return new Validation('Invalid Efficiency Method for GCHP and Mini-Split Types', ERROR);
-                }
-            } else if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
+            if(value === 'none' && _homeValues[oppLower+'_type_'+num] === 'none') {
                 let message = heatingOrCooling + ' Type is required if there is no ' + oppSystem + ' Type';
                 return new Validation(message, ERROR);
             }
@@ -908,6 +899,23 @@ let validationRules = {
                     return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
                 } else if (heatingFuelToType[_homeValues['heating_fuel_'+num]].indexOf(_homeValues['heating_type_'+num]) === -1) {
                     return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
+                }
+            } else {
+                // If Cooling Type is heat_pump or gchp, Heating Type must match or be wood_stove or none
+                if(['heat_pump', 'gchp'].indexOf(value) > -1) {
+                    if([value, 'wood_stove', 'none'].indexOf(_homeValues[oppLower+'_type_'+num]) === -1) {
+                        return new Validation(_homeValues['heating_type_'+num]+' is not an appropriate heating type with cooling type '+value, ERROR);
+                    }
+                // If Cooling Type is minisplit, Heating Type cannot be heat_pump or gchp
+                } else if('mini_split' === value) {
+                    if(['heat_pump', 'gchp'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
+                        return new Validation(_homeValues['heating_type_'+num]+' is not an appropriate heating type with cooling type '+value, ERROR);
+                    }
+                // If Cooling Type is split_dx, Heating Type cannot be a heat pump
+                } else if('split_dx' === value) {
+                    if(['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
+                        return new Validation(_homeValues[oppLower+'_type_'+num]+' is not an appropriate heating type with cooling type '+value, ERROR);
+                    }
                 }
             }
         }
