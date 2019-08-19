@@ -397,7 +397,8 @@ const heatingFuelToType = {
         'heat_pump',
         'mini_split',
         'gchp',
-        'baseboard'
+        'baseboard',
+        'boiler'
     ],
     'cord_wood': ['wood_stove'],
     'pellet_wood': ['wood_stove'],
