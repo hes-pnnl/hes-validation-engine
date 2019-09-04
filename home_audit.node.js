@@ -916,6 +916,11 @@ let validationRules = {
                     if(['heat_pump', 'gchp', 'mini_split'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
                         return new Validation(_homeValues[oppLower+'_type_'+num]+' is not an appropriate heating type with cooling type '+value, ERROR);
                     }
+                // TODO: The rule below was but in place because dec / gchp combo triggered an error: https://hescore-pnnl-sim-doe2-st.s3.us-west-2.amazonaws.com/st-st-727018/userLayer.inc/OUTPUT
+                } else if('dec' === value) {
+                    if(['gchp'].indexOf(_homeValues[oppLower+'_type_'+num]) > -1) {
+                        return new Validation(_homeValues[oppLower+'_type_'+num]+' is not an appropriate heating type with cooling type '+value, ERROR);
+                    }
                 }
             }
         }
