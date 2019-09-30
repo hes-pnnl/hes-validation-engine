@@ -228,7 +228,7 @@ module.exports = function (homeValues) {
     if (['', 'tankless_coil', 'indirect', null, undefined].indexOf(homeValues['hot_water_type']) === -1) {
         requiredFields['hot_water_fuel'] = 'Required for non-boiler water heaters';
         requiredFields['hot_water_efficiency_method'] = 'Required for non-boiler water heaters';
-        if (homeValues['hot_water_efficiency_method'] === 'user') {
+        if (['user', 'uef'].indexOf(homeValues['hot_water_efficiency_method'])) {
             requiredFields['hot_water_energy_factor'] = mandatoryMessage;
         } else if (homeValues['hot_water_efficiency_method'] === 'shipment_weighted') {
             requiredFields['hot_water_year'] = 'Year Installed is required when energy factor is unknown';
