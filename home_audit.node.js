@@ -958,6 +958,12 @@ let validationRules = {
             if(!TypeRules._is_empty(value) && (isHeatingTypeWithoutEfficiencyMethod || isElectricFurnace || TypeRules._is_empty(_homeValues['heating_type_'+num]))) {
                 return new Validation('Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty', ERROR);
             }
+            if(value === 'shipment_weighted') {
+                // If heating is wall_furnace and not natural_gas, efficiency method must be user
+                if(_homeValues['heating_type_'+num] === 'wall_furnace' && _homeValues['heating_fuel_'+num] !== 'natural_gas') {
+                    return new Validation('Efficiency method must be "user" if heating type "wall_furnace" and fuel is not "natural_gas"', ERROR);
+                }
+            }
         }
         return blocker;
     },
