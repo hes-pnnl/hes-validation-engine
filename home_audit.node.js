@@ -1237,9 +1237,6 @@ let validationRules = {
     contractor_zip_code: function(value) {
         return new Validation(TypeRules._zip(value), ERROR);
     },
-    is_income_eligible_program: function(value) {
-        return new Validation(TypeRules._bool(value), ERROR);
-    },
 
 /*
  * CONDITION FUNCTIONS

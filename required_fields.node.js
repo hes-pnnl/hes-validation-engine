@@ -257,8 +257,7 @@ module.exports = function (homeValues) {
     if (homeValues['improvement_installation_start_date'] ||
         homeValues['improvement_installation_completion_date'] ||
         homeValues['contractor_business_name'] ||
-        homeValues['contractor_zip_code'] ||
-        homeValues['is_income_eligible_program'] )
+        homeValues['contractor_zip_code'])
     {
         requiredFields['improvement_installation_start_date'] = mandatoryHPwESMessage;
         requiredFields['improvement_installation_completion_date'] = mandatoryHPwESMessage;
