@@ -869,15 +869,20 @@ let validationRules = {
      * hvac
      */
     hvac_fraction_1: function(value) {
-        return this._hvac_fraction();
+        return this._hvac_fraction(value);
     },
     hvac_fraction_2: function(value) {
-        return this._hvac_fraction();
+        return this._hvac_fraction(value);
     },
-    _hvac_fraction: function() {
+    _hvac_fraction: function(value) {
         const fraction1 = _homeValues.hvac_fraction_1 ? parseFloat(_homeValues.hvac_fraction_1) : 0;
         const fraction2 = _homeValues.hvac_fraction_2 ? parseFloat(_homeValues.hvac_fraction_2) : 0;
-        return new Validation(TypeRules._fraction(fraction1 + fraction2), BLOCKER);
+        const fullPercentCheck = TypeRules._fraction(fraction1 + fraction2);
+        if(fullPercentCheck) {
+            return new Validation(fullPercentCheck, BLOCKER);
+        } else if(TypeRules._float(value, 0, 1)) {
+            return new Validation('Value must be between 0 and 100%', ERROR);
+        }
     },
 
     /*
@@ -1070,28 +1075,36 @@ let validationRules = {
     },
 
     duct_fraction_1_1: function(value) {
-        return this._duct_fraction('1');
+        return this._duct_fraction(value, '1');
     },
     duct_fraction_2_1: function(value) {
-        return this._duct_fraction('1');
+        return this._duct_fraction(value, '1');
     },
     duct_fraction_3_1: function(value) {
-        return this._duct_fraction('1');
+        return this._duct_fraction(value, '1');
     },
     duct_fraction_1_2: function(value) {
-        return this._duct_fraction('2');
+        return this._duct_fraction(value, '2');
     },
     duct_fraction_2_2: function(value) {
-        return this._duct_fraction('2');
+        return this._duct_fraction(value, '2');
     },
     duct_fraction_3_2: function(value) {
-        return this._duct_fraction('2');
+        return this._duct_fraction(value, '2');
     },
-    _duct_fraction: function(c) {
-        if (c === '1') {
-            return new Validation(TypeRules._percent((parseInt(_homeValues.duct_fraction_1_1) || 0) + (parseInt(_homeValues.duct_fraction_2_1) || 0) + (parseInt(_homeValues.duct_fraction_3_1) || 0)), BLOCKER);
-        } else if (c === '2') {
-            return new Validation(TypeRules._percent((parseInt(_homeValues.duct_fraction_1_2) || 0) + (parseInt(_homeValues.duct_fraction_2_2) || 0) + (parseInt(_homeValues.duct_fraction_3_2) || 0)), BLOCKER);
+    _duct_fraction: function(value, c) {
+        let fullPercentCheck = '';
+        if(['1', '2'].indexOf(c) > -1) {
+            if (c === '1') {
+                fullPercentCheck = TypeRules._percent((parseInt(_homeValues.duct_fraction_1_1) || 0) + (parseInt(_homeValues.duct_fraction_2_1) || 0) + (parseInt(_homeValues.duct_fraction_3_1) || 0));
+            } else if (c === '2') {
+                fullPercentCheck = TypeRules._percent((parseInt(_homeValues.duct_fraction_1_2) || 0) + (parseInt(_homeValues.duct_fraction_2_2) || 0) + (parseInt(_homeValues.duct_fraction_3_2) || 0));
+            }
+            if(fullPercentCheck) {
+                return new Validation(fullPercentCheck, BLOCKER);
+            } else if(TypeRules._float(value, 0, 100)) {
+                return new Validation('Value must be between 0 and 100', ERROR);
+            }
         } else {
             throw new Error("Unexpected duct " + c);
         }
