@@ -21,7 +21,6 @@ let TypeRules = {
      * @param {bool} inclusive
      */
     _float: function(value, min, max, inclusive = true) {
-        inclusive = true; // TODO: Remove when LBNL Model Updates are pushed
         if (value != parseFloat(value)) {
             return value + " is not a number."
         }
