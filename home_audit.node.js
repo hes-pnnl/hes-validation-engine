@@ -773,10 +773,15 @@ let validationRules = {
             //Windows have API max area of 999
             return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 999), BLOCKER));
         }
-        const invalidWall = this._is_valid_wall_side(value, side);
-        if (invalidWall && invalidWall['message']) {
-            return invalidWall;
+
+        // We don't care if the window is defined on an invalid wall if its area is 0
+        if (value > 0) {
+            const invalidWall = this._is_valid_wall_side(value, side);
+            if (invalidWall && invalidWall['message']) {
+                return invalidWall;
+            }
         }
+
         if (wallArea) {
             return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, wallArea), BLOCKER));
         }
