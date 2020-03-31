@@ -177,14 +177,18 @@ module.exports = function (homeValues) {
         });
     }
     for (let system of ['1', '2']) {
-        if ([null, undefined, ''].indexOf(homeValues['heating_fuel_'+system]) === -1 &&
-            ['', 'none', null, undefined, 'baseboard', 'wood_stove'].indexOf(homeValues['heating_type_'+system]) === -1 &&
-            !(homeValues['heating_fuel_'+system] === 'electric' && homeValues['heating_type_'+system] === 'central_furnace')
+        let heatingType = homeValues['heating_type_'+system];
+        let heatingFuel = homeValues['heating_fuel_'+system];
+        let heatingEfficiencyMethod = homeValues['heating_efficiency_method_'+system];
+
+        if ([null, undefined, ''].includes(heatingFuel) &&
+            ['', 'none', null, undefined, 'baseboard', 'wood_stove'].includes(heatingType) &&
+            !(heatingFuel === 'electric' && ['central_furnace', 'boiler'].includes(heatingType))
         ){
             requiredFields['heating_efficiency_method_'+system] = 'Field is required when Heating Type has variable efficiency';
-            if(homeValues['heating_efficiency_method_'+system] === 'user') {
+            if(heatingEfficiencyMethod === 'user') {
                 requiredFields['heating_efficiency_'+system] = 'Efficiency Value is required when known';
-            } else if(homeValues['heating_efficiency_method_'+system] === 'shipment_weighted') {
+            } else if(heatingEfficiencyMethod === 'shipment_weighted') {
                 requiredFields['heating_year_'+system] = 'Installation year is required when efficiency value is unknown';
             }
         }
@@ -198,7 +202,7 @@ module.exports = function (homeValues) {
         }
         //Require ducts for heating/cooling types with ducts
         let ductTypes = ['central_furnace', 'heat_pump', 'gchp', 'split_dx'];
-        if (ductTypes.indexOf(homeValues['heating_type_'+system]) > -1  ||
+        if (ductTypes.indexOf(heatingType) > -1  ||
             ductTypes.indexOf(homeValues['cooling_type_'+system]) > -1)
         {
             requiredFields['duct_fraction_1_'+system] = 'Duct percentage is required when they exist';
