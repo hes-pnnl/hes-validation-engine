@@ -182,7 +182,7 @@ module.exports = function (homeValues) {
         let heatingEfficiencyMethod = homeValues['heating_efficiency_method_'+system];
 
         if (![null, undefined, ''].includes(heatingFuel) &&
-            ['', 'none', null, undefined, 'baseboard', 'wood_stove'].includes(heatingType) &&
+            !['', 'none', null, undefined, 'baseboard', 'wood_stove'].includes(heatingType) &&
             !(heatingFuel === 'electric' && ['central_furnace', 'boiler'].includes(heatingType))
         ){
             requiredFields['heating_efficiency_method_'+system] = 'Field is required when Heating Type has variable efficiency';
