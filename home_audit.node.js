@@ -774,12 +774,9 @@ let validationRules = {
             return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, 999), BLOCKER));
         }
 
-        // We don't care if the window is defined on an invalid wall if its area is 0
-        if (value > 0) {
-            const invalidWall = this._is_valid_wall_side(value, side);
-            if (invalidWall && invalidWall['message']) {
-                return invalidWall;
-            }
+        const invalidWall = this._is_valid_wall_side(value, side);
+        if (invalidWall && invalidWall['message']) {
+            return invalidWall;
         }
 
         if (wallArea) {
@@ -1253,7 +1250,7 @@ let validationRules = {
      * @param {string} side
      */
     _is_valid_wall_side: function(value, side) {
-        if(_homeValues.shape === 'town_house' && value) {
+        if(_homeValues.shape === 'town_house' && value && parseInt(value) !== 0) {
             const validSides = _homeValues.town_house_walls ? _homeValues.town_house_walls.split('_') : [];
             if(validSides.indexOf(side) === -1) {
                 return new Validation(
