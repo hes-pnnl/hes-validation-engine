@@ -778,7 +778,8 @@ let validationRules = {
             return invalidWall;
         }
         if (wallArea) {
-            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, wallArea), BLOCKER));
+            // NOTE: While the XSD def is inclusive, the wall area check is exclusive
+            return this._get_wall_validation(value, side, new Validation(TypeRules._float(value, 0, wallArea, false), BLOCKER));
         }
     },
 
