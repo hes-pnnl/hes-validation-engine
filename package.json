@@ -1,6 +1,6 @@
 {
     "name": "hes-validation-engine",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Validation Engine for HEScore Project",
     "main": "home_audit.node.js",
     "scripts": {
