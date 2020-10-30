@@ -1181,12 +1181,10 @@ let validationRules = {
     hot_water_energy_factor: function(value) {
         let min, max;
 
-        if (_homeValues.hot_water_type === 'storage') {
+        if (_homeValues.hot_water_type === 'storage' || _homeValues.hot_water_type === 'tankless') {
             [min, max] = [0.45, 1.0];
         } else if (_homeValues.hot_water_type === 'heat_pump') {
             [min, max] = [1, 4];
-        } else if (_homeValues.hot_water_type === 'tankless') {
-            [min, max] = [0.8, 1];
         }
 
         return new Validation(TypeRules._float(value, min, max), BLOCKER);
