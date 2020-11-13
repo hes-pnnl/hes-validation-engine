@@ -1490,7 +1490,7 @@ let validationRules = {
     _check_combined_area: function() {
         let combinedRoofArea = this._get_combined_roof_area();
         let combinedFloorArea = this._get_combined_floor_area();
-        if (combinedRoofArea <= combinedFloorArea * .95) { // Allow 5% error
+        if (combinedRoofArea <= combinedFloorArea * 0.95) { // Allow 5% error
             return "The roof does not cover the floor";
         } else {
             return false;
@@ -1505,8 +1505,13 @@ let validationRules = {
         if (TypeRules._int_or_zero(_homeValues.num_floor_above_grade) === 0) {
             return "This home’s minumum footprint is unknown.  Please enter number of stories.";
         } else {
-            if (footprintArea * .95 >= combinedArea) { // Allow 5% error
-                return "This home’s minimum footprint is approximately "+footprintArea+"sqft, but you have only specified "+combinedArea+"sqft of total "+thisAreaType+". Please adjust any incorrect values. *The footprint is calculated as (<total area> - <conditioned basement area>) / <number of floors>";
+            if ((footprintArea * 0.95 >= combinedArea) || (footprintArea * 2.5 <= combinedArea)) {
+                return `
+                    This home's minimum footprint is approximately ${footprintArea}sqft, but you
+                    have specified ${combinedArea}sqft of total ${thisAreaType}. Please adjust any
+                    incorrect values. *The footprint is calculated as (<total area> -
+                    <conditioned basement area>) / <number of floors>
+                `;
             }
         }
     }
