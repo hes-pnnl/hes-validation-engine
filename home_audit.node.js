@@ -1505,12 +1505,15 @@ let validationRules = {
         if (TypeRules._int_or_zero(_homeValues.num_floor_above_grade) === 0) {
             return "This home’s minumum footprint is unknown.  Please enter number of stories.";
         } else {
-            if ((footprintArea * 0.95 >= combinedArea) || (footprintArea * 2.5 <= combinedArea)) {
+            // Check that combined areas are within reasonable range of footprint
+            const allowedRange = [footprintArea * 0.95, footprintArea * 2.5];
+            if (!((allowedRange[0] < combinedArea) && (allowedRange < expectedRange[1]))) {
                 return `
                     This home's minimum footprint is approximately ${footprintArea}sqft, but you
-                    have specified ${combinedArea}sqft of total ${thisAreaType}. Please adjust any
-                    incorrect values. *The footprint is calculated as (<total area> -
-                    <conditioned basement area>) / <number of floors>
+                    have specified ${combinedArea}sqft of total ${thisAreaType}. The allowed range
+                    is (${Math.ceil(expectedRange[0])}sqft - ${Math.floor(expectedRange[1])}sqft).
+                    Please adjust any incorrect values. *The footprint is calculated as
+                    (<total area> - <conditioned basement area>) / <number of floors>
                 `;
             }
         }
