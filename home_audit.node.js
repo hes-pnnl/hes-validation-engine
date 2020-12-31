@@ -1427,18 +1427,17 @@ let validationRules = {
      * Get projected roof area
      * @param {string} '1' or '2'
      */
-    _get_proj_roof_area: function(value) {
-        const roofArea = TypeRules._int_or_zero(_homeValues['roof_area_'+value]);
-        return _homeValues['roof_type_'+value] === 'cath_ceiling'
-          ? roofArea * Math.cos(30 * (Math.PI/180))
-          : roofArea;
+    _get_proj_roof_area: function(roof_num) {
+        const roofArea = TypeRules._int_or_zero(_homeValues['roof_area_'+roof_num]);
+        return _homeValues['roof_type_'+roof_num] === 'cath_ceiling'
+            ? roofArea * Math.cos(30 * (Math.PI/180))
+            : roofArea;
     },
 
     /*
      * Get combined roof area
      */
     _get_combined_roof_area: function() {
-      console.log('_get_combined_roof_area', this._get_proj_roof_area('1') + this._get_proj_roof_area('2'));
         return this._get_proj_roof_area('1') + this._get_proj_roof_area('2');
     },
 
