@@ -1424,10 +1424,21 @@ let validationRules = {
     },
 
     /*
+     * Get projected roof area
+     * @param {string} '1' or '2'
+     */
+    _get_proj_roof_area: function(roof_num) {
+        const roofArea = TypeRules._int_or_zero(_homeValues['roof_area_'+roof_num]);
+        return _homeValues['roof_type_'+roof_num] === 'cath_ceiling'
+            ? roofArea * Math.cos(30 * (Math.PI/180))
+            : roofArea;
+    },
+
+    /*
      * Get combined roof area
      */
     _get_combined_roof_area: function() {
-        return TypeRules._int_or_zero(_homeValues.roof_area_1) + TypeRules._int_or_zero(_homeValues.roof_area_2);
+        return this._get_proj_roof_area('1') + this._get_proj_roof_area('2');
     },
 
     /*
@@ -1505,8 +1516,16 @@ let validationRules = {
         if (TypeRules._int_or_zero(_homeValues.num_floor_above_grade) === 0) {
             return "This home’s minumum footprint is unknown.  Please enter number of stories.";
         } else {
-            if (footprintArea * .95 >= combinedArea) { // Allow 5% error
-                return "This home’s minimum footprint is approximately "+footprintArea+"sqft, but you have only specified "+combinedArea+"sqft of total "+thisAreaType+". Please adjust any incorrect values. *The footprint is calculated as (<total area> - <conditioned basement area>) / <number of floors>";
+            // Check that combined areas are within reasonable range of footprint
+            const expectedRange = [footprintArea * 0.95, footprintArea * 2.5];
+            if (!((expectedRange[0] < combinedArea) && (combinedArea < expectedRange[1]))) {
+                return `
+                    This home's minimum footprint is approximately ${footprintArea}sqft, but you
+                    have specified ${combinedArea}sqft of total ${thisAreaType}. The allowed range
+                    is (${Math.ceil(expectedRange[0])}sqft - ${Math.floor(expectedRange[1])}sqft).
+                    Please adjust any incorrect values. *The footprint is calculated as
+                    (<total area> - <conditioned basement area>) / <number of floors>
+                `;
             }
         }
     }

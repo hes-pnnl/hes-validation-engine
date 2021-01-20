@@ -6,7 +6,7 @@
  * node home_audit.cli.js '{"solar_electric_capacity_known" : "3"}'
  * > {"solar_electric_capacity_known":"3 is outside the allowed range (0 - 1)"}
  */
-let hes_validation_engine = require('hes-validation-engine');
+let hes_validation_engine = require('./home_audit.node.js');
 let validate_address = hes_validation_engine.validate_address;
 let validate_home_audit = hes_validation_engine.validate_home_audit;
 
