@@ -1428,10 +1428,7 @@ let validationRules = {
      * @param {string} '1' or '2'
      */
     _get_proj_roof_area: function(roof_num) {
-        const roofArea = TypeRules._int_or_zero(_homeValues['roof_area_'+roof_num]);
-        return _homeValues['roof_type_'+roof_num] === 'cath_ceiling'
-            ? roofArea * Math.cos(30 * (Math.PI/180))
-            : roofArea;
+        return TypeRules._int_or_zero(_homeValues['roof_area_'+roof_num]);
     },
 
     /*
