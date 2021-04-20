@@ -526,7 +526,7 @@ let validationRules = {
         return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     envelope_leakage: function(value) {
-        return new Validation(TypeRules._int(value, 0, 25000), BLOCKER);
+        return new Validation(TypeRules._int(value, 0, 25000, false), BLOCKER);
     },
 
     /*
@@ -549,7 +549,7 @@ let validationRules = {
     },
     _roof_area: function(value) {
         //Check that roof area is within legal bounds per API
-        if (TypeRules._int(value, 1, 25000) === undefined) {
+        if (TypeRules._int(value, 4, 25000, false) === undefined) {
             let combinedAreaCheck = this._check_combined_area();
             //Check that roof area is not less than floor area
             if (!combinedAreaCheck) {
@@ -629,7 +629,7 @@ let validationRules = {
     },
     _floor_area: function(value) {
         //Check that floor area is within legal bounds per API
-        if (TypeRules._int(value, 1, 25000) === undefined) {
+        if (TypeRules._int(value, 4, 25000, false) === undefined) {
             let combinedAreaCheck = this._check_combined_area();
             //Check that floor area is not greater than roof area
             if (!combinedAreaCheck) {
@@ -1179,6 +1179,9 @@ let validationRules = {
             }
             if(_homeValues.hot_water_type === 'heat_pump' && value !== 'electric') {
                 return new Validation('Fuel must be electric if type is heat pump', ERROR);
+            }
+            if((_homeValues.hot_water_type === 'tankless') && value === 'fuel_oil') {
+                return new Validation('Fuel oil is not valid for tankless water heaters', ERROR);
             }
         }
         return blocker;
