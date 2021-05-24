@@ -554,7 +554,7 @@ let validationRules = {
             //Check that roof area is not less than floor area
             if (!combinedAreaCheck) {
                 let combinedRoofArea = this._get_combined_roof_area();
-                let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "roof area");
+                let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "roof");
                 //Check that combined areas are consistent with conditioned floor areas
                 if (checkConditionedAreas) {
                     return new Validation(checkConditionedAreas, ERROR);
@@ -634,7 +634,7 @@ let validationRules = {
             //Check that floor area is not greater than roof area
             if (!combinedAreaCheck) {
                 let combinedFloorArea = this._get_combined_floor_area();
-                let checkConditionedAreas = this._check_conditioned_areas(combinedFloorArea, "floor area");
+                let checkConditionedAreas = this._check_conditioned_areas(combinedFloorArea, "floor");
                 //Check that combined areas are consistent with conditioned floor areas
                 if (checkConditionedAreas) {
                     return new Validation(checkConditionedAreas, ERROR);
@@ -1510,6 +1510,8 @@ let validationRules = {
 
     /*
      * Checks that the roof_area and floor_areas are consistent with conditioned footprint areas
+     * @param {number} combinedArea
+     * @param {'roof'|'floor'} thisAreaType
      */
     _check_conditioned_areas: function(combinedArea, thisAreaType) {
         let footprintArea = this._get_footprint_area();
@@ -1517,11 +1519,14 @@ let validationRules = {
             return "This home’s minumum footprint is unknown.  Please enter number of stories.";
         } else {
             // Check that combined areas are within reasonable range of footprint
-            const expectedRange = [footprintArea * 0.95, footprintArea * 2.5];
+            const max = thisAreaType === "roof"
+                ? footprintArea * 2.5 // roof area max
+                : _homeValues.conditioned_floor_area * 1.05; // floor area max
+            const expectedRange = [footprintArea * 0.95, max];
             if (!((expectedRange[0] < combinedArea) && (combinedArea < expectedRange[1]))) {
                 return `
                     This home's minimum footprint is approximately ${footprintArea}sqft, but you
-                    have specified ${combinedArea}sqft of total ${thisAreaType}. The allowed range
+                    have specified ${combinedArea}sqft of total ${thisAreaType} area. The allowed range
                     is (${Math.ceil(expectedRange[0])}sqft - ${Math.floor(expectedRange[1])}sqft).
                     Please adjust any incorrect values. *The footprint is calculated as
                     (<total area> - <conditioned basement area>) / <number of floors>
