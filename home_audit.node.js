@@ -488,7 +488,7 @@ let validationRules = {
         return new Validation(TypeRules._date(value, Date.parse('2010-01-01'), Date.now()), BLOCKER);
     },
     comments: function(value) {
-        return new Validation(TypeRules._string(value, 256), BLOCKER);
+        return new Validation(TypeRules._string(value, 512), BLOCKER);
     },
     //The following two functions are associated with current Walls page
     shape: function(value) {
