@@ -972,6 +972,10 @@ let validationRules = {
                 if(_homeValues['heating_type_'+num] === 'wall_furnace' && _homeValues['heating_fuel_'+num] !== 'natural_gas') {
                     return new Validation('Efficiency method must be "user" if heating type "wall_furnace" and fuel is not "natural_gas"', ERROR);
                 }
+                // HVAC and Water Heater efficiencies must be user when type is mini_split or gchp
+                if(['mini_split', 'gchp'].includes(_homeValues['heating_type_'+num])) {
+                    return new Validation(`Heating efficiency method must be 'user' when type is '${_homeValues['heating_type_'+num]}'`, ERROR);
+                }
             }
         }
         return blocker;
@@ -1027,6 +1031,10 @@ let validationRules = {
         if(!blocker['message']) {
             if(!TypeRules._is_empty(value) && (['none', 'dec'].indexOf(_homeValues['cooling_type_'+num]) > -1  || TypeRules._is_empty(_homeValues['cooling_type_'+num]))) {
                 return new Validation('Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty', ERROR);
+            }
+            // HVAC and Water Heater efficiencies must be user when type is mini_split or gchp
+            if(['mini_split', 'gchp'].includes(_homeValues['cooling_type_'+num]) && value !== 'user') {
+                return new Validation(`Cooling efficiency must be 'user' when type is '${_homeValues['cooling_type_'+num]}'`, ERROR);
             }
         }
         return blocker;
