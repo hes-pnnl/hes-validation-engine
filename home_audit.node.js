@@ -1607,8 +1607,6 @@ function validate_address (homeValues) {
     let mandatoryMessage = "Missing value for mandatory field";
     // Define values that are always required
     let requiredFields = {
-        address : mandatoryMessage,
-        city : mandatoryMessage,
         state : mandatoryMessage,
         zip_code : mandatoryMessage,
         assessment_type : mandatoryMessage,
