@@ -549,7 +549,7 @@ let validationRules = {
     },
     _roof_area: function(value) {
         //Check that roof area is within legal bounds per API
-        if (TypeRules._int(value, 4, 25000, false) === undefined) {
+        if (TypeRules._float(value, 4, 25000, false) === undefined) {
             let combinedAreaCheck = this._check_combined_area();
             //Check that roof area is not less than floor area
             if (!combinedAreaCheck) {
