@@ -466,6 +466,7 @@ let validationRules = {
         return new Validation(TypeRules._string(value), ERROR);
     },
     city: function(value) {
+
         return new Validation(TypeRules._string(value), ERROR);
     },
     state: function(value) {
@@ -1533,11 +1534,30 @@ let validationRules = {
                 `;
             }
         }
+    },
+
+    /*
+     * Checks that if coordinates or address has been added. 
+     * @param {string} value
+     */
+    _require_if_no_coordinates: function(value) {
+        let latLo = _homeValues.latitude_lo;
+        let longLo = _homeValues.longitude_lo;
+        let latHi =  _homeValues.latitude_hi;
+        let longHi = _homeValues.longitude_hi;
+        let latCen = _homeValues.latitude_center;
+        let longCen = _homeValues.longitude_center
+        
+        if((latLo && longLo && latHi && longHi && latCen && longCen) || value){
+            return null;
+        }
+        else{
+            return "Field is required if no cooridnates are provided."
+        }
     }
 };
 
 function get_validation_messages (homeValues, requiredFields, additionalRules) {
-  
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
     validationRules = additionalRules ? Object.assign(validationRules, additionalRules) : validationRules;
@@ -1558,7 +1578,9 @@ function get_validation_messages (homeValues, requiredFields, additionalRules) {
                  * Further, if both are empty, we do not need to see the validation message for both.
                  */
             } else if (fieldName === 'hot_water_type' && homeValues['hot_water_type'] && TypeRules._is_empty(homeValues['hot_water_fuel'])) {
-                // Do nothing ... avoid duplicate messages
+                // Do nothing ... avoid duplicate messages 
+            } else if (["address", "city"].includes(fieldName) && !validationRules._require_if_no_coordinates(homeValues[fieldName])){
+                // Do nothing ... only require city and address if no coordinates.
             } else {
                 result[MANDATORY][fieldName] = requiredFields[fieldName];
             }
@@ -1605,8 +1627,11 @@ function validate_home_audit (homeValues, additionalRules = null) {
  */
 function validate_address (homeValues) {
     let mandatoryMessage = "Missing value for mandatory field";
+    let optionalMessage = "Required field, if no cooridnates are provided."
     // Define values that are always required
     let requiredFields = {
+        address : optionalMessage,
+        city : optionalMessage,
         state : mandatoryMessage,
         zip_code : mandatoryMessage,
         assessment_type : mandatoryMessage,
