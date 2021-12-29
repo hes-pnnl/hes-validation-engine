@@ -1627,7 +1627,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
  */
 function validate_address (homeValues) {
     let mandatoryMessage = "Missing value for mandatory field";
-    let optionalMessage = "Required field, if no cooridnates are provided."
+    let optionalMessage = "Required field, if no coordinates are provided";
     // Define values that are always required
     let requiredFields = {
         address : optionalMessage,
