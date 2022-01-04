@@ -466,7 +466,6 @@ let validationRules = {
         return new Validation(TypeRules._string(value), ERROR);
     },
     city: function(value) {
-
         return new Validation(TypeRules._string(value), ERROR);
     },
     state: function(value) {
@@ -1537,7 +1536,8 @@ let validationRules = {
     },
 
     /*
-     * Checks that if coordinates or address has been added. 
+     * Checks address/city or coordinates to be an accepted input. 
+     * Intended to validate half addresses that do not require address and/or city feilds, if coordinates are provided on map.
      * @param {string} value
      */
     _require_if_no_coordinates: function(value) {
@@ -1552,7 +1552,7 @@ let validationRules = {
             return null;
         }
         else{
-            return "Field is required if no cooridnates are provided."
+            return "Field is required, if no coordinates are provided."
         }
     }
 };
@@ -1627,7 +1627,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
  */
 function validate_address (homeValues) {
     let mandatoryMessage = "Missing value for mandatory field";
-    let optionalMessage = "Required field, if no coordinates are provided";
+    let optionalMessage = "Field is required, if no coordinates are provided.";
     // Define values that are always required
     let requiredFields = {
         address : optionalMessage,
