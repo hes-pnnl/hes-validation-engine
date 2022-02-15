@@ -1188,9 +1188,6 @@ let validationRules = {
             if(_homeValues.hot_water_type === 'heat_pump' && value !== 'electric') {
                 return new Validation('Fuel must be electric if type is heat pump', ERROR);
             }
-            if((_homeValues.hot_water_type === 'tankless') && value === 'fuel_oil') {
-                return new Validation('Fuel oil is not valid for tankless water heaters', ERROR);
-            }
         }
         return blocker;
     },
