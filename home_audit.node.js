@@ -1549,7 +1549,7 @@ let validationRules = {
      * @param {string} value
      */
     _require_if_no_coordinates: function(value) {
-        if((_homeValues.latitude && _homeValues.logitude) || value){
+        if((_homeValues.latitude && _homeValues.longitude) || value){
             return null;
         }
         else{
