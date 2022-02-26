@@ -243,10 +243,11 @@ module.exports = function (homeValues) {
      * PV System
      */
     let mandatoryPVMessage = 'This is a mandatory PV field';
-    if (homeValues['solar_electric_capacity_known'] || homeValues['solar_electric_year'] || homeValues['solar_electric_array_azimuth']) {
+    if (homeValues['solar_electric_capacity_known'] || homeValues['solar_electric_year'] || homeValues['solar_electric_array_azimuth'] || homeValues['solar_electric_array_tilt']) {
         requiredFields['solar_electric_capacity_known'] = mandatoryPVMessage;
         requiredFields['solar_electric_year'] = mandatoryPVMessage;
         requiredFields['solar_electric_array_azimuth'] = mandatoryPVMessage;
+        requiredFields['solar_electric_array_tilt'] = mandatoryPVMessage;
         if (homeValues['solar_electric_capacity_known'] === '1' || homeValues['solar_electric_capacity_known'] === 1) {
             requiredFields['solar_electric_system_capacity'] = 'System Capacity is required when known';
         } else if (homeValues['solar_electric_capacity_known'] === '0' || homeValues['solar_electric_capacity_known'] === 0) {

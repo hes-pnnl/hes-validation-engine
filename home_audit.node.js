@@ -93,6 +93,13 @@ const orientationArray = [
     'west',
     'north_west'
 ];
+
+const tiltArray = [
+    'flat',
+    'low_slope',
+    'medium_slope',
+    'steep_slope',
+];
 const roofAssemblyCode = [
     'rfwf00co',
     'rfwf00rc',
@@ -1230,6 +1237,9 @@ let validationRules = {
     },
     solar_electric_array_azimuth: function(value) {
         return new Validation(TypeRules._string(value, 20, orientationArray), BLOCKER);
+    },
+    solar_electric_array_tilt: function(value) {
+        return new Validation(TypeRules._string(value, 20, tiltArray), BLOCKER);
     },
 
     /*
