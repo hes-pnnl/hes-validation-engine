@@ -428,6 +428,16 @@ const ductType = [
     'outside'
 ];
 
+const ductType_alwaysValid = [
+    'cond_space',
+    'garage',
+    'under_slab',
+    'unknown',
+    'exterior_wall',
+    'roof_deck',
+    'outside'
+];
+
 const hotWaterFuel = [
     'natural_gas',
     'lpg',
@@ -1376,7 +1386,7 @@ let validationRules = {
      * @param value
      */
     _duct_space_exists: function(value) {
-        const ductLocations = ['cond_space', /* Always a valid duct option */];
+        const ductLocations = ductType_alwaysValid;
         if (_homeValues.foundation_type_1 === 'uncond_basement' || _homeValues.foundation_type_2 === 'uncond_basement') {
             ductLocations.push('uncond_basement');
         }
