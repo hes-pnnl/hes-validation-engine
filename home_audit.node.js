@@ -540,10 +540,26 @@ let validationRules = {
     /*
      * zone_roof
      */
+    roof_type_1: function(value) {
+      return this._roof_type(value);
+    },
+    roof_type_2: function(value) {
+        return this._roof_type(value);
+    },
+    _roof_type: function(value) {
+        return new Validation(TypeRules._string(value, 20, roofType), BLOCKER);
+    },
+
     roof_area_1: function(value) {
         return this._roof_area(value);
     },
     roof_area_2: function(value) {
+        return this._roof_area(value);
+    },
+    ceiling_area_1: function(value) {
+        return this._roof_area(value);
+    },
+    ceiling_area_2: function(value) {
         return this._roof_area(value);
     },
     _roof_area: function(value) {
@@ -595,16 +611,6 @@ let validationRules = {
     },
     _roof_absorptance: function(value) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
-    },
-
-    roof_type_1: function(value) {
-        return this._roof_type(value);
-    },
-    roof_type_2: function(value) {
-        return this._roof_type(value);
-    },
-    _roof_type: function(value) {
-        return new Validation(TypeRules._string(value, 20, roofType), BLOCKER);
     },
 
     ceiling_assembly_code_1: function(value) {
