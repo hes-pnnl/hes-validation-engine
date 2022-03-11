@@ -180,7 +180,6 @@ const roofColor = [
 ];
 const roofType = [
     'vented_attic',
-    'cond_attic',
     'cath_ceiling'
 ];
 const ceilingAssemblyCode = [
