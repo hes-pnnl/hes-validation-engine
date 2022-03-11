@@ -77,7 +77,7 @@ module.exports = function (homeValues) {
                 requiredFields['ceiling_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
                 requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling assembly' + mandatoryRoofTypeMessage;
                 requiredFields['knee_wall_area_'+roofNumber] = 'Knee wall area' + mandatoryRoofTypeMessage;
-                requiredFields['knee_wall_insulation_'+roofNumber] = 'Knee wall insulation' + mandatoryRoofTypeMessage;
+                requiredFields['knee_wall_assembly_code_'+roofNumber] = 'Knee wall assembly' + mandatoryRoofTypeMessage;
             } else if(homeValues['roof_type_' + roofNumber] === 'cath_ceiling') {
                 requiredFields['roof_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
             }

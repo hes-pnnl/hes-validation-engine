@@ -198,6 +198,17 @@ const ceilingAssemblyCode = [
     'ecwf60'
 ];
 
+const kneeWallAssemblyCodes = [
+    'kwwf00',
+    'kwwf03',
+    'kwwf07',
+    'kwwf11',
+    'kwwf13',
+    'kwwf15',
+    'kwwf19',
+    'kwwf21',
+];
+
 const foundationType = [
     'uncond_basement',
     'cond_basement',
@@ -621,6 +632,26 @@ let validationRules = {
     },
     _ceiling_assembly_code: function(value) {
         return new Validation(TypeRules._string(value, 20, ceilingAssemblyCode), BLOCKER);
+    },
+
+    knee_wall_area_1: function(value) {
+        return this._knee_wall_area(value);
+    },
+    knee_wall_area_2: function(value) {
+        return this._knee_wall_area(value);
+    },
+    _knee_wall_area: function(value) {
+        return new Validation(TypeRules._float(value, 4, 5000, true), BLOCKER);
+    },
+
+    knee_wall_assembly_code_1: function(value) {
+        return this._knee_wall_area(value);
+    },
+    knee_wall_assembly_code_2: function(value) {
+        return this._knee_wall_assembly_code(value);
+    },
+    _knee_wall_assembly_code: function(value) {
+        return new Validation(TypeRules._string(value, 10, kneeWallAssemblyCodes), BLOCKER);
     },
 
     /*
