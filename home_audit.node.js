@@ -187,7 +187,6 @@ const roofColor = [
 ];
 const roofType = [
     'vented_attic',
-    'cond_attic',
     'cath_ceiling'
 ];
 const ceilingAssemblyCode = [
@@ -204,6 +203,17 @@ const ceilingAssemblyCode = [
     'ecwf44',
     'ecwf49',
     'ecwf60'
+];
+
+const kneeWallAssemblyCodes = [
+    'kwwf00',
+    'kwwf03',
+    'kwwf07',
+    'kwwf11',
+    'kwwf13',
+    'kwwf15',
+    'kwwf19',
+    'kwwf21',
 ];
 
 const foundationType = [
@@ -564,10 +574,26 @@ let validationRules = {
     /*
      * zone_roof
      */
+    roof_type_1: function(value) {
+      return this._roof_type(value);
+    },
+    roof_type_2: function(value) {
+        return this._roof_type(value);
+    },
+    _roof_type: function(value) {
+        return new Validation(TypeRules._string(value, 20, roofType), BLOCKER);
+    },
+
     roof_area_1: function(value) {
         return this._roof_area(value);
     },
     roof_area_2: function(value) {
+        return this._roof_area(value);
+    },
+    ceiling_area_1: function(value) {
+        return this._roof_area(value);
+    },
+    ceiling_area_2: function(value) {
         return this._roof_area(value);
     },
     _roof_area: function(value) {
@@ -621,16 +647,6 @@ let validationRules = {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     },
 
-    roof_type_1: function(value) {
-        return this._roof_type(value);
-    },
-    roof_type_2: function(value) {
-        return this._roof_type(value);
-    },
-    _roof_type: function(value) {
-        return new Validation(TypeRules._string(value, 20, roofType), BLOCKER);
-    },
-
     ceiling_assembly_code_1: function(value) {
         return this._ceiling_assembly_code(value);
     },
@@ -639,6 +655,26 @@ let validationRules = {
     },
     _ceiling_assembly_code: function(value) {
         return new Validation(TypeRules._string(value, 20, ceilingAssemblyCode), BLOCKER);
+    },
+
+    knee_wall_area_1: function(value) {
+        return this._knee_wall_area(value);
+    },
+    knee_wall_area_2: function(value) {
+        return this._knee_wall_area(value);
+    },
+    _knee_wall_area: function(value) {
+        return new Validation(TypeRules._float(value, 4, 5000, true), BLOCKER);
+    },
+
+    knee_wall_assembly_code_1: function(value) {
+        return this._knee_wall_area(value);
+    },
+    knee_wall_assembly_code_2: function(value) {
+        return this._knee_wall_assembly_code(value);
+    },
+    _knee_wall_assembly_code: function(value) {
+        return new Validation(TypeRules._string(value, 10, kneeWallAssemblyCodes), BLOCKER);
     },
 
     /*

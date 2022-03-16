@@ -36,7 +36,7 @@ module.exports = function (homeValues) {
         heating_type_1 : mandatoryMessage,
         heating_fuel_1 : mandatoryMessage,
         cooling_type_1 : mandatoryMessage,
-        roof_area_1 : mandatoryMessage,
+        roof_type_1 : mandatoryMessage,
         floor_area_1 : mandatoryMessage,
         wall_construction_same : mandatoryMessage,
         window_construction_same : mandatoryMessage
@@ -62,20 +62,24 @@ module.exports = function (homeValues) {
      * Roof/Attic conditional validations
      */
     for (let roofNumber of [1, 2]) {
-        //If the roof area is entered, required roof contents
-        let mandatoryRoofMessage = ' is a required roof value';
-        if (parseInt(homeValues['roof_area_'+roofNumber]) > 0) {
+        // If the roof type is entered, require roof contents
+        const mandatoryRoofMessage = ' is a required roof value';
+        if (homeValues['roof_type_'+roofNumber]) {
             requiredFields['roof_assembly_code_'+roofNumber] = 'Roof Assembly' + mandatoryRoofMessage;
             requiredFields['roof_color_'+roofNumber] = 'Roof Color' + mandatoryRoofMessage;
-            requiredFields['roof_type_'+roofNumber] = 'Roof Type' + mandatoryRoofMessage;
-
             // The "cool_color" option for roof color requires an additional "absorptance" value to be set
             if (homeValues['roof_color_' + roofNumber] === 'cool_color') {
                 requiredFields['roof_absorptance_' + roofNumber] = 'Roof absortance is required when Roof Color is Cool';
             }
-            // If "cath_ceiling" is selected, we do not need "ceiling_insulation"
-            if (homeValues['roof_type_' + roofNumber] !== 'cath_ceiling') {
-                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling Code is required if Roof Type is not Cathedral Ceiling';
+            const mandatoryRoofTypeMessage = ' is required for this roof type';
+            // If "vented_attic", require knee wall fields
+            if (homeValues['roof_type_'+roofNumber] === 'vented_attic') {
+                requiredFields['ceiling_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
+                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling assembly' + mandatoryRoofTypeMessage;
+                requiredFields['knee_wall_area_'+roofNumber] = 'Knee wall area' + mandatoryRoofTypeMessage;
+                requiredFields['knee_wall_assembly_code_'+roofNumber] = 'Knee wall assembly' + mandatoryRoofTypeMessage;
+            } else if(homeValues['roof_type_' + roofNumber] === 'cath_ceiling') {
+                requiredFields['roof_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
             }
         }
     }
