@@ -426,7 +426,23 @@ const ductType = [
     'uncond_attic',
     'uncond_basement',
     'vented_crawl',
-    'unvented_crawl'
+    'unvented_crawl',
+    'garage',
+    'under_slab',
+    'unknown',
+    'exterior_wall',
+    'roof_deck',
+    'outside'
+];
+
+const ductType_alwaysValid = [
+    'cond_space',
+    'garage',
+    'under_slab',
+    'unknown',
+    'exterior_wall',
+    'roof_deck',
+    'outside'
 ];
 
 const hotWaterFuel = [
@@ -1067,6 +1083,39 @@ let validationRules = {
     /*
      * hvac_distribution
      */
+    hvac_distribution_leakage_method_1: function(value) {
+        return this._hvac_distribution_leakage_method(value, 1);
+    },
+    hvac_distribution_leakage_method_2: function(value) {
+        return this._hvac_distribution_leakage_method(value, 2);
+    },
+    _hvac_distribution_leakage_method: function(value) {
+        return new Validation(TypeRules._string(value, 20, ['qualitative', 'quantitative']), BLOCKER);
+    },
+    hvac_distribution_leakage_to_outside_1: function(value) {
+        return this._hvac_distribution_leakage_to_outside(value, 1);
+    },
+    hvac_distribution_leakage_to_outside_2: function(value) {
+        return this._hvac_distribution_leakage_to_outside(value, 2);
+    },
+    _hvac_distribution_leakage_to_outside: function(value, system) {
+        if(_homeValues['hvac_distribution_leakage_method_'+system] === 'quantitative') {
+            return new Validation("Leakage should not be passed for your system if the method is 'quantitative'", ERROR);
+        }
+        return new Validation(TypeRules._float(value, 0, 1000, true), BLOCKER);
+    },
+    hvac_distribution_sealed_1: function(value) {
+        return this._hvac_distribution_sealed(value, 1);
+    },
+    hvac_distribution_sealed_2: function(value) {
+        return this._hvac_distribution_sealed(value, 2);
+    },
+    _hvac_distribution_sealed: function(value) {
+        return new Validation(TypeRules._bool(value), BLOCKER);
+    },
+    /*
+     * ducts
+     */
     duct_location_1_1: function(value) {
         return this._get_duct_validation(value, 1, 1, this._duct_location(value));
     },
@@ -1148,28 +1197,6 @@ let validationRules = {
         return this._duct_insulated(value, 2, 3);
     },
     _duct_insulated: function(value, sys, duct) {
-        return this._get_duct_validation(value, sys, duct, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
-    },
-
-    duct_sealed_1_1: function(value) {
-        return this._duct_sealed(value, 1, 1);
-    },
-    duct_sealed_2_1: function(value) {
-        return this._duct_sealed(value, 1, 2);
-    },
-    duct_sealed_3_1: function(value) {
-        return this._duct_sealed(value, 1, 3);
-    },
-    duct_sealed_1_2: function(value) {
-        return this._duct_sealed(value, 2, 1);
-    },
-    duct_sealed_2_2: function(value) {
-        return this._duct_sealed(value, 2, 2);
-    },
-    duct_sealed_3_2: function(value) {
-        return this._duct_sealed(value, 2, 3);
-    },
-    _duct_sealed: function(value, sys, duct) {
         return this._get_duct_validation(value, sys, duct, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
     },
 
@@ -1369,7 +1396,7 @@ let validationRules = {
      * @param value
      */
     _duct_space_exists: function(value) {
-        const ductLocations = ['cond_space', /* Always a valid duct option */];
+        const ductLocations = ductType_alwaysValid;
         if (_homeValues.foundation_type_1 === 'uncond_basement' || _homeValues.foundation_type_2 === 'uncond_basement') {
             ductLocations.push('uncond_basement');
         }

@@ -205,6 +205,11 @@ module.exports = function (homeValues) {
         if (ductTypes.indexOf(heatingType) > -1  ||
             ductTypes.indexOf(homeValues['cooling_type_'+system]) > -1)
         {
+            requiredFields['hvac_distribution_sealed_'+system] = 'Duct information is required for your system type selections';
+            requiredFields['hvac_distribution_leakage_method_'+system] = 'Duct leakage is required for your system type selections';
+            if(homeValues['hvac_distribution_leakage_method_'+system] === 'qualitative') {
+                requiredFields['hvac_distribution_leakage_to_outside_'+system] = 'Duct leakage is required when known';
+            }
             requiredFields['duct_fraction_1_'+system] = 'Duct percentage is required when they exist';
         }
         let ductPercent = (parseInt(homeValues['duct_fraction_1_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_2_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_3_'+system]) || 0 );
@@ -221,7 +226,6 @@ module.exports = function (homeValues) {
             if(parseInt(homeValues['duct_fraction_'+duct+'_'+system]) > 0){
                 requiredFields['duct_location_'+duct+'_'+system] = mandatoryDuctMessage;
                 requiredFields['duct_insulated_'+duct+'_'+system] = mandatoryDuctMessage;
-                requiredFields['duct_sealed_'+duct+'_'+system] = mandatoryDuctMessage;
             }
         }
     }
