@@ -1147,7 +1147,7 @@ let validationRules = {
         return this._hvac_distribution_sealed(value, 2);
     },
     _hvac_distribution_sealed: function(value) {
-        return new Validation(TypeRules._bool(value), BLOCKER);
+        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
     },
     /*
      * ducts
