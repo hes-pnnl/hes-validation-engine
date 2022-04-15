@@ -1200,13 +1200,13 @@ let validationRules = {
         let fullPercentCheck = '';
         if(['1', '2'].indexOf(c) > -1) {
             if (c === '1') {
-                fullPercentCheck = TypeRules._percent((parseInt(_homeValues.duct_fraction_1_1) || 0) + (parseInt(_homeValues.duct_fraction_2_1) || 0) + (parseInt(_homeValues.duct_fraction_3_1) || 0));
+                fullPercentCheck = TypeRules._fraction((parseFloat(_homeValues.duct_fraction_1_1) || 0) + (parseFloat(_homeValues.duct_fraction_2_1) || 0) + (parseFloat(_homeValues.duct_fraction_3_1) || 0));
             } else if (c === '2') {
-                fullPercentCheck = TypeRules._percent((parseInt(_homeValues.duct_fraction_1_2) || 0) + (parseInt(_homeValues.duct_fraction_2_2) || 0) + (parseInt(_homeValues.duct_fraction_3_2) || 0));
+                fullPercentCheck = TypeRules._fraction((parseFloat(_homeValues.duct_fraction_1_2) || 0) + (parseFloat(_homeValues.duct_fraction_2_2) || 0) + (parseFloat(_homeValues.duct_fraction_3_2) || 0));
             }
             if(fullPercentCheck) {
                 return new Validation(fullPercentCheck, BLOCKER);
-            } else if(TypeRules._float(value, 0, 100)) {
+            } else if(TypeRules._float(value, 0, 1)) {
                 return new Validation('Value must be between 0 and 100', ERROR);
             }
         } else {
