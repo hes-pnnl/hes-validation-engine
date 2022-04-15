@@ -1202,7 +1202,7 @@ let validationRules = {
             if (c === '1') {
                 fullPercentCheck = TypeRules._fraction((parseFloat(_homeValues.duct_fraction_1_1) || 0) + (parseFloat(_homeValues.duct_fraction_2_1) || 0) + (parseFloat(_homeValues.duct_fraction_3_1) || 0));
             } else if (c === '2') {
-                if(_homeValues.duct_fraction_1_2) {
+                if(parseFloat(_homeValues.duct_fraction_1_2)>0) {
                     fullPercentCheck = TypeRules._fraction((parseFloat(_homeValues.duct_fraction_1_2) || 0) + (parseFloat(_homeValues.duct_fraction_2_2) || 0) + (parseFloat(_homeValues.duct_fraction_3_2) || 0));
                 }
             }
