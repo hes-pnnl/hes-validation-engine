@@ -613,10 +613,10 @@ let validationRules = {
         }
     },
     ceiling_area_1: function(value) {
-        return this._roof_area(value);
+        return this._ceiling_area(value);
     },
     ceiling_area_2: function(value) {
-        return this._roof_area(value);
+        return this._ceiling_area(value);
     },
     _ceiling_area: function(value) {
         if(_homeValues['roof_type_1'] === 'vented_attic') {
@@ -1631,7 +1631,7 @@ let validationRules = {
         let combinedRoofArea = this._get_combined_roof_area();
         let combinedCeilingArea = this._get_combined_ceiling_area();
         let combinedFloorArea = this._get_combined_floor_area();
-        if ((combinedRoofArea +combinedCeilingArea) <= combinedFloorArea * .95) { // Allow 5% error
+        if ((combinedRoofArea + combinedCeilingArea) <= combinedFloorArea * .95) { // Allow 5% error
             return "The roof does not cover the floor";
         } else {
             return false;
