@@ -590,33 +590,56 @@ let validationRules = {
     roof_area_2: function(value) {
         return this._roof_area(value);
     },
+    _roof_area: function(value) {
+        if(_homeValues['roof_type_1'] === 'cath_ceiling') {
+            //Check that roof area is within legal bounds per API
+            if (TypeRules._int(value, 4, 25000, false) === undefined) {
+                let combinedAreaCheck = this._check_combined_area();
+                //Check that roof area is not less than floor area
+                if (!combinedAreaCheck) {
+                    let combinedRoofArea = this._get_combined_roof_area();
+                    let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "roof");
+                    //Check that combined areas are consistent with conditioned floor areas
+                    if (checkConditionedAreas) {
+                        return new Validation(checkConditionedAreas, ERROR);
+                    }
+                } else {
+                    return new Validation(combinedAreaCheck, ERROR);
+                }
+            } else {
+                //This is a blocker case and will prevent saving
+                return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
+            }
+        }
+    },
     ceiling_area_1: function(value) {
         return this._roof_area(value);
     },
     ceiling_area_2: function(value) {
         return this._roof_area(value);
     },
-    _roof_area: function(value) {
-        //Check that roof area is within legal bounds per API
-        if (TypeRules._int(value, 4, 25000, false) === undefined) {
-            let combinedAreaCheck = this._check_combined_area();
-            //Check that roof area is not less than floor area
-            if (!combinedAreaCheck) {
-                let combinedRoofArea = this._get_combined_roof_area();
-                let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "roof");
-                //Check that combined areas are consistent with conditioned floor areas
-                if (checkConditionedAreas) {
-                    return new Validation(checkConditionedAreas, ERROR);
+    _ceiling_area: function(value) {
+        if(_homeValues['roof_type_1'] === 'vented_attic') {
+            //Check that roof area is within legal bounds per API
+            if (TypeRules._int(value, 4, 25000, false) === undefined) {
+                let combinedAreaCheck = this._check_combined_area();
+                //Check that roof area is not less than floor area
+                if (!combinedAreaCheck) {
+                    let combinedRoofArea = this._get_combined_ceiling_area();
+                    let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "ceiling");
+                    //Check that combined areas are consistent with conditioned floor areas
+                    if (checkConditionedAreas) {
+                        return new Validation(checkConditionedAreas, ERROR);
+                    }
+                } else {
+                    return new Validation(combinedAreaCheck, ERROR);
                 }
             } else {
-                return new Validation(combinedAreaCheck, ERROR);
+                //This is a blocker case and will prevent saving
+                return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
             }
-        } else {
-            //This is a blocker case and will prevent saving
-            return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
         }
     },
-
     roof_assembly_code_1: function(value) {
         return this._roof_assembly_code(value);
     },
@@ -664,7 +687,16 @@ let validationRules = {
         return this._knee_wall_area(value);
     },
     _knee_wall_area: function(value) {
-        return new Validation(TypeRules._float(value, 4, 5000, true), BLOCKER);
+        if (TypeRules._int(value, 4, 5000, false) === undefined) {
+            let footprintArea = this._get_footprint_area();
+            let max_knee_wall_area = 2*footprintArea/3;
+            let knee_wall_area = TypeRules._int_or_zero(_homeValues['knee_wall_area_1']) + TypeRules._int_or_zero(_homeValues['knee_wall_area_2']);
+            if(knee_wall_area > max_knee_wall_area){
+                return new Validation( `Total knee wall area is exceeded maximum of ${Math.ceil(max_knee_wall_area)} sqft).`, ERROR);
+            }
+        } else {
+            return new Validation(TypeRules._float(value, 4, 5000, true), BLOCKER);
+        }
     },
 
     knee_wall_assembly_code_1: function(value) {
@@ -1276,8 +1308,10 @@ let validationRules = {
     hot_water_energy_factor: function(value) {
         let min, max;
 
-        if (_homeValues.hot_water_type === 'storage' || _homeValues.hot_water_type === 'tankless') {
-            [min, max] = [0.45, 1.0];
+        if (_homeValues.hot_water_type === 'storage') {
+            [min, max] = [0.45, 0.95];
+        } else if (_homeValues.hot_water_type === 'tankless') {
+            [min, max] = [0.45, 0.99];
         } else if (_homeValues.hot_water_type === 'heat_pump') {
             [min, max] = [1, 4];
         }
@@ -1515,10 +1549,25 @@ let validationRules = {
     },
 
     /*
+     * Get projected ceiling area
+     * @param {string} '1' or '2'
+     */
+    _get_proj_ceiling_area: function(ceiling_num) {
+        return TypeRules._int_or_zero(_homeValues['ceiling_area_'+ceiling_num]);
+    },
+
+    /*
      * Get combined roof area
      */
     _get_combined_roof_area: function() {
         return this._get_proj_roof_area('1') + this._get_proj_roof_area('2');
+    },
+
+    /*
+     * Get combined ceiling area
+     */
+    _get_combined_ceiling_area: function() {
+        return this._get_proj_ceiling_area('1') + this._get_proj_ceiling_area('2');
     },
 
     /*
@@ -1580,8 +1629,9 @@ let validationRules = {
      */
     _check_combined_area: function() {
         let combinedRoofArea = this._get_combined_roof_area();
+        let combinedCeilingArea = this._get_combined_ceiling_area();
         let combinedFloorArea = this._get_combined_floor_area();
-        if (combinedRoofArea <= combinedFloorArea * .95) { // Allow 5% error
+        if ((combinedRoofArea +combinedCeilingArea) <= combinedFloorArea * .95) { // Allow 5% error
             return "The roof does not cover the floor";
         } else {
             return false;
@@ -1601,7 +1651,7 @@ let validationRules = {
             // Check that combined areas are within reasonable range of footprint
             const max = thisAreaType === "roof"
                 ? footprintArea * 2.5 // roof area max
-                : _homeValues.conditioned_floor_area * 1.05; // floor area max
+                : _homeValues.conditioned_floor_area * 1.05; // floor area & ceiling area max
             const expectedRange = [footprintArea * 0.95, max];
             if (!((expectedRange[0] < combinedArea) && (combinedArea < expectedRange[1]))) {
                 return `

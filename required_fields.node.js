@@ -72,12 +72,10 @@ module.exports = function (homeValues) {
                 requiredFields['roof_absorptance_' + roofNumber] = 'Roof absortance is required when Roof Color is Cool';
             }
             const mandatoryRoofTypeMessage = ' is required for this roof type';
-            // If "vented_attic", require knee wall fields
+            // If "vented_attic", require ceiling fields
             if (homeValues['roof_type_'+roofNumber] === 'vented_attic') {
                 requiredFields['ceiling_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
                 requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling assembly' + mandatoryRoofTypeMessage;
-                requiredFields['knee_wall_area_'+roofNumber] = 'Knee wall area' + mandatoryRoofTypeMessage;
-                requiredFields['knee_wall_assembly_code_'+roofNumber] = 'Knee wall assembly' + mandatoryRoofTypeMessage;
             } else if(homeValues['roof_type_' + roofNumber] === 'cath_ceiling') {
                 requiredFields['roof_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
             }
@@ -186,7 +184,7 @@ module.exports = function (homeValues) {
         let heatingEfficiencyMethod = homeValues['heating_efficiency_method_'+system];
 
         if (![null, undefined, ''].includes(heatingFuel) &&
-            !['', 'none', null, undefined, 'baseboard', 'wood_stove'].includes(heatingType) &&
+            !['', 'none', null, undefined, 'baseboard', 'wood_stove', 'central_furnace', 'wall_furnace'].includes(heatingType) &&
             !(heatingFuel === 'electric' && ['central_furnace', 'boiler'].includes(heatingType))
         ){
             requiredFields['heating_efficiency_method_'+system] = 'Field is required when Heating Type has variable efficiency';
