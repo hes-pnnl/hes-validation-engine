@@ -700,7 +700,7 @@ let validationRules = {
     },
 
     knee_wall_assembly_code_1: function(value) {
-        return this._knee_wall_area(value);
+        return this._knee_wall_assembly_code(value);
     },
     knee_wall_assembly_code_2: function(value) {
         return this._knee_wall_assembly_code(value);
@@ -1232,7 +1232,9 @@ let validationRules = {
         let fullPercentCheck = null;
         if(['1', '2'].indexOf(c) > -1) {
             if (c === '1') {
-                fullPercentCheck = TypeRules._fraction((parseFloat(_homeValues.duct_fraction_1_1) || 0) + (parseFloat(_homeValues.duct_fraction_2_1) || 0) + (parseFloat(_homeValues.duct_fraction_3_1) || 0));
+                if(parseFloat(_homeValues.duct_fraction_1_1)>0) {
+                    fullPercentCheck = TypeRules._fraction((parseFloat(_homeValues.duct_fraction_1_1) || 0) + (parseFloat(_homeValues.duct_fraction_2_1) || 0) + (parseFloat(_homeValues.duct_fraction_3_1) || 0));
+                }
             } else if (c === '2') {
                 if(parseFloat(_homeValues.duct_fraction_1_2)>0) {
                     fullPercentCheck = TypeRules._fraction((parseFloat(_homeValues.duct_fraction_1_2) || 0) + (parseFloat(_homeValues.duct_fraction_2_2) || 0) + (parseFloat(_homeValues.duct_fraction_3_2) || 0));
