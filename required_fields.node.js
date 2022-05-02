@@ -76,6 +76,9 @@ module.exports = function (homeValues) {
             if (homeValues['roof_type_'+roofNumber] === 'vented_attic') {
                 requiredFields['ceiling_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
                 requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling assembly' + mandatoryRoofTypeMessage;
+                if(homeValues['knee_wall_area_'+roofNumber] > 0){
+                    requiredFields['ceiling_assembly_code_'+roofNumber] = 'Knee wall assembly' + mandatoryRoofTypeMessage;
+                }
             } else if(homeValues['roof_type_' + roofNumber] === 'cath_ceiling') {
                 requiredFields['roof_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
             }

@@ -597,7 +597,7 @@ let validationRules = {
                 let combinedAreaCheck = this._check_combined_area();
                 //Check that roof area is not less than floor area
                 if (!combinedAreaCheck) {
-                    let combinedRoofArea = this._get_combined_roof_area();
+                    let combinedRoofArea = this._get_combined_roof_ceiling_area();
                     let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "roof");
                     //Check that combined areas are consistent with conditioned floor areas
                     if (checkConditionedAreas) {
@@ -625,7 +625,7 @@ let validationRules = {
                 let combinedAreaCheck = this._check_combined_area();
                 //Check that roof area is not less than floor area
                 if (!combinedAreaCheck) {
-                    let combinedRoofArea = this._get_combined_ceiling_area();
+                    let combinedRoofArea = this._get_combined_roof_ceiling_area();
                     let checkConditionedAreas = this._check_conditioned_areas(combinedRoofArea, "ceiling");
                     //Check that combined areas are consistent with conditioned floor areas
                     if (checkConditionedAreas) {
@@ -1568,8 +1568,9 @@ let validationRules = {
     /*
      * Get combined ceiling area
      */
-    _get_combined_ceiling_area: function() {
-        return this._get_proj_ceiling_area('1') + this._get_proj_ceiling_area('2');
+    _get_combined_roof_ceiling_area: function() {
+        return this._get_proj_roof_area('1') + this._get_proj_roof_area('2') +
+            this._get_proj_ceiling_area('1') + this._get_proj_ceiling_area('2');
     },
 
     /*
@@ -1630,10 +1631,9 @@ let validationRules = {
      * Checks that the combined roof_area is not less than the combined floor_area
      */
     _check_combined_area: function() {
-        let combinedRoofArea = this._get_combined_roof_area();
-        let combinedCeilingArea = this._get_combined_ceiling_area();
+        let combinedRoofCeilingArea = this._get_combined_roof_ceiling_area();
         let combinedFloorArea = this._get_combined_floor_area();
-        if ((combinedRoofArea + combinedCeilingArea) <= combinedFloorArea * .95) { // Allow 5% error
+        if (combinedRoofCeilingArea  <= combinedFloorArea * .95) { // Allow 5% error
             return "The roof does not cover the floor";
         } else {
             return false;
@@ -1651,9 +1651,10 @@ let validationRules = {
             return "This home’s minumum footprint is unknown.  Please enter number of stories.";
         } else {
             // Check that combined areas are within reasonable range of footprint
-            const max = thisAreaType === "roof"
-                ? footprintArea * 2.5 // roof area max
-                : _homeValues.conditioned_floor_area * 1.05; // floor area & ceiling area max
+            // const max = thisAreaType === "roof"
+            //     ? footprintArea * 2.5 // roof area max
+            //     : _homeValues.conditioned_floor_area * 1.05; // floor area & ceiling area max
+            const max = footprintArea * 2.5;
             const expectedRange = [footprintArea * 0.95, max];
             if (!((expectedRange[0] < combinedArea) && (combinedArea < expectedRange[1]))) {
                 return `
