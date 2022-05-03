@@ -1205,7 +1205,12 @@ let validationRules = {
         let min, max;
 
         if (_homeValues.hot_water_type === 'storage' || _homeValues.hot_water_type === 'tankless') {
-            [min, max] = [0.45, 1.0];
+            min = 0.45;
+            if(_homeValues.hot_water_fuel === 'electric') {
+                max = _homeValues.hot_water_type === 'storage' ? 0.95 : 0.99;
+            } else {
+                max = 1.0;
+            }
         } else if (_homeValues.hot_water_type === 'heat_pump') {
             [min, max] = [1, 4];
         }
