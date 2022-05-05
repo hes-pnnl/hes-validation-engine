@@ -585,13 +585,13 @@ let validationRules = {
     },
 
     roof_area_1: function(value) {
-        return this._roof_area(value);
+        return this._roof_area(value, '1');
     },
     roof_area_2: function(value) {
-        return this._roof_area(value);
+        return this._roof_area(value, '2');
     },
     _roof_area: function(value) {
-        if(_homeValues['roof_type_1'] === 'cath_ceiling') {
+        if(_homeValues['roof_type_'+ num] === 'cath_ceiling') {
             //Check that roof area is within legal bounds per API
             if (TypeRules._int(value, 4, 25000, false) === undefined) {
                 let combinedAreaCheck = this._check_combined_area();
@@ -613,13 +613,13 @@ let validationRules = {
         }
     },
     ceiling_area_1: function(value) {
-        return this._ceiling_area(value);
+        return this._ceiling_area(value, '1');
     },
     ceiling_area_2: function(value) {
-        return this._ceiling_area(value);
+        return this._ceiling_area(value, '2');
     },
-    _ceiling_area: function(value) {
-        if(_homeValues['roof_type_1'] === 'vented_attic') {
+    _ceiling_area: function(value, num) {
+        if(_homeValues['roof_type_'+ num] === 'vented_attic') {
             //Check that roof area is within legal bounds per API
             if (TypeRules._int(value, 4, 25000, false) === undefined) {
                 let combinedAreaCheck = this._check_combined_area();
