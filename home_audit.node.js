@@ -590,7 +590,7 @@ let validationRules = {
     roof_area_2: function(value) {
         return this._roof_area(value, '2');
     },
-    _roof_area: function(value) {
+    _roof_area: function(value, num) {
         if(_homeValues['roof_type_'+ num] === 'cath_ceiling') {
             //Check that roof area is within legal bounds per API
             if (TypeRules._int(value, 4, 25000, false) === undefined) {
