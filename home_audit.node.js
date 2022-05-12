@@ -1167,8 +1167,8 @@ let validationRules = {
         return this._hvac_distribution_leakage_to_outside(value, 2);
     },
     _hvac_distribution_leakage_to_outside: function(value, system) {
-        if(_homeValues['hvac_distribution_leakage_method_'+system] === 'quantitative') {
-            return new Validation("Leakage should not be passed for your system if the method is 'quantitative'", ERROR);
+        if(_homeValues['hvac_distribution_leakage_method_'+system] === 'qualitative') {
+            return new Validation("Leakage should not be passed for your system if the method is 'qualitative'", ERROR);
         }
         return new Validation(TypeRules._float(value, 0, 1000, true), BLOCKER);
     },
