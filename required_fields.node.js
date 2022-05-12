@@ -217,13 +217,13 @@ module.exports = function (homeValues) {
             }
             requiredFields['duct_fraction_1_'+system] = 'Duct percentage is required when they exist';
         }
-        let ductPercent = (parseInt(homeValues['duct_fraction_1_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_2_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_3_'+system]) || 0 );
-        if(ductPercent === 100) {
+        let ductPercent = (parseFloat(homeValues['duct_fraction_1_'+system]) || 0 )+(parseFloat(homeValues['duct_fraction_2_'+system]) || 0 )+(parseFloat(homeValues['duct_fraction_3_'+system]) || 0 );
+        if(ductPercent === 1) {
             //Do nothing
-        } else if((parseInt(homeValues['duct_fraction_1_'+system]) > 0) && (parseInt(homeValues['duct_fraction_2_'+system]) > 0) && ductPercent < 100) {
-            requiredFields['duct_fraction_3_'+system] = 'Duct percetange is required when they exist';
-        } else if(parseInt(homeValues['duct_fraction_1_'+system]) > 0 && ductPercent < 100) {
-            requiredFields['duct_fraction_2_'+system] = 'Duct percetange is required when they exist';
+        } else if((parseFloat(homeValues['duct_fraction_1_'+system]) > 0) && (parseFloat(homeValues['duct_fraction_2_'+system]) > 0) && ductPercent < 1) {
+            requiredFields['duct_fraction_3_'+system] = 'Duct percentage is required when they exist';
+        } else if(parseFloat(homeValues['duct_fraction_1_'+system]) > 0 && ductPercent < 1) {
+            requiredFields['duct_fraction_2_'+system] = 'Duct percentage is required when they exist';
         }
         for (let duct of ['1', '2', '3']) {
             //If duct percentage entered, require rest of ducts
