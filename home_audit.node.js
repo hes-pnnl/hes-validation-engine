@@ -437,21 +437,15 @@ const ductType = [
     'uncond_basement',
     'vented_crawl',
     'unvented_crawl',
-    'garage',
     'under_slab',
-    'unknown',
     'exterior_wall',
-    'roof_deck',
     'outside'
 ];
 
 const ductType_alwaysValid = [
     'cond_space',
-    'garage',
     'under_slab',
-    'unknown',
     'exterior_wall',
-    'roof_deck',
     'outside'
 ];
 
