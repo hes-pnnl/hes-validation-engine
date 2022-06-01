@@ -176,6 +176,31 @@ const roofAssemblyCode = [
     'rfwf30tg',
     'rfrb00lc',
     'rfrb00tg',
+    'rfwf03co',
+    'rfwf03wo',
+    'rfwf03rc',
+    'rfwf03lc',
+    'rfwf03tg',
+    'rfwf07co',
+    'rfwf07wo',
+    'rfwf07rc',
+    'rfwf07lc',
+    'rfwf07tg',
+    'rfwf25co',
+    'rfwf25wo',
+    'rfwf25rc',
+    'rfwf25lc',
+    'rfwf25tg',
+    'rfps03co',
+    'rfps03wo',
+    'rfps03rc',
+    'rfps03lc',
+    'rfps03tg',
+    'rfps07co',
+    'rfps07wo',
+    'rfps07rc',
+    'rfps07lc',
+    'rfps07tg'
 ];
 const roofColor = [
     'white',
@@ -195,13 +220,17 @@ const ceilingAssemblyCode = [
     'ecwf06',
     'ecwf09',
     'ecwf11',
+    'ecwf13',
+    'ecwf15',
     'ecwf19',
     'ecwf21',
     'ecwf25',
     'ecwf30',
+    'ecwf35',
     'ecwf38',
     'ecwf44',
     'ecwf49',
+    'ecwf55',
     'ecwf60'
 ];
 
@@ -226,6 +255,8 @@ const foundationType = [
 
 const floorAssemblyCode = [
     'efwf00ca',
+    'efwf03ca',
+    'efwf07ca',
     'efwf11ca',
     'efwf13ca',
     'efwf15ca',
@@ -233,6 +264,7 @@ const floorAssemblyCode = [
     'efwf21ca',
     'efwf25ca',
     'efwf30ca',
+    'efwf35ca',
     'efwf38ca'
 ];
 
@@ -376,6 +408,16 @@ const wallAssemblyCode = [
     'ewcb00br',
     'ewcb03br',
     'ewcb06br',
+    'ewov25wo',
+    'ewov35wo',
+    'ewov25st',
+    'ewov35st',
+    'ewov25vi',
+    'ewov35vi',
+    'ewov25al',
+    'ewov35al',
+    'ewov25br',
+    'ewov35br'
 ];
 
 const heatingTypeOptions = [
