@@ -1,6 +1,7 @@
 /**
  * required_fields.node.js - Validates that required home audit fields have a value.
  */
+let TypeRules = require('./type_rules.node');
 
 /**
  * Casts string to matching boolean, or null if no exact match
@@ -252,7 +253,17 @@ module.exports = function (homeValues) {
      * PV System
      */
     let mandatoryPVMessage = 'This is a mandatory PV field';
-    if (homeValues['solar_electric_capacity_known'] || homeValues['solar_electric_year'] || homeValues['solar_electric_array_azimuth'] || homeValues['solar_electric_array_tilt']) {
+    // Check whether there are any PV entries
+    const pvNotEmpty = [
+        "solar_electric_year",
+        "solar_electric_array_azimuth",
+        "solar_electric_capacity_known",
+        "solar_electric_system_capacity",
+        "solar_electric_num_panels",
+        "solar_electric_array_tilt"
+    ].some((field) => !TypeRules._is_empty(homeValues[field]));
+    // If so, require and validate
+    if (pvNotEmpty) {
         requiredFields['solar_electric_capacity_known'] = mandatoryPVMessage;
         requiredFields['solar_electric_year'] = mandatoryPVMessage;
         requiredFields['solar_electric_array_azimuth'] = mandatoryPVMessage;
