@@ -75,13 +75,13 @@ module.exports = function (homeValues) {
             const mandatoryRoofTypeMessage = ' is required for this roof type';
             // If "vented_attic", require ceiling fields
             if (homeValues['roof_type_'+roofNumber] === 'vented_attic') {
-                requiredFields['ceiling_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
-                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling assembly' + mandatoryRoofTypeMessage;
+                requiredFields['ceiling_area_'+roofNumber] = 'Attic floor area' + mandatoryRoofTypeMessage;
+                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Attic floor insulation' + mandatoryRoofTypeMessage;
                 if(homeValues['knee_wall_area_'+roofNumber] > 0){
                     requiredFields['knee_wall_assembly_code_'+roofNumber] = 'Knee wall assembly' + mandatoryRoofTypeMessage;
                 }
             } else if(homeValues['roof_type_' + roofNumber] === 'cath_ceiling') {
-                requiredFields['roof_area_'+roofNumber] = 'Roof area' + mandatoryRoofTypeMessage;
+                requiredFields['roof_area_'+roofNumber] = 'Ceiling area' + mandatoryRoofTypeMessage;
             }
         }
     }
