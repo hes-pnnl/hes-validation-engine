@@ -37,7 +37,7 @@ module.exports = function (homeValues) {
         heating_type_1 : mandatoryMessage,
         heating_fuel_1 : mandatoryMessage,
         cooling_type_1 : mandatoryMessage,
-        roof_area_1 : mandatoryMessage,
+        roof_type_1 : mandatoryMessage,
         floor_area_1 : mandatoryMessage,
         wall_construction_same : mandatoryMessage,
         window_construction_same : mandatoryMessage
@@ -63,20 +63,25 @@ module.exports = function (homeValues) {
      * Roof/Attic conditional validations
      */
     for (let roofNumber of [1, 2]) {
-        //If the roof area is entered, required roof contents
-        let mandatoryRoofMessage = ' is a required roof value';
-        if (parseInt(homeValues['roof_area_'+roofNumber]) > 0) {
+        // If the roof type is entered, require roof contents
+        const mandatoryRoofMessage = ' is a required roof value';
+        if (homeValues['roof_type_'+roofNumber]) {
             requiredFields['roof_assembly_code_'+roofNumber] = 'Roof Assembly' + mandatoryRoofMessage;
             requiredFields['roof_color_'+roofNumber] = 'Roof Color' + mandatoryRoofMessage;
-            requiredFields['roof_type_'+roofNumber] = 'Roof Type' + mandatoryRoofMessage;
-
             // The "cool_color" option for roof color requires an additional "absorptance" value to be set
             if (homeValues['roof_color_' + roofNumber] === 'cool_color') {
                 requiredFields['roof_absorptance_' + roofNumber] = 'Roof absortance is required when Roof Color is Cool';
             }
-            // If "cath_ceiling" is selected, we do not need "ceiling_insulation"
-            if (homeValues['roof_type_' + roofNumber] !== 'cath_ceiling') {
-                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Ceiling Code is required if Roof Type is not Cathedral Ceiling';
+            const mandatoryRoofTypeMessage = ' is required for this roof type';
+            // If "vented_attic", require ceiling fields
+            if (homeValues['roof_type_'+roofNumber] === 'vented_attic') {
+                requiredFields['ceiling_area_'+roofNumber] = 'Attic floor area' + mandatoryRoofTypeMessage;
+                requiredFields['ceiling_assembly_code_'+roofNumber] = 'Attic floor insulation' + mandatoryRoofTypeMessage;
+                if(homeValues['knee_wall_area_'+roofNumber] > 0){
+                    requiredFields['knee_wall_assembly_code_'+roofNumber] = 'Knee wall assembly' + mandatoryRoofTypeMessage;
+                }
+            } else if(homeValues['roof_type_' + roofNumber] === 'cath_ceiling') {
+                requiredFields['roof_area_'+roofNumber] = 'Ceiling area' + mandatoryRoofTypeMessage;
             }
         }
     }
@@ -183,7 +188,7 @@ module.exports = function (homeValues) {
         let heatingEfficiencyMethod = homeValues['heating_efficiency_method_'+system];
 
         if (![null, undefined, ''].includes(heatingFuel) &&
-            !['', 'none', null, undefined, 'baseboard', 'wood_stove'].includes(heatingType) &&
+            !['', 'none', null, undefined, 'baseboard', 'wood_stove', 'central_furnace', 'wall_furnace'].includes(heatingType) &&
             !(heatingFuel === 'electric' && ['central_furnace', 'boiler'].includes(heatingType))
         ){
             requiredFields['heating_efficiency_method_'+system] = 'Field is required when Heating Type has variable efficiency';
@@ -206,15 +211,20 @@ module.exports = function (homeValues) {
         if (ductTypes.indexOf(heatingType) > -1  ||
             ductTypes.indexOf(homeValues['cooling_type_'+system]) > -1)
         {
+            requiredFields['hvac_distribution_sealed_'+system] = 'Duct information is required for your system type selections';
+            requiredFields['hvac_distribution_leakage_method_'+system] = 'Duct leakage is required for your system type selections';
+            if(homeValues['hvac_distribution_leakage_method_'+system] === 'quantitative') {
+                requiredFields['hvac_distribution_leakage_to_outside_'+system] = 'Duct leakage is required when known';
+            }
             requiredFields['duct_fraction_1_'+system] = 'Duct percentage is required when they exist';
         }
-        let ductPercent = (parseInt(homeValues['duct_fraction_1_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_2_'+system]) || 0 )+(parseInt(homeValues['duct_fraction_3_'+system]) || 0 );
-        if(ductPercent === 100) {
+        let ductPercent = (parseFloat(homeValues['duct_fraction_1_'+system]) || 0 )+(parseFloat(homeValues['duct_fraction_2_'+system]) || 0 )+(parseFloat(homeValues['duct_fraction_3_'+system]) || 0 );
+        if(ductPercent === 1) {
             //Do nothing
-        } else if((parseInt(homeValues['duct_fraction_1_'+system]) > 0) && (parseInt(homeValues['duct_fraction_2_'+system]) > 0) && ductPercent < 100) {
-            requiredFields['duct_fraction_3_'+system] = 'Duct percetange is required when they exist';
-        } else if(parseInt(homeValues['duct_fraction_1_'+system]) > 0 && ductPercent < 100) {
-            requiredFields['duct_fraction_2_'+system] = 'Duct percetange is required when they exist';
+        } else if((parseFloat(homeValues['duct_fraction_1_'+system]) > 0) && (parseFloat(homeValues['duct_fraction_2_'+system]) > 0) && ductPercent < 1) {
+            requiredFields['duct_fraction_3_'+system] = 'Duct percentage is required when they exist';
+        } else if(parseFloat(homeValues['duct_fraction_1_'+system]) > 0 && ductPercent < 1) {
+            requiredFields['duct_fraction_2_'+system] = 'Duct percentage is required when they exist';
         }
         for (let duct of ['1', '2', '3']) {
             //If duct percentage entered, require rest of ducts
@@ -222,7 +232,6 @@ module.exports = function (homeValues) {
             if(parseInt(homeValues['duct_fraction_'+duct+'_'+system]) > 0){
                 requiredFields['duct_location_'+duct+'_'+system] = mandatoryDuctMessage;
                 requiredFields['duct_insulated_'+duct+'_'+system] = mandatoryDuctMessage;
-                requiredFields['duct_sealed_'+duct+'_'+system] = mandatoryDuctMessage;
             }
         }
     }
@@ -250,13 +259,15 @@ module.exports = function (homeValues) {
         "solar_electric_array_azimuth",
         "solar_electric_capacity_known",
         "solar_electric_system_capacity",
-        "solar_electric_num_panels"
+        "solar_electric_num_panels",
+        "solar_electric_array_tilt"
     ].some((field) => !TypeRules._is_empty(homeValues[field]));
     // If so, require and validate
     if (pvNotEmpty) {
         requiredFields['solar_electric_capacity_known'] = mandatoryPVMessage;
         requiredFields['solar_electric_year'] = mandatoryPVMessage;
         requiredFields['solar_electric_array_azimuth'] = mandatoryPVMessage;
+        requiredFields['solar_electric_array_tilt'] = mandatoryPVMessage;
         if (homeValues['solar_electric_capacity_known'] === '1' || homeValues['solar_electric_capacity_known'] === 1) {
             requiredFields['solar_electric_system_capacity'] = 'System Capacity is required when known';
         } else if (homeValues['solar_electric_capacity_known'] === '0' || homeValues['solar_electric_capacity_known'] === 0) {
