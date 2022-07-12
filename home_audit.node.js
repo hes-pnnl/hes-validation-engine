@@ -728,7 +728,7 @@ let validationRules = {
             let max_knee_wall_area = 2*footprintArea/3;
             let knee_wall_area = TypeRules._int_or_zero(_homeValues['knee_wall_area_1']) + TypeRules._int_or_zero(_homeValues['knee_wall_area_2']);
             if(knee_wall_area > max_knee_wall_area){
-                return new Validation( `Total knee wall area is exceeded maximum of ${Math.ceil(max_knee_wall_area)} sqft).`, ERROR);
+                return new Validation( `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`, ERROR);
             }
         } else {
             return new Validation(TypeRules._float(value, 4, 5000, true), BLOCKER);
