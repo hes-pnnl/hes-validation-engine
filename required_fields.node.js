@@ -229,7 +229,7 @@ module.exports = function (homeValues) {
         for (let duct of ['1', '2', '3']) {
             //If duct percentage entered, require rest of ducts
             let mandatoryDuctMessage = 'This is a mandatory duct field';
-            if(parseInt(homeValues['duct_fraction_'+duct+'_'+system]) > 0){
+            if(parseFloat(homeValues['duct_fraction_'+duct+'_'+system]) > 0){
                 requiredFields['duct_location_'+duct+'_'+system] = mandatoryDuctMessage;
                 requiredFields['duct_insulated_'+duct+'_'+system] = mandatoryDuctMessage;
             }
