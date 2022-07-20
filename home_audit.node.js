@@ -723,7 +723,8 @@ let validationRules = {
         return this._knee_wall_area(value);
     },
     _knee_wall_area: function(value) {
-        if (TypeRules._int(value, 4, 5000, false) === undefined) {
+        const constraintsError = TypeRules._int(value, 4, 5000, false);
+        if (constraintsError === undefined) {
             let footprintArea = this._get_footprint_area();
             let max_knee_wall_area = 2*footprintArea/3;
             let knee_wall_area = TypeRules._int_or_zero(_homeValues['knee_wall_area_1']) + TypeRules._int_or_zero(_homeValues['knee_wall_area_2']);
@@ -731,7 +732,7 @@ let validationRules = {
                 return new Validation( `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`, ERROR);
             }
         } else {
-            return new Validation(TypeRules._float(value, 4, 5000, true), BLOCKER);
+            return new Validation(constraintsError, BLOCKER);
         }
     },
 
