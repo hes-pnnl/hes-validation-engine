@@ -1603,10 +1603,7 @@ let validationRules = {
             this._get_proj_ceiling_area('1') + this._get_proj_ceiling_area('2');
     },
 
-    /*
-     * Gets the first wall dimension for window area validations
-     */
-    _get_wall_dimension_left_right: function() {
+    _get_dimension1: function(){
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
@@ -1615,11 +1612,8 @@ let validationRules = {
             return false;
         }
     },
-    
-    /*
-     * Gets the second wall dimension for window area validations
-     */
-    _get_wall_dimension_front_back: function() {
+
+    _get_dimension2: function(){
         let dimension2 = this._get_wall_dimension_left_right();
         if (dimension2) {
             //Assume floor dimensions area 5x3
@@ -1627,6 +1621,27 @@ let validationRules = {
         } else {
             return false;
         }
+    },
+
+    /*
+     * Gets the first wall dimension for window area validations
+     * The calculations for dimension1 and dimension2 need to be swapped if the shape is 'townhouse'
+     */
+    _get_wall_dimension_left_right: function() {
+        if(_homeValues.shape === 'town_house'){
+            return this._get_dimension2();
+        }
+        return this._get_dimension1();
+    },
+    
+    /*
+     * Gets the second wall dimension for window area validations
+     */
+    _get_wall_dimension_front_back: function() {
+        if(_homeValues.shape === 'town_house'){
+            return this._get_dimension1();
+        }
+        return this._get_dimension2();
     },
 
     /*
