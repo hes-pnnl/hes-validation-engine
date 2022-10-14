@@ -1614,7 +1614,7 @@ let validationRules = {
     },
 
     _get_dimension2: function(){
-        let dimension2 = this._get_wall_dimension_left_right();
+        let dimension2 = this._get_dimension1();
         if (dimension2) {
             //Assume floor dimensions area 5x3
             return dimension2 * (5 / 3);
