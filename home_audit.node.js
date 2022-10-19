@@ -1712,20 +1712,6 @@ let validationRules = {
             }
         }
     },
-
-    /*
-     * Checks address/city or coordinates to be an accepted input. 
-     * Intended to validate half addresses that do not require address and/or city feilds, if coordinates are provided on map.
-     * @param {string} value
-     */
-    _require_if_no_coordinates: function(value) {
-        if((_homeValues.latitude && _homeValues.longitude) || value){
-            return null;
-        }
-        else{
-            return "Field is required, if no coordinates are provided."
-        }
-    }
 };
 
 function get_validation_messages (homeValues, requiredFields, additionalRules) {
@@ -1750,8 +1736,6 @@ function get_validation_messages (homeValues, requiredFields, additionalRules) {
                  */
             } else if (fieldName === 'hot_water_type' && homeValues['hot_water_type'] && TypeRules._is_empty(homeValues['hot_water_fuel'])) {
                 // Do nothing ... avoid duplicate messages 
-            } else if (["address", "city"].includes(fieldName) && !validationRules._require_if_no_coordinates(homeValues[fieldName])){
-                // Do nothing ... only require city and address if no coordinates.
             } else {
                 result[MANDATORY][fieldName] = requiredFields[fieldName];
             }
@@ -1798,11 +1782,10 @@ function validate_home_audit (homeValues, additionalRules = null) {
  */
 function validate_address (homeValues) {
     let mandatoryMessage = "Missing value for mandatory field";
-    let optionalMessage = "Field is required, if no coordinates are provided.";
     // Define values that are always required
     let requiredFields = {
-        address : optionalMessage,
-        city : optionalMessage,
+        address : mandatoryMessage,
+        city : mandatoryMessage,
         state : mandatoryMessage,
         zip_code : mandatoryMessage,
         assessment_type : mandatoryMessage,
