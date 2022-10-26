@@ -6,10 +6,11 @@
  * node home_audit.cli.js '{"solar_electric_capacity_known" : "3"}'
  * > {"solar_electric_capacity_known":"3 is outside the allowed range (0 - 1)"}
  */
+const fs = require('fs');
+
 let hes_validation_engine = require('./home_audit.node.js');
 let validate_address = hes_validation_engine.validate_address;
 let validate_home_audit = hes_validation_engine.validate_home_audit;
-
-const obj = JSON.parse(process.argv[2]);
+const obj = JSON.parse(fs.readFileSync(process.argv[2]));
 const result = Object.assign(validate_address(obj), validate_home_audit(obj));
 console.log(JSON.stringify(result));

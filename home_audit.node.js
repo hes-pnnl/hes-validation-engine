@@ -1770,9 +1770,12 @@ function get_validation_messages (homeValues, requiredFields, additionalRules) {
 function validate_home_audit (homeValues, additionalRules = null) {
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
-    let requiredFields = require('./required_fields.node')(homeValues);
-
-    return get_validation_messages(homeValues, requiredFields, additionalRules);
+    let requiredFields = require('./required_fields.node.js')(homeValues);
+    if(homeValues.building) {
+        return requiredFields
+    } else {
+        return get_validation_messages(homeValues, requiredFields, additionalRules);
+    }
 }
 
 /**
@@ -1782,17 +1785,24 @@ function validate_home_audit (homeValues, additionalRules = null) {
  * validation rules were violated, an empty object is returned.
  */
 function validate_address (homeValues) {
+    // If we are given the new version of the home object, we need to pass the right area to the
+    // validation engine
+    if(homeValues.building_address) {
+        homeValues = homeValues.building_address;
+    }
     let mandatoryMessage = "Missing value for mandatory field";
     let optionalMessage = "Field is required, if no coordinates are provided.";
     // Define values that are always required
     let requiredFields = {
-        address : optionalMessage,
-        city : optionalMessage,
+        address : mandatoryMessage,
+        city : mandatoryMessage,
         state : mandatoryMessage,
         zip_code : mandatoryMessage,
         assessment_type : mandatoryMessage,
     };
-    return get_validation_messages(homeValues, requiredFields);
+    const item = get_validation_messages(homeValues, requiredFields);
+    console.log('address validation', item);
+    return item;
 }
 
 module.exports = {validate_home_audit, validate_address};

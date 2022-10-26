@@ -15,5 +15,10 @@
     "bugs": {
         "url": "https://github.com/hes-pnnl/hes-validation-engine/issues"
     },
-    "homepage": "https://github.com/hes-pnnl/hes-validation-engine#readme"
+    "homepage": "https://github.com/hes-pnnl/hes-validation-engine#readme",
+    "dependencies": {
+        "ajv": "^8.11.0",
+        "ajv-formats": "^2.1.1",
+        "jsonschema": "^1.4.1"
+    }
 }

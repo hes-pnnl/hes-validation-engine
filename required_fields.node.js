@@ -2,6 +2,12 @@
  * required_fields.node.js - Validates that required home audit fields have a value.
  */
 let TypeRules = require('./type_rules.node');
+let validationRules = require('./validation_rules');
+const ENUMS = require('./validation_enums.node')
+const Ajv = require("ajv");
+const addFormats = require('ajv-formats');
+const ajv = new Ajv({allErrors: true})
+addFormats(ajv);
 
 /**
  * Casts string to matching boolean, or null if no exact match
@@ -19,29 +25,323 @@ function castBool(value) {
     }
 }
 
+nestedRequiredFields = {
+    type: "object",
+    properties: {
+        about: {
+            type: "object",
+            properties: {
+                air_sealing_present: {type: "boolean"},
+                assessment_date: {type: "string", format: "date"},
+                blower_door_test: {type: "boolean"},
+                comment_api_only: {type: "string"}, // schema
+                comments: {type: "string"}, // schema
+                conditioned_floor_area: {type: "integer", minimum: 250, maximum: 25000},
+                envelope_leakage: {type: "integer", minimum: 0, maximum: 25000},
+                floor_to_ceiling_height: {type: "integer", minimum: 6, maximum: 12},
+                number_bedrooms: {type: "integer", minimum: 1, maximum: 10},
+                num_floor_above_grade: {type: "integer", minimum: 1, maximum: 4},
+                orientation: {type: "string", enum: ENUMS.orientationArray},
+                shape: {type: "string", enum: ENUMS.buildingShapes, $comment: 'Building Shape is required'},
+                town_house_walls: {type: "string", enum: ENUMS.townHouseWallOrientations},
+                year_built: {type: "integer", minimum: 1600, maximum: (new Date().getFullYear())},
+            },
+            // If blower door test conducted, require envelope_leackage, else air_sealing_present
+            if: {properties: {blower_door_test: {const: true}}},
+            then: {required: ['envelope_leakage']},
+            else: {required: ['air_sealing_present']},
+
+            required: [
+                "assessment_date",
+                "shape",
+                "year_built",
+                "number_bedrooms",
+                "num_floor_above_grade",
+                "floor_to_ceiling_height",
+                "conditioned_floor_area",
+                "orientation",
+                "blower_door_test"
+            ],
+            additionalProperties: false
+        },
+        systems: {
+            type: "object",
+            properties: {
+                domestic_hot_water: {
+                    type: "object",
+                    properties: {
+                        category: {type: "string", enum: ENUMS.hotWaterCategories},
+                        type: {type: "string", enum: ENUMS.hotWaterType}
+                    }
+                },
+                generation: {
+                    type: "object",
+                    properties: {
+                        solar_electric: {
+                            type: "object",
+                            properties: {
+                                array_azimuth: {type: "string", enum: ENUMS.orientationArray},
+                                array_tilt: {type: "string", enum: ENUMS.tiltArray},
+                                capacity_known: {type: "boolean"},
+                                system_capacity: {type: "number", minimum: 0.05, maximum: 100},
+                                year: {type: "integer", minimum: 2000, maximum: (new Date().getFullYear())}
+                            }
+                        }
+                    }
+                },
+                hvac: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            cooling: {
+                                type: "object",
+                                properties: {
+                                    efficiency: {type: "number", minimum: 8, maximum: 40},
+                                    efficiency_method: {type: "string", enum: ENUMS.hvacEfficiencyOptions},
+                                    type: {type: "string", enum: ENUMS.coolingTypeOptions},
+                                }
+                            },
+                            heating: {
+                                type: "object",
+                                properties: {
+                                    efficiency: {type: "number", minimum: 0.6, maximum: 20},
+                                    efficiency_method: {type: "string", enum: ENUMS.hvacEfficiencyOptions},
+                                    fuel_primary: {type: "string", enum: ENUMS.heatingFuelOptions},
+                                    type: {type: "string", enum: ENUMS.heatingTypeOptions}
+                                }
+                            },
+                            hvac_fraction: {},
+                            hvac_name: {type: "string"},
+                        }
+                    }
+                },
+            }
+        },
+        zone: {
+            type: "object",
+            properties: {
+                wall_construction_same: {
+                    type: "boolean"
+                },
+                window_construction_same: {
+                    type: "boolean"
+                },
+                zone_floor: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            floor_area: {type: "number", minimum: 4, maximum: 25000 },
+                            floor_assembly_code: {type: "string", enum: ENUMS.floorAssemblyCode },
+                            floor_name: {type: "string"},
+                            foundation_insulation_level: {type: "number", enum: ENUMS.foundationInsulationLevels },
+                            foundation_type: {type: "string", enum: ENUMS.foundationType },
+                        },
+                        additionalProperties: false
+                    },
+                },
+                zone_roof: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            ceiling_assembly_code: {type: "string", enum: ENUMS.ceilingAssemblyCode},
+                            ceiling_area: {type: "number", minimum: 4, maximum: 25000},
+                            roof_assembly_code: {type: "string", enum: ENUMS.roofAssemblyCode},
+                            roof_color: {type: "string", enum: ENUMS.roofColor},
+                            roof_name: {type: "string"},
+                            roof_type: {type: "string", enum: ENUMS.roofType},
+                            zone_skylight: {
+                                type: "object",
+                                properties: {
+                                    skylight_area: {type: "number", minimum: 0, maximum: 300},
+                                    skylight_u_value: {type: "number", minimum: 0.01, maximum: 5},
+                                    skylight_shqc: {type: "number", minimum: 0, maximum: 1},
+                                    solar_screen: {type: "boolean"}
+                                }
+                            },
+                        },
+                        // If roof_type entered, require roof contents
+                        if: { properties: {roof_type: {enum: ENUMS.roofType}}},
+                        then: {
+                            required: ['roof_assembly_code', 'roof_color'],
+                            // If roof_type is vented_attic, require ceiling fields
+                            if: { properties: {roof_type: {const: 'vented_attic'}}},
+                            then: {
+                                required: ['ceiling_area', 'ceiling_assembly_code']
+                            },
+                            else: {
+                                if: {properties: {roof_type: {const: 'cath_ceiling'}}},
+                                then: {required: ['roof_area']}
+                            },
+                        },
+                    }
+                },
+                zone_wall: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            side: {type: "string", enum: ENUMS.zoneWallSides},
+                            wall_assembly_code: {type: "string", enum: ENUMS.wallAssemblyCode},
+                            zone_window: {
+                                type: "object",
+                                properties: {
+                                    solar_screen: {type: "boolean"},
+                                    window_area: {type: "number", minimum: 0, maximum:999},
+                                    window_method: {type: "string"},
+                                    window_shqc: {type: "number", maximum: 1, minimum: 0},
+                                    window_u_value: {type: "number", maximum: 1, minimum: 0},
+                                }
+                            }
+                        },
+                        additionalProperties: false
+                    }
+                }
+            },
+
+            required: [
+                "wall_construction_same",
+                "window_construction_same"
+            ],
+        }
+    },
+    required: ["about"],
+    // additionalProperties: true
+}
+
+mandatoryMessage = "Missing value for mandatory field";
+
+flatRequiredFields = {
+    assessment_date : mandatoryMessage,
+    blower_door_test : mandatoryMessage,
+    conditioned_floor_area : mandatoryMessage,
+    floor_to_ceiling_height : mandatoryMessage,
+    num_floor_above_grade : mandatoryMessage,
+    number_bedrooms : mandatoryMessage,
+    orientation : mandatoryMessage,
+    shape : mandatoryMessage,
+    year_built : mandatoryMessage,
+    hot_water_type : mandatoryMessage,
+    hvac_fraction_1 : mandatoryMessage,
+    heating_type_1 : mandatoryMessage,
+    heating_fuel_1 : mandatoryMessage,
+    cooling_type_1 : mandatoryMessage,
+    roof_type_1 : mandatoryMessage,
+    floor_area_1 : mandatoryMessage,
+    wall_construction_same : mandatoryMessage,
+    window_construction_same : mandatoryMessage
+};
+
 module.exports = function (homeValues) {
-    let mandatoryMessage = "Missing value for mandatory field";
+    // If we are given the new version of the home object, we need to validate the nested version instead
+    return homeValues.building ? getNestedRequiredFields(homeValues.building) : getFlatRequiredFields(homeValues);
+}
+
+function getNestedRequiredFields (homeValues) {
+    const errorMessages = {}
+    errorMessages[ENUMS.BLOCKER] = {};
+    errorMessages[ENUMS.ERROR] = {};
+    errorMessages[ENUMS.MANDATORY] = {};
+
+    const nested_validate = ajv.compile(nestedRequiredFields);
+    const valid=nested_validate(homeValues);
+    if(!valid) {
+        nested_validate.errors.forEach((error) => {
+            const {instancePath, params} = error;
+            const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
+            if(errorMessages[ENUMS.BLOCKER][errorPath] === undefined) {
+                errorMessages[ENUMS.BLOCKER][errorPath] = [];
+            }
+            errorMessages[ENUMS.BLOCKER][errorPath].push(convertAJVError(error));
+        })
+        // console.log('errors', nested_validate.errors[0]);
+    }
+    getAdditionalNestedRequiredFields(homeValues, errorMessages);
+    getCrossValidationMessages(homeValues, errorMessages);
+    return errorMessages
+}
+
+function convertAJVError(errorObj) {
+    const {keyword, schemaPath, instancePath, params, message} = errorObj;
+    const returnObj = {
+        schemaPath, instancePath, keyword, message
+    }
+    switch(keyword) {
+        case 'required':
+            returnObj.message = mandatoryMessage;
+            break;
+        default:
+            break;
+    }
+    return returnObj;
+}
+
+function getCrossValidationMessages (homeValues, errorMessages) {
+    const CrossValidator = new validationRules(homeValues);
+    getAboutObjectCrossValidationMessages(homeValues.about, errorMessages, CrossValidator)
+}
+
+/**
+ * Cross validations for the "About" object in the nested JSON Schema
+ */
+function getAboutObjectCrossValidationMessages(about, errorMessages, CrossValidator) {
+    const fields = ['shape', 'year_built', 'number_bedrooms', 'num_floor_above_grade',
+        'floor_to_ceiling_height', 'conditioned_floor_area', 'orientation', 'blower_door_test',
+        'envelope_leakage', 'town_house_walls', 'air_sealing_present', 'comments'];
+    for(const index in fields) {
+        const field = fields[index]
+        if(![null, undefined].includes(about[field])) {
+            const validationResult = CrossValidator[field](about[field])
+            if(validationResult && validationResult['message']) {
+                if(errorMessages[validationResult['type']][`/about/${field}`] === undefined) {
+                    errorMessages[validationResult['type']][`/about/${field}`] = [];
+                }
+                errorMessages[validationResult['type']][`/about/${field}`].push(validationResult['message']);
+            }
+        }
+    }
+}
+
+
+function getAdditionalNestedRequiredFields (homeValues) {
+    //
+}
+
+function getAdditionalRoofFields (roof, index, errorMessages) {
+
+}
+
+function getAdditionalSkylightFields (skylight, roof_index, errorMessages) {
+    // If we have a skylight area and it's not 0
+    if(skylight.skylight_area && skylight.skylight_area !== 0) {
+        // Skylight method is required
+        if(!skylight.skylight_method) {
+            // ERROR:  Skylight method is required
+            errorMessages[ENUMS.BLOCKER].zone_roof[roof_index].zone_skylight.skylight_method = 'This is a required skylight field';
+        } else
+            // Skylight method is code
+        if (skylight.skylight_method === 'code' && !skylight.skylight_code) {
+            // If there is not 'code'
+            errorMessages[ENUMS.BLOCKER].zone_roof[roof_index].zone_skylight.skylight_code = 'Skylight specs are required if known';
+        }
+        // Else, is custom
+        else {
+            ['skylight_u_value', 'skylight_shgc'].forEach((item) => {
+                if(!skylight[item]) {
+                    errorMessages[ENUMS.BLOCKER].zone_roof[roof_index].zone_skylight[item] = 'Field is required if skylight specs unknown'
+                }
+            });
+        }
+    }
+}
+
+function getFlatRequiredFields (homeValues) {
+    // If we are given the new version of the home object, we need to validate the nested version instead
+
     // Define values that are always required
-    let requiredFields = {
-        assessment_date : mandatoryMessage,
-        blower_door_test : mandatoryMessage,
-        conditioned_floor_area : mandatoryMessage,
-        floor_to_ceiling_height : mandatoryMessage,
-        num_floor_above_grade : mandatoryMessage,
-        number_bedrooms : mandatoryMessage,
-        orientation : mandatoryMessage,
-        shape : mandatoryMessage,
-        year_built : mandatoryMessage,
-        hot_water_type : mandatoryMessage,
-        hvac_fraction_1 : mandatoryMessage,
-        heating_type_1 : mandatoryMessage,
-        heating_fuel_1 : mandatoryMessage,
-        cooling_type_1 : mandatoryMessage,
-        roof_type_1 : mandatoryMessage,
-        floor_area_1 : mandatoryMessage,
-        wall_construction_same : mandatoryMessage,
-        window_construction_same : mandatoryMessage
-    };
+    let requiredFields = flatRequiredFields;
     
     let positions = [];
 
