@@ -80,7 +80,7 @@ let TypeRules = {
      * @param {float} value
      */
     _fraction: function(value) {
-        value = parseFloat(value.toFixed(3)); // Re-parse to avoid bit rounding inaccuracies
+        value = parseFloat(value.toFixed(10)); // Re-parse to avoid bit rounding inaccuracies
         if (value > 1) {
             return "Sum of fraction values may not exceed 100%"
         } else if (value < 1) {
