@@ -110,30 +110,39 @@ module.exports = class ValidationRules{
      * zone
      */
     wall_construction_same(value) {
-        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
+        return new Validation(TypeRules._bool(value), BLOCKER);
     }
     window_construction_same(value) {
-        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
+        return new Validation(TypeRules._bool(value), BLOCKER);
     }
     /*
      * zone_roof
      */
-    roof_type_1(value) {
-        return this._roof_type(value);
-    }
-    roof_type_2(value) {
-        return this._roof_type(value);
-    }
+    // roof_type_1(value) {
+    //     return this._roof_type(value);
+    // }
+    // roof_type_2(value) {
+    //     return this._roof_type(value);
+    // }
     _roof_type(value) {
         return new Validation(TypeRules._string(value, 20, ENUMS.roofType), BLOCKER);
     }
 
-    roof_area_1(value) {
-        return this._roof_area(value, '1');
-    }
-    roof_area_2(value) {
-        return this._roof_area(value, '2');
-    }
+    // roof_area_1(value) {
+    //     return this._roof_area(value, '1');
+    // }
+    // roof_area_2(value) {
+    //     return this._roof_area(value, '2');
+    // }
+
+    /**
+     * If the roof is Cathedral Celiing (roof_type = 'cath_ceiling'), check that the roof area is not less
+     * than the combined floor area of the zone AND that the roof is not less than the
+     * @param value
+     * @param num
+     * @return {Validation}
+     * @private
+     */
     _roof_area(value, num) {
         if(this._homeValues['roof_type_'+ num] === 'cath_ceiling') {
             //Check that roof area is within legal bounds per API
@@ -156,12 +165,12 @@ module.exports = class ValidationRules{
             }
         }
     }
-    ceiling_area_1(value) {
-        return this._ceiling_area(value, '1');
-    }
-    ceiling_area_2(value) {
-        return this._ceiling_area(value, '2');
-    }
+    // ceiling_area_1(value) {
+    //     return this._ceiling_area(value, '1');
+    // }
+    // ceiling_area_2(value) {
+    //     return this._ceiling_area(value, '2');
+    // }
     _ceiling_area(value, num) {
         if(this._homeValues['roof_type_'+ num] === 'vented_attic') {
             //Check that roof area is within legal bounds per API
@@ -184,52 +193,52 @@ module.exports = class ValidationRules{
             }
         }
     }
-    roof_assembly_code_1(value) {
-        return this._roof_assembly_code(value);
-    }
-    roof_assembly_code_2(value) {
-        return this._roof_assembly_code(value);
-    }
+    // roof_assembly_code_1(value) {
+    //     return this._roof_assembly_code(value);
+    // }
+    // roof_assembly_code_2(value) {
+    //     return this._roof_assembly_code(value);
+    // }
     _roof_assembly_code(value) {
         return new Validation(TypeRules._string(value, 20, ENUMS.roofAssemblyCode), BLOCKER);
     }
 
-    roof_color_1(value) {
-        return this._roof_color(value);
-    }
-    roof_color_2(value) {
-        return this._roof_color(value);
-    }
+    // roof_color_1(value) {
+    //     return this._roof_color(value);
+    // }
+    // roof_color_2(value) {
+    //     return this._roof_color(value);
+    // }
     _roof_color(value) {
         return new Validation(TypeRules._string(value, 20, ENUMS.roofColor), BLOCKER);
     }
 
-    roof_absorptance_1(value) {
-        return this._roof_absorptance(value);
-    }
-    roof_absorptance_2(value) {
-        return this._roof_absorptance(value);
-    }
+    // roof_absorptance_1(value) {
+    //     return this._roof_absorptance(value);
+    // }
+    // roof_absorptance_2(value) {
+    //     return this._roof_absorptance(value);
+    // }
     _roof_absorptance(value) {
         return new Validation(TypeRules._float(value, 0, 1), BLOCKER);
     }
 
-    ceiling_assembly_code_1(value) {
-        return this._ceiling_assembly_code(value);
-    }
-    ceiling_assembly_code_2(value) {
-        return this._ceiling_assembly_code(value);
-    }
+    // ceiling_assembly_code_1(value) {
+    //     return this._ceiling_assembly_code(value);
+    // }
+    // ceiling_assembly_code_2(value) {
+    //     return this._ceiling_assembly_code(value);
+    // }
     _ceiling_assembly_code(value) {
         return new Validation(TypeRules._string(value, 20, ENUMS.ceilingAssemblyCode), BLOCKER);
     }
 
-    knee_wall_area_1(value) {
-        return this._knee_wall_area(value);
-    }
-    knee_wall_area_2(value) {
-        return this._knee_wall_area(value);
-    }
+    // knee_wall_area_1(value) {
+    //     return this._knee_wall_area(value);
+    // }
+    // knee_wall_area_2(value) {
+    //     return this._knee_wall_area(value);
+    // }
     _knee_wall_area(value) {
         const constraintsError = TypeRules._int(value, 4, 5000, false);
         if (constraintsError === undefined) {
@@ -244,12 +253,12 @@ module.exports = class ValidationRules{
         }
     }
 
-    knee_wall_assembly_code_1(value) {
-        return this._knee_wall_assembly_code(value);
-    }
-    knee_wall_assembly_code_2(value) {
-        return this._knee_wall_assembly_code(value);
-    }
+    // knee_wall_assembly_code_1(value) {
+    //     return this._knee_wall_assembly_code(value);
+    // }
+    // knee_wall_assembly_code_2(value) {
+    //     return this._knee_wall_assembly_code(value);
+    // }
     _knee_wall_assembly_code(value) {
         return new Validation(TypeRules._string(value, 10, ENUMS.kneeWallAssemblyCodes), BLOCKER);
     }
@@ -1213,7 +1222,7 @@ module.exports = class ValidationRules{
     _check_conditioned_areas(combinedArea, thisAreaType) {
         let footprintArea = this._get_footprint_area();
         if (TypeRules._int_or_zero(this._homeValues.num_floor_above_grade) === 0) {
-            return "This home’s minumum footprint is unknown.  Please enter number of stories.";
+            return "This home’s minimum footprint is unknown.  Please enter number of stories.";
         } else {
             // Check that combined areas are within reasonable range of footprint
             // const max = thisAreaType === "roof"

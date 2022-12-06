@@ -42,11 +42,11 @@ nestedRequiredFields = {
                 number_bedrooms: {type: "integer", minimum: 1, maximum: 10},
                 num_floor_above_grade: {type: "integer", minimum: 1, maximum: 4},
                 orientation: {type: "string", enum: ENUMS.orientationArray},
-                shape: {type: "string", enum: ENUMS.buildingShapes, $comment: 'Building Shape is required'},
+                shape: {type: "string", enum: ENUMS.buildingShapes},
                 town_house_walls: {type: "string", enum: ENUMS.townHouseWallOrientations},
                 year_built: {type: "integer", minimum: 1600, maximum: (new Date().getFullYear())},
             },
-            // If blower door test conducted, require envelope_leackage, else air_sealing_present
+            // If blower door test conducted, require envelope_leakage, else air_sealing_present
             if: {properties: {blower_door_test: {const: true}}},
             then: {required: ['envelope_leakage']},
             else: {required: ['air_sealing_present']},
@@ -251,6 +251,7 @@ function getNestedRequiredFields (homeValues) {
         nested_validate.errors.forEach((error) => {
             const {instancePath, params} = error;
             const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
+
             if(errorMessages[ENUMS.BLOCKER][errorPath] === undefined) {
                 errorMessages[ENUMS.BLOCKER][errorPath] = [];
             }
@@ -304,9 +305,17 @@ function getAboutObjectCrossValidationMessages(about, errorMessages, CrossValida
     }
 }
 
+function getZoneCrossValidationMessages(zone, errorMessages, CrossValidator) {
+    // zone wall
+
+    // zone roof
+
+    // zone floor
+}
+
 
 function getAdditionalNestedRequiredFields (homeValues) {
-    //
+
 }
 
 function getAdditionalRoofFields (roof, index, errorMessages) {

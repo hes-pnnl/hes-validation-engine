@@ -1,0 +1,140 @@
+{
+  "building_address": {
+    "address": "8 Tamarack Drive",
+    "city": "Amherst",
+    "state": "MA",
+    "zip_code": "01002",
+    "assessment_type": "test"
+  },
+  "building": {
+    "about": {
+      "shape": "town_house",
+      "assessment_date": "2022-01-01",
+      "year_built": 1988,
+      "number_bedrooms": 3,
+      "num_floor_above_grade": 1,
+      "floor_to_ceiling_height": 8,
+      "conditioned_floor_area": 1260,
+      "orientation": "north_east",
+      "blower_door_test": true,
+      "envelope_leakage": 2260,
+      "air_sealing_present": false,
+      "town_house_walls": "back_right_front"
+    },
+    "zone": {
+      "zone_wall": [
+        {
+          "side": "front",
+          "wall_assembly_code": "ewwf07vi",
+          "zone_window": {
+            "window_area": 55,
+            "window_method": "custom",
+            "solar_screen": false,
+            "window_u_value": 0.37,
+            "window_shgc": 0.52
+          }
+        },
+        {
+          "side": "back",
+          "wall_assembly_code": "ewwf07vi",
+          "zone_window": {
+            "window_area": 56,
+            "window_method": "custom",
+            "solar_screen": false,
+            "window_u_value": 0.37,
+            "window_shgc": 0.52
+          }
+        },
+        {
+          "side": "right",
+          "wall_assembly_code": "ewwf07vi",
+          "zone_window": {
+            "window_area": 40,
+            "window_method": "custom",
+            "solar_screen": false,
+            "window_u_value": 0.37,
+            "window_shgc": 0.52
+          }
+        }
+      ],
+      "wall_construction_same": false,
+      "window_construction_same": false,
+      "zone_roof": [
+        {
+          "roof_name": "roof1",
+          "roof_type": "vented_attic",
+          "ceiling_assembly_code": "ecwf21",
+          "ceiling_area": 1250,
+          "roof_assembly_code": "rfwf00co",
+          "roof_color": "medium",
+          "zone_skylight": {
+            "skylight_area": 12,
+            "skylight_method": "custom",
+            "skylight_u_value": 0.61,
+            "skylight_shgc": 0.52,
+            "solar_screen": false
+          }
+        },
+        {
+          "roof_name": "roof2",
+          "roof_type": "vented_attic",
+          "ceiling_assembly_code": "ecwf25",
+          "ceiling_area": 288,
+          "roof_color": "medium",
+          "roof_assembly_code": "rfwf00co"
+        }
+      ],
+      "zone_floor": [
+        {
+          "floor_name": "floor1",
+          "floor_area": 972,
+          "foundation_type": "vented_crawl",
+          "foundation_insulation_level": 0,
+          "floor_assembly_code": "efwf00ca"
+        }
+      ]
+    },
+    "systems": {
+      "hvac": [
+        {
+          "hvac_name": "hvac1",
+          "hvac_fraction": 0.59,
+          "heating": {
+            "fuel_primary": "natural_gas",
+            "type": "boiler",
+            "efficiency_method": "user",
+            "efficiency": 0.78
+          }
+        },
+        {
+          "hvac_name": "hvac2",
+          "hvac_fraction": 0.41,
+          "heating": {
+            "fuel_primary": "electric",
+            "type": "mini_split",
+            "efficiency_method": "user",
+            "efficiency": 10
+          },
+          "cooling": {
+            "type": "mini_split",
+            "efficiency_method": "user",
+            "efficiency": 19
+          }
+        }
+      ],
+      "domestic_hot_water": {
+        "category": "combined",
+        "type": "indirect"
+      },
+      "generation": {
+        "solar_electric": {
+          "capacity_known": true,
+          "year": 2014,
+          "array_azimuth": "south_west",
+          "array_tilt": "steep_slope",
+          "system_capacity": 4
+        }
+      }
+    }
+  }
+}
