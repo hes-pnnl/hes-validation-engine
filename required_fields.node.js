@@ -152,6 +152,14 @@ nestedRequiredFields = {
                             roof_color: {type: "string", enum: ENUMS.roofColor},
                             roof_name: {type: "string"},
                             roof_type: {type: "string", enum: ENUMS.roofType},
+                            roof_absorptance: {type: "number", minimum: 0, maximum: 1},
+                            knee_wall: {
+                                type: "object",
+                                properties: {
+                                    area: {type: "number", minimum: 1, maximum: 5000},
+                                    assembly_code: {type: "string", enum: ENUMS.kneeWallAssemblyCodes}
+                                }
+                            },
                             zone_skylight: {
                                 type: "object",
                                 properties: {
@@ -257,7 +265,6 @@ function getNestedRequiredFields (homeValues) {
             }
             errorMessages[ENUMS.BLOCKER][errorPath].push(convertAJVError(error));
         })
-        // console.log('errors', nested_validate.errors[0]);
     }
     getAdditionalNestedRequiredFields(homeValues, errorMessages);
     getCrossValidationMessages(homeValues, errorMessages);
@@ -311,15 +318,103 @@ function getZoneCrossValidationMessages(zone, errorMessages, CrossValidator) {
     // zone roof
 
     // zone floor
+
+    // zone skylight
 }
 
+function getAdditionalZoneNestedRequiredFields (zone, errorMessages) {
+    // zone wall
 
-function getAdditionalNestedRequiredFields (homeValues) {
+    // zone roof
+    zone.zone_roof.forEach((roof, index) => (
+        getAdditionalRoofFields(roof, index, errorMessages)
+    ));
 
+    // zone floor
+    zone.zone_floor.forEach((floor, index) => (
+        getAdditionalFloorFields(floor, index, errorMessages)
+    ));
+
+    // zone skylight
+    zone.zone_skylight.forEach((skylight, index) => (
+        getAdditionalSkylightFields(skylight, index, errorMessages)
+    ));
+}
+
+function getAdditionalNestedRequiredFields (homeValues, errorMessages) {
+    // About
+
+    // Zone
+    getAdditionalZoneNestedRequiredFields(homeValues.zone, errorMessages)
+
+    // Systems
 }
 
 function getAdditionalRoofFields (roof, index, errorMessages) {
+    // If we have a roof type specified
+    if(roof.roof_type) {
+        // require roof assembly code
+        if(!ENUMS.roofAssemblyCode.includes(roof.roof_assembly_code)) {
+            errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/roof_assembly_code`].push('Roof Assembly is a required roof value')
+        }
+        // require roof color
+        if(!ENUMS.roofColor.includes(roof.roof_color)) {
+            errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/roof_color`].push('Roof Color is a required roof value')
+        }
+        // if color = cool_color
+        else if(roof.roof_color === 'cool_color') {
+            // require aborptance
+            if([undefined, null].includes(roof.roof_absorptance)) {
+                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/roof_absorptance`].push('Roof Absorptance is required when Roof Color is Cool')
+            }
+        }
+        // if type = vented_attic
+        if(roof.roof_type === 'vented_attic') {
+            // require ceiling area
+            if([undefined, null].includes(roof.ceiling_area)) {
+                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/ceiling_area`].push('Attic floor area is required for this roof type')
+            }
+            // require ceiling assembly code
+            if(!ENUMS.ceilingAssemblyCode.includes(roof.ceiling_assembly_code)) {
+                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/ceiling_assembly_code`].push('Attic floor insulation is required for this roof type')
+            }
+            // if knee_wall
+            if(![undefined, null].includes(roof.knee_wall)) {
+                // require knee wall assembly code
+                if(!ENUMS.kneeWallAssemblyCodes.includes(roof.knee_wall.assembly_code)) {
+                    errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/knee_wall/assembly_code`].push('Knee wall assembly is required for this roof type')
+                }
+            }
+        }
+        // if type = cath ceiling
+        else if (roof.roof_type === 'cath_ceiling') {
+            // require ceiling area
+            if([undefined, null].includes(roof.ceiling_area)) {
+                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/ceiling_area`].push('Ceiling area is required for this roof type')
+            }
+        }
+    }
+}
 
+function getAdditionalFloorFields (floor, index, errorMessages) {
+    // If floor area > 0 (required by JSON Schema)
+    if(![undefined, null].includes(floor.floor_area) && floor.floor_area > 0) {
+        // require foundation type
+        if(!ENUMS.foundationType.includes(floor.foundation_type)) {
+            errorMessages[ENUMS.BLOCKER][`/zone/zone_floor/${index}/foundation_type`].push('Foundation type is required for this floor')
+
+        }
+        // require foundation insulation level
+        if(!ENUMS.foundationInsulationLevels.includes(floor.foundation_insulation_level)) {
+            errorMessages[ENUMS.BLOCKER][`/zone/zone_floor/${index}/foundation_insulation_level`].push('Foundation insulation level is required for this floor')
+
+        }
+        // require floor assembly code IF foundation type is not slab on grade
+        if(floor.foundation_type !== 'slab_on_grade' && !ENUMS.floorAssemblyCode.includes(floor.floor_assembly_code)) {
+            errorMessages[ENUMS.BLOCKER][`/zone/zone_floor/${index}/floor_assembly_code`].push('Foundation assembly code is required for this floor')
+
+        }
+    }
 }
 
 function getAdditionalSkylightFields (skylight, roof_index, errorMessages) {
