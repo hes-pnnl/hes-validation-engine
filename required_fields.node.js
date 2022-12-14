@@ -322,8 +322,29 @@ function getZoneCrossValidationMessages(zone, errorMessages, CrossValidator) {
     // zone skylight
 }
 
-function getAdditionalZoneNestedRequiredFields (zone, errorMessages) {
+function getAdditionalNestedRequiredFields (homeValues, errorMessages) {
+    // About
+    getAdditionalAboutNestedRequiredFields(homeValues.about, errorMessages);
+
+    // Zone
+    getAdditionalZoneNestedRequiredFields(homeValues.zone, homeValues.about, errorMessages)
+
+    // Systems
+}
+
+function getAdditionalAboutNestedRequiredFields(about, errorMessages) {
+    // If the shape is townhouse
+    if(about.shape === 'town_house') {
+        // Require town_house_walls
+        if(!ENUMS.townHouseWallOrientations.includes(about.town_house_walls)) {
+            errorMessages[ENUMS.BLOCKER][`/about/town_house_walls`].push('Position is required if home is a Townhouse or Duplex')
+        }
+    }
+}
+
+function getAdditionalZoneNestedRequiredFields (zone, about, errorMessages) {
     // zone wall
+    getAdditionalWallFields(zone, about, errorMessages)
 
     // zone roof
     zone.zone_roof.forEach((roof, index) => (
@@ -341,13 +362,23 @@ function getAdditionalZoneNestedRequiredFields (zone, errorMessages) {
     ));
 }
 
-function getAdditionalNestedRequiredFields (homeValues, errorMessages) {
-    // About
-
-    // Zone
-    getAdditionalZoneNestedRequiredFields(homeValues.zone, errorMessages)
-
-    // Systems
+function getAdditionalWallFields(zone, about, errorMessages) {
+    const {shape, town_house_walls} = about;
+    const {wall_construction_same, zone_wall} = zone
+    // If all the walls are the same construction, we only check the assembly on the front wall.
+    let walls_to_check = ['front'];
+    // Otherwise...
+    if(!wall_construction_same) {
+        // If shape = town_house
+        if (shape === 'town_house') {
+            // Identify the walls we need to check for construction type on
+            walls_to_check = town_house_walls.split('_');
+        }
+        // Otherwise, we have to check every wall
+        else {
+            walls_to_check = ENUMS.zoneWallSides;
+        }
+    }
 }
 
 function getAdditionalRoofFields (roof, index, errorMessages) {
