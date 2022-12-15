@@ -1306,6 +1306,23 @@ let validationRules = {
             );
         }
     },
+
+
+    _is_servicing_duct_system: function(value, sys, duct) {
+        // If heating/cooling system does not require ducts, we need to ensure the
+        // user has not entered values for ducts
+        let ductTypes = ['central_furnace', 'heat_pump', 'gchp', 'split_dx'];
+        if (ductTypes.indexOf(_homeValues['heating_type_'+sys]) !== -1  &&
+            ductTypes.indexOf(_homeValues['cooling_type_'+sys]) !== -1)
+        {
+            if(!TypeRules._is_empty(value)) {
+                return new Validation(
+                    'Values may not be defined for system that does not call for ducts. Please only set values for ducts on Central Furnace, Heat Pump, Ground Coupled Heating Pump, or Central Air Conditioner systems',
+                    ERROR
+                )
+                }
+        }
+    },
     
     /**
      * Get validations for wall values, ensuring wall is valid
@@ -1342,6 +1359,10 @@ let validationRules = {
         const invalidDuct = this._is_servicing_duct(value, sys, duct);
         if (invalidDuct && invalidDuct['message']) {
             return invalidDuct;
+        }
+        const invalidDuctType = this._is_servicing_duct_system(value, sys, duct);
+        if(invalidDuctType && invalidDuctType['message']) {
+            return invalidDuctType;
         }
         return validation;
     },
