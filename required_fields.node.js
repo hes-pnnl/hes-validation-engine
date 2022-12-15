@@ -197,7 +197,7 @@ module.exports = function (homeValues) {
             if(homeValues['cooling_efficiency_method_'+system] === 'user') {
                 requiredFields['cooling_efficiency_'+system] = 'Cooling Efficiency is required when known';
             } else if(homeValues['cooling_efficiency_method_'+system] === 'shipment_weighted') {
-                requiredFields['cooling_year_'+system] = 'Year Installed is required when efficincy value is unknown';
+                requiredFields['cooling_year_'+system] = 'Year Installed is required when efficiency value is unknown';
             }
         }
         //Require ducts for heating/cooling types with ducts
@@ -211,9 +211,9 @@ module.exports = function (homeValues) {
         if(ductPercent === 100) {
             //Do nothing
         } else if((parseInt(homeValues['duct_fraction_1_'+system]) > 0) && (parseInt(homeValues['duct_fraction_2_'+system]) > 0) && ductPercent < 100) {
-            requiredFields['duct_fraction_3_'+system] = 'Duct percetange is required when they exist';
+            requiredFields['duct_fraction_3_'+system] = 'Duct percentage is required when they exist';
         } else if(parseInt(homeValues['duct_fraction_1_'+system]) > 0 && ductPercent < 100) {
-            requiredFields['duct_fraction_2_'+system] = 'Duct percetange is required when they exist';
+            requiredFields['duct_fraction_2_'+system] = 'Duct percentage is required when they exist';
         }
         for (let duct of ['1', '2', '3']) {
             //If duct percentage entered, require rest of ducts
