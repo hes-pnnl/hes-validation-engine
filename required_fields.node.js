@@ -292,6 +292,19 @@ function getCrossValidationMessages (homeValues, errorMessages) {
 }
 
 /**
+ * Helper function to add the validation messages easily to the object
+ * @param {object} errorMessageObj Container for the validation messages of a certain type (e.g. Blocker)
+ * @param {string} path Path in the nested schema to the error area
+ * @param {string} message Validation error message
+ */
+function addErrorMessage(errorMessageObj, path, message) {
+    if(errorMessageObj[path] === undefined) {
+        errorMessageObj[path] = [];
+    }
+    errorMessageObj[path].push(message);
+}
+
+/**
  * Cross validations for the "About" object in the nested JSON Schema
  */
 function getAboutObjectCrossValidationMessages(about, errorMessages, CrossValidator) {
@@ -303,10 +316,7 @@ function getAboutObjectCrossValidationMessages(about, errorMessages, CrossValida
         if(![null, undefined].includes(about[field])) {
             const validationResult = CrossValidator[field](about[field])
             if(validationResult && validationResult['message']) {
-                if(errorMessages[validationResult['type']][`/about/${field}`] === undefined) {
-                    errorMessages[validationResult['type']][`/about/${field}`] = [];
-                }
-                errorMessages[validationResult['type']][`/about/${field}`].push(validationResult['message']);
+                addErrorMessage(validationResult['type'], `about/${field}`, validationResult['message']);
             }
         }
     }
@@ -337,7 +347,7 @@ function getAdditionalAboutNestedRequiredFields(about, errorMessages) {
     if(about.shape === 'town_house') {
         // Require town_house_walls
         if(!ENUMS.townHouseWallOrientations.includes(about.town_house_walls)) {
-            errorMessages[ENUMS.BLOCKER][`/about/town_house_walls`].push('Position is required if home is a Townhouse or Duplex')
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/about/town_house_walls', 'Position is required if home is a Townhouse or Duplex')
         }
     }
 }
@@ -355,28 +365,42 @@ function getAdditionalZoneNestedRequiredFields (zone, about, errorMessages) {
     zone.zone_floor.forEach((floor, index) => (
         getAdditionalFloorFields(floor, index, errorMessages)
     ));
-
-    // zone skylight
-    zone.zone_skylight.forEach((skylight, index) => (
-        getAdditionalSkylightFields(skylight, index, errorMessages)
-    ));
 }
 
 function getAdditionalWallFields(zone, about, errorMessages) {
-    const {shape, town_house_walls} = about;
-    const {wall_construction_same, zone_wall} = zone
-    // If all the walls are the same construction, we only check the assembly on the front wall.
-    let walls_to_check = ['front'];
-    // Otherwise...
-    if(!wall_construction_same) {
-        // If shape = town_house
-        if (shape === 'town_house') {
-            // Identify the walls we need to check for construction type on
-            walls_to_check = town_house_walls.split('_');
+    const {wall_construction_same, zone_wall} = zone;
+    // First, we need to verify that all the walls are in a different position
+    const sides = zone_wall.map(wall => wall.side);
+    const duplicate_sides = sides.filter((side, i) => sides.indexOf(side) !== i)
+    // const unique_sides = [...new Set(zone_wall.map(wall => wall.side))];
+    if(duplicate_sides.length !== 0) {
+        duplicate_sides.forEach((side) => (
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
+        ))
+    }  else {
+        // Once we have validated that, continue with other checks.
+        const {shape, town_house_walls} = about;
+        // If all the walls are the same construction, we only check the assembly on the front wall.
+        let walls_to_check = ['front'];
+        // Otherwise...
+        if(!wall_construction_same) {
+            // If shape = town_house
+            if (shape === 'town_house') {
+                // Identify the walls we need to check for construction type on
+                walls_to_check = town_house_walls.split('_');
+            }
+            // Otherwise, we have to check every wall
+            else {
+                walls_to_check = ENUMS.zoneWallSides;
+            }
         }
-        // Otherwise, we have to check every wall
-        else {
-            walls_to_check = ENUMS.zoneWallSides;
+
+
+
+        const zone_walls_to_check = [...new Set(zone_wall.filter(wall => walls_to_check.includes(wall.side)))];
+        // If we don't have all the walls we expect, report the error and we
+        if(zone_walls_to_check.length !== walls_to_check.length) {
+            errorMessages[ENUMS.BLOCKER][`/zone/zone_wall`].push('Mismatch in zone walls provided and zone walls found to check. Ensure that all zone walls have been identified. If they are all the same construction, please indicate that as well');
         }
     }
 }
@@ -423,6 +447,10 @@ function getAdditionalRoofFields (roof, index, errorMessages) {
             if([undefined, null].includes(roof.ceiling_area)) {
                 errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/ceiling_area`].push('Ceiling area is required for this roof type')
             }
+        }
+        // If we have a skylight in the roof, we need to perform the skylight validations
+        if(roof.zone_skylight) {
+            getAdditionalSkylightFields(roof.zone_skylight, index, errorMessages)
         }
     }
 }
