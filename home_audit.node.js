@@ -1456,20 +1456,24 @@ let validationRules = {
         }
     },
 
-
-    _is_servicing_duct_system: function(value, sys, duct) {
+    /**
+     * Checks if a HVAC system requires ducts, and returns a validation error if it does not require ducts but the user
+     * added one or more ducts.
+     * @param value Any duct value
+     * @param {int} sys System index
+     * @return {Validation|void}
+     */
+    _is_servicing_duct_system: function(value, sys) {
         // If heating/cooling system does not require ducts, we need to ensure the
         // user has not entered values for ducts
         let ductTypes = ['central_furnace', 'heat_pump', 'gchp', 'split_dx'];
-        if (ductTypes.indexOf(_homeValues['heating_type_'+sys]) !== -1  &&
-            ductTypes.indexOf(_homeValues['cooling_type_'+sys]) !== -1)
-        {
+        if (!ductTypes.includes(_homeValues['heating_type_'+sys]) && !ductTypes.includes(_homeValues['cooling_type_'+sys])) {
             if(!TypeRules._is_empty(value)) {
                 return new Validation(
                     'Values may not be defined for system that does not call for ducts. Please only set values for ducts on Central Furnace, Heat Pump, Ground Coupled Heating Pump, or Central Air Conditioner systems',
                     ERROR
-                )
-                }
+                );
+            }
         }
     },
     
@@ -1509,7 +1513,7 @@ let validationRules = {
         if (invalidDuct && invalidDuct['message']) {
             return invalidDuct;
         }
-        const invalidDuctType = this._is_servicing_duct_system(value, sys, duct);
+        const invalidDuctType = this._is_servicing_duct_system(value, sys);
         if(invalidDuctType && invalidDuctType['message']) {
             return invalidDuctType;
         }
