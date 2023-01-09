@@ -666,7 +666,7 @@ function getFlatRequiredFields (homeValues) {
             if(homeValues['cooling_efficiency_method_'+system] === 'user') {
                 requiredFields['cooling_efficiency_'+system] = 'Cooling Efficiency is required when known';
             } else if(homeValues['cooling_efficiency_method_'+system] === 'shipment_weighted') {
-                requiredFields['cooling_year_'+system] = 'Year Installed is required when efficincy value is unknown';
+                requiredFields['cooling_year_'+system] = 'Year Installed is required when efficiency value is unknown';
             }
         }
         //Require ducts for heating/cooling types with ducts

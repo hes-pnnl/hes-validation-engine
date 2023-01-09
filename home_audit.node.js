@@ -1455,6 +1455,27 @@ let validationRules = {
             );
         }
     },
+
+    /**
+     * Checks if a HVAC system requires ducts, and returns a validation error if it does not require ducts but the user
+     * added one or more ducts.
+     * @param value Any duct value
+     * @param {int} sys System index
+     * @return {Validation|void}
+     */
+    _is_servicing_duct_system: function(value, sys) {
+        // If heating/cooling system does not require ducts, we need to ensure the
+        // user has not entered values for ducts
+        let ductTypes = ['central_furnace', 'heat_pump', 'gchp', 'split_dx'];
+        if (!ductTypes.includes(_homeValues['heating_type_'+sys]) && !ductTypes.includes(_homeValues['cooling_type_'+sys])) {
+            if(!TypeRules._is_empty(value)) {
+                return new Validation(
+                    'Values may not be defined for system that does not call for ducts. Please only set values for ducts on Central Furnace, Heat Pump, Ground Coupled Heating Pump, or Central Air Conditioner systems',
+                    ERROR
+                );
+            }
+        }
+    },
     
     /**
      * Get validations for wall values, ensuring wall is valid
@@ -1491,6 +1512,10 @@ let validationRules = {
         const invalidDuct = this._is_servicing_duct(value, sys, duct);
         if (invalidDuct && invalidDuct['message']) {
             return invalidDuct;
+        }
+        const invalidDuctType = this._is_servicing_duct_system(value, sys);
+        if(invalidDuctType && invalidDuctType['message']) {
+            return invalidDuctType;
         }
         return validation;
     },
@@ -1603,10 +1628,7 @@ let validationRules = {
             this._get_proj_ceiling_area('1') + this._get_proj_ceiling_area('2');
     },
 
-    /*
-     * Gets the first wall dimension for window area validations
-     */
-    _get_wall_dimension_left_right: function() {
+    _get_dimension1: function(){
         let area = this._get_footprint_area();
         if (area) {
             //Assume floor dimensions area 5x3
@@ -1615,18 +1637,36 @@ let validationRules = {
             return false;
         }
     },
-    
-    /*
-     * Gets the second wall dimension for window area validations
-     */
-    _get_wall_dimension_front_back: function() {
-        let dimension2 = this._get_wall_dimension_left_right();
+
+    _get_dimension2: function(){
+        let dimension2 = this._get_dimension1();
         if (dimension2) {
             //Assume floor dimensions area 5x3
             return dimension2 * (5 / 3);
         } else {
             return false;
         }
+    },
+
+    /*
+     * Gets the first wall dimension for window area validations
+     * The calculations for dimension1 and dimension2 need to be swapped if the shape is 'townhouse'
+     */
+    _get_wall_dimension_left_right: function() {
+        if(_homeValues.shape === 'town_house'){
+            return this._get_dimension2();
+        }
+        return this._get_dimension1();
+    },
+    
+    /*
+     * Gets the second wall dimension for window area validations
+     */
+    _get_wall_dimension_front_back: function() {
+        if(_homeValues.shape === 'town_house'){
+            return this._get_dimension1();
+        }
+        return this._get_dimension2();
     },
 
     /*
@@ -1697,20 +1737,6 @@ let validationRules = {
             }
         }
     },
-
-    /*
-     * Checks address/city or coordinates to be an accepted input. 
-     * Intended to validate half addresses that do not require address and/or city feilds, if coordinates are provided on map.
-     * @param {string} value
-     */
-    _require_if_no_coordinates: function(value) {
-        if((_homeValues.latitude && _homeValues.longitude) || value){
-            return null;
-        }
-        else{
-            return "Field is required, if no coordinates are provided."
-        }
-    }
 };
 
 function get_validation_messages (homeValues, requiredFields, additionalRules) {
@@ -1735,8 +1761,6 @@ function get_validation_messages (homeValues, requiredFields, additionalRules) {
                  */
             } else if (fieldName === 'hot_water_type' && homeValues['hot_water_type'] && TypeRules._is_empty(homeValues['hot_water_fuel'])) {
                 // Do nothing ... avoid duplicate messages 
-            } else if (["address", "city"].includes(fieldName) && !validationRules._require_if_no_coordinates(homeValues[fieldName])){
-                // Do nothing ... only require city and address if no coordinates.
             } else {
                 result[MANDATORY][fieldName] = requiredFields[fieldName];
             }
@@ -1791,7 +1815,6 @@ function validate_address (homeValues) {
         homeValues = homeValues.building_address;
     }
     let mandatoryMessage = "Missing value for mandatory field";
-    let optionalMessage = "Field is required, if no coordinates are provided.";
     // Define values that are always required
     let requiredFields = {
         address : mandatoryMessage,
