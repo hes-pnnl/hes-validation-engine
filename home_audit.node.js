@@ -1194,8 +1194,8 @@ let validationRules = {
     hvac_distribution_leakage_method_2: function(value) {
         return this._hvac_distribution_leakage_method(value, 2);
     },
-    _hvac_distribution_leakage_method: function(value) {
-        return new Validation(TypeRules._string(value, 20, ['qualitative', 'quantitative']), BLOCKER);
+    _hvac_distribution_leakage_method: function(value, num) {
+        return this._hvac_distribution_validation(value, num, new Validation(TypeRules._string(value, 20, ['qualitative', 'quantitative']), BLOCKER));
     },
     hvac_distribution_leakage_to_outside_1: function(value) {
         return this._hvac_distribution_leakage_to_outside(value, 1);
@@ -1204,10 +1204,14 @@ let validationRules = {
         return this._hvac_distribution_leakage_to_outside(value, 2);
     },
     _hvac_distribution_leakage_to_outside: function(value, system) {
-        if(_homeValues['hvac_distribution_leakage_method_'+system] === 'qualitative') {
-            return new Validation("Leakage should not be passed for your system if the method is 'qualitative'", ERROR);
+        const blocker = new Validation(TypeRules._float(value, 0, 1000, true), BLOCKER);
+        if(blocker['message']) {
+            return blocker;
         }
-        return new Validation(TypeRules._float(value, 0, 1000, true), BLOCKER);
+        if(_homeValues['hvac_distribution_leakage_method_'+system] === 'qualitative') {
+            const error = new Validation("Leakage should not be passed for your system if the method is 'qualitative'", ERROR);
+        }
+        return this._hvac_distribution_validation(value, system, error);
     },
     hvac_distribution_sealed_1: function(value) {
         return this._hvac_distribution_sealed(value, 1);
@@ -1215,8 +1219,18 @@ let validationRules = {
     hvac_distribution_sealed_2: function(value) {
         return this._hvac_distribution_sealed(value, 2);
     },
-    _hvac_distribution_sealed: function(value) {
-        return new Validation(TypeRules._int(value, 0, 1), BLOCKER);
+    _hvac_distribution_sealed: function(value, num) {
+        return this._hvac_distribution_validation(value, num, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
+    },
+    _hvac_distribution_validation: function(value, num, validation) {
+        if ((validation['message'] && validation['type'] === BLOCKER)) {
+            return validation;
+        }
+        const invalidDuctType = this._is_servicing_duct_system(value, num);
+        if(invalidDuctType && invalidDuctType['message']) {
+            return invalidDuctType;
+        }
+        return validation;
     },
     /*
      * ducts
