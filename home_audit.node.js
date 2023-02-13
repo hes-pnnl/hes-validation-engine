@@ -1208,10 +1208,11 @@ let validationRules = {
         if(blocker['message']) {
             return blocker;
         }
+        let message = "";
         if(_homeValues['hvac_distribution_leakage_method_'+system] === 'qualitative') {
-            const error = new Validation("Leakage should not be passed for your system if the method is 'qualitative'", ERROR);
+            message = "Leakage should not be passed for your system if the method is 'qualitative'";
         }
-        return this._hvac_distribution_validation(value, system, error);
+        return this._hvac_distribution_validation(value, system, new Validation(message, ERROR));
     },
     hvac_distribution_sealed_1: function(value) {
         return this._hvac_distribution_sealed(value, 1);
