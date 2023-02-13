@@ -1208,7 +1208,7 @@ let validationRules = {
         if(blocker['message']) {
             return blocker;
         }
-        let message = "";
+        let message = undefined;
         if(_homeValues['hvac_distribution_leakage_method_'+system] === 'qualitative') {
             message = "Leakage should not be passed for your system if the method is 'qualitative'";
         }
@@ -1224,7 +1224,7 @@ let validationRules = {
         return this._hvac_distribution_validation(value, num, new Validation(TypeRules._int(value, 0, 1), BLOCKER));
     },
     _hvac_distribution_validation: function(value, num, validation) {
-        if ((validation['message'] && validation['type'] === BLOCKER)) {
+        if ((validation && validation['message'] && validation['type'] === BLOCKER)) {
             return validation;
         }
         const invalidDuctType = this._is_servicing_duct_system(value, num);
