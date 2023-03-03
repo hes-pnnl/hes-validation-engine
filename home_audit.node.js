@@ -1467,6 +1467,7 @@ let validationRules = {
         // If heating/cooling system does not require ducts, we need to ensure the
         // user has not entered values for ducts
         let ductTypes = ['central_furnace', 'heat_pump', 'gchp', 'split_dx'];
+
         if (!ductTypes.includes(_homeValues['heating_type_'+sys]) && !ductTypes.includes(_homeValues['cooling_type_'+sys])) {
             if(!TypeRules._is_empty(value)) {
                 return new Validation(
@@ -1811,6 +1812,12 @@ function validate_home_audit (homeValues, additionalRules = null) {
 function validate_address (homeValues) {
     // If we are given the new version of the home object, we need to pass the right area to the
     // validation engine
+    // Updated schema will have all information in a `building_unit` property, with the address inside.
+    /*
+    if(homeValues.building_unit) {
+        homeValues = homeValues.building_unit.address;
+    }
+     */
     if(homeValues.building_address) {
         homeValues = homeValues.building_address;
     }
@@ -1823,9 +1830,7 @@ function validate_address (homeValues) {
         zip_code : mandatoryMessage,
         assessment_type : mandatoryMessage,
     };
-    const item = get_validation_messages(homeValues, requiredFields);
-    console.log('address validation', item);
-    return item;
+    return get_validation_messages(homeValues, requiredFields);
 }
 
 module.exports = {validate_home_audit, validate_address};

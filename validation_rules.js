@@ -551,7 +551,7 @@ module.exports = class ValidationRules{
             if(heatingOrCooling === ENUMS.HEATING) {
                 if(!this._homeValues['heating_fuel_'+num]) {
                     return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
-                } else if (heatingFuelToType[this._homeValues['heating_fuel_'+num]].indexOf(this._homeValues['heating_type_'+num]) === -1) {
+                } else if (ENUMS.heatingFuelToType[this._homeValues['heating_fuel_'+num]].indexOf(this._homeValues['heating_type_'+num]) === -1) {
                     return new Validation(this._homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
                 }
             } else {

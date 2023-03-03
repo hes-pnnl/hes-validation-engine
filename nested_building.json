@@ -9,16 +9,15 @@
   "building": {
     "about": {
       "shape": "town_house",
-      "assessment_date": "2022-01-01",
+      "assessment_date": "2023-01-01",
       "year_built": 1988,
       "number_bedrooms": 3,
-      "num_floor_above_grade": 1,
-      "floor_to_ceiling_height": 8,
+      "num_floor_above_grade": 2,
+      "floor_to_ceiling_height": 7,
       "conditioned_floor_area": 1260,
-      "orientation": "north_east",
+      "orientation": "north",
       "blower_door_test": true,
       "envelope_leakage": 2260,
-      "air_sealing_present": false,
       "town_house_walls": "back_right_front"
     },
     "zone": {
@@ -35,7 +34,7 @@
           }
         },
         {
-          "side": "back",
+          "side": "right",
           "wall_assembly_code": "ewwf07vi",
           "zone_window": {
             "window_area": 56,
@@ -46,7 +45,7 @@
           }
         },
         {
-          "side": "right",
+          "side": "back",
           "wall_assembly_code": "ewwf07vi",
           "zone_window": {
             "window_area": 40,
@@ -64,22 +63,25 @@
           "roof_name": "roof1",
           "roof_type": "vented_attic",
           "ceiling_assembly_code": "ecwf21",
-          "ceiling_area": 1250,
+          "ceiling_area": 1234,
           "roof_assembly_code": "rfwf00co",
-          "roof_color": "medium",
+          "roof_color": "cool_color",
+          "roof_absorptance": 0.1,
           "zone_skylight": {
             "skylight_area": 12,
             "skylight_method": "custom",
             "skylight_u_value": 0.61,
             "skylight_shgc": 0.52,
             "solar_screen": false
+          },
+          "knee_wall": {
+            "assembly_code": "kwwf00",
+            "area": 123
           }
         },
         {
           "roof_name": "roof2",
-          "roof_type": "vented_attic",
-          "ceiling_assembly_code": "ecwf25",
-          "ceiling_area": 288,
+          "roof_type": "cath_ceiling",
           "roof_color": "medium",
           "roof_assembly_code": "rfwf00co"
         }

@@ -4,9 +4,10 @@
 let TypeRules = require('./type_rules.node');
 let validationRules = require('./validation_rules');
 const ENUMS = require('./validation_enums.node')
+const NestedBuildingSchema = require('./nested_building_schema');
 const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
-const ajv = new Ajv({allErrors: true})
+const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
 addFormats(ajv);
 
 /**
@@ -25,199 +26,7 @@ function castBool(value) {
     }
 }
 
-nestedRequiredFields = {
-    type: "object",
-    properties: {
-        about: {
-            type: "object",
-            properties: {
-                air_sealing_present: {type: "boolean"},
-                assessment_date: {type: "string", format: "date"},
-                blower_door_test: {type: "boolean"},
-                comment_api_only: {type: "string"}, // schema
-                comments: {type: "string"}, // schema
-                conditioned_floor_area: {type: "integer", minimum: 250, maximum: 25000},
-                envelope_leakage: {type: "integer", minimum: 0, maximum: 25000},
-                floor_to_ceiling_height: {type: "integer", minimum: 6, maximum: 12},
-                number_bedrooms: {type: "integer", minimum: 1, maximum: 10},
-                num_floor_above_grade: {type: "integer", minimum: 1, maximum: 4},
-                orientation: {type: "string", enum: ENUMS.orientationArray},
-                shape: {type: "string", enum: ENUMS.buildingShapes},
-                town_house_walls: {type: "string", enum: ENUMS.townHouseWallOrientations},
-                year_built: {type: "integer", minimum: 1600, maximum: (new Date().getFullYear())},
-            },
-            // If blower door test conducted, require envelope_leakage, else air_sealing_present
-            if: {properties: {blower_door_test: {const: true}}},
-            then: {required: ['envelope_leakage']},
-            else: {required: ['air_sealing_present']},
-
-            required: [
-                "assessment_date",
-                "shape",
-                "year_built",
-                "number_bedrooms",
-                "num_floor_above_grade",
-                "floor_to_ceiling_height",
-                "conditioned_floor_area",
-                "orientation",
-                "blower_door_test"
-            ],
-            additionalProperties: false
-        },
-        systems: {
-            type: "object",
-            properties: {
-                domestic_hot_water: {
-                    type: "object",
-                    properties: {
-                        category: {type: "string", enum: ENUMS.hotWaterCategories},
-                        type: {type: "string", enum: ENUMS.hotWaterType}
-                    }
-                },
-                generation: {
-                    type: "object",
-                    properties: {
-                        solar_electric: {
-                            type: "object",
-                            properties: {
-                                array_azimuth: {type: "string", enum: ENUMS.orientationArray},
-                                array_tilt: {type: "string", enum: ENUMS.tiltArray},
-                                capacity_known: {type: "boolean"},
-                                system_capacity: {type: "number", minimum: 0.05, maximum: 100},
-                                year: {type: "integer", minimum: 2000, maximum: (new Date().getFullYear())}
-                            }
-                        }
-                    }
-                },
-                hvac: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            cooling: {
-                                type: "object",
-                                properties: {
-                                    efficiency: {type: "number", minimum: 8, maximum: 40},
-                                    efficiency_method: {type: "string", enum: ENUMS.hvacEfficiencyOptions},
-                                    type: {type: "string", enum: ENUMS.coolingTypeOptions},
-                                }
-                            },
-                            heating: {
-                                type: "object",
-                                properties: {
-                                    efficiency: {type: "number", minimum: 0.6, maximum: 20},
-                                    efficiency_method: {type: "string", enum: ENUMS.hvacEfficiencyOptions},
-                                    fuel_primary: {type: "string", enum: ENUMS.heatingFuelOptions},
-                                    type: {type: "string", enum: ENUMS.heatingTypeOptions}
-                                }
-                            },
-                            hvac_fraction: {},
-                            hvac_name: {type: "string"},
-                        }
-                    }
-                },
-            }
-        },
-        zone: {
-            type: "object",
-            properties: {
-                wall_construction_same: {
-                    type: "boolean"
-                },
-                window_construction_same: {
-                    type: "boolean"
-                },
-                zone_floor: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            floor_area: {type: "number", minimum: 4, maximum: 25000 },
-                            floor_assembly_code: {type: "string", enum: ENUMS.floorAssemblyCode },
-                            floor_name: {type: "string"},
-                            foundation_insulation_level: {type: "number", enum: ENUMS.foundationInsulationLevels },
-                            foundation_type: {type: "string", enum: ENUMS.foundationType },
-                        },
-                        additionalProperties: false
-                    },
-                },
-                zone_roof: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            ceiling_assembly_code: {type: "string", enum: ENUMS.ceilingAssemblyCode},
-                            ceiling_area: {type: "number", minimum: 4, maximum: 25000},
-                            roof_assembly_code: {type: "string", enum: ENUMS.roofAssemblyCode},
-                            roof_color: {type: "string", enum: ENUMS.roofColor},
-                            roof_name: {type: "string"},
-                            roof_type: {type: "string", enum: ENUMS.roofType},
-                            roof_absorptance: {type: "number", minimum: 0, maximum: 1},
-                            knee_wall: {
-                                type: "object",
-                                properties: {
-                                    area: {type: "number", minimum: 1, maximum: 5000},
-                                    assembly_code: {type: "string", enum: ENUMS.kneeWallAssemblyCodes}
-                                }
-                            },
-                            zone_skylight: {
-                                type: "object",
-                                properties: {
-                                    skylight_area: {type: "number", minimum: 0, maximum: 300},
-                                    skylight_u_value: {type: "number", minimum: 0.01, maximum: 5},
-                                    skylight_shqc: {type: "number", minimum: 0, maximum: 1},
-                                    solar_screen: {type: "boolean"}
-                                }
-                            },
-                        },
-                        // If roof_type entered, require roof contents
-                        if: { properties: {roof_type: {enum: ENUMS.roofType}}},
-                        then: {
-                            required: ['roof_assembly_code', 'roof_color'],
-                            // If roof_type is vented_attic, require ceiling fields
-                            if: { properties: {roof_type: {const: 'vented_attic'}}},
-                            then: {
-                                required: ['ceiling_area', 'ceiling_assembly_code']
-                            },
-                            else: {
-                                if: {properties: {roof_type: {const: 'cath_ceiling'}}},
-                                then: {required: ['roof_area']}
-                            },
-                        },
-                    }
-                },
-                zone_wall: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            side: {type: "string", enum: ENUMS.zoneWallSides},
-                            wall_assembly_code: {type: "string", enum: ENUMS.wallAssemblyCode},
-                            zone_window: {
-                                type: "object",
-                                properties: {
-                                    solar_screen: {type: "boolean"},
-                                    window_area: {type: "number", minimum: 0, maximum:999},
-                                    window_method: {type: "string"},
-                                    window_shqc: {type: "number", maximum: 1, minimum: 0},
-                                    window_u_value: {type: "number", maximum: 1, minimum: 0},
-                                }
-                            }
-                        },
-                        additionalProperties: false
-                    }
-                }
-            },
-
-            required: [
-                "wall_construction_same",
-                "window_construction_same"
-            ],
-        }
-    },
-    required: ["about"],
-    // additionalProperties: true
-}
+nullOrUndefined = [null, undefined];
 
 mandatoryMessage = "Missing value for mandatory field";
 
@@ -244,7 +53,19 @@ flatRequiredFields = {
 
 module.exports = function (homeValues) {
     // If we are given the new version of the home object, we need to validate the nested version instead
-    return homeValues.building ? getNestedRequiredFields(homeValues.building) : getFlatRequiredFields(homeValues);
+    /* To handle the update where all building information is inside the `building_unit` property and then `building` inside
+    return homeValues.building_unit ? getNestedRequiredFields(homeValues.building_unit) : getFlatRequiredFields(homeValues);
+     */
+    return homeValues.building ? getNestedRequiredFields(homeValues) : getFlatRequiredFields(homeValues);
+}
+
+function setupAJV () {
+    ajv.addSchema(NestedBuildingSchema);
+    // Add the custom keywords "error_msg"
+    ajv.addKeyword('error_msg');
+    // const schema = ajv.getSchema("https://github.com/NREL/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json")
+    // return ajv.compile(NestedBuildingSchema)
+    return ajv;
 }
 
 function getNestedRequiredFields (homeValues) {
@@ -253,250 +74,562 @@ function getNestedRequiredFields (homeValues) {
     errorMessages[ENUMS.ERROR] = {};
     errorMessages[ENUMS.MANDATORY] = {};
 
-    const nested_validate = ajv.compile(nestedRequiredFields);
-    const valid=nested_validate(homeValues);
+    const nested_validate = setupAJV();
+    const valid=nested_validate.validate(NestedBuildingSchema, homeValues);
     if(!valid) {
         nested_validate.errors.forEach((error) => {
             const {instancePath, params} = error;
             const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
-
-            if(errorMessages[ENUMS.BLOCKER][errorPath] === undefined) {
-                errorMessages[ENUMS.BLOCKER][errorPath] = [];
-            }
-            errorMessages[ENUMS.BLOCKER][errorPath].push(convertAJVError(error));
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], errorPath, convertAJVError(error))
         })
     }
-    getAdditionalNestedRequiredFields(homeValues, errorMessages);
-    getCrossValidationMessages(homeValues, errorMessages);
+    getCrossValidationMessages(homeValues.building, errorMessages);
     return errorMessages
 }
 
 function convertAJVError(errorObj) {
     const {keyword, schemaPath, instancePath, params, message} = errorObj;
+    const keyArr = errorObj.schemaPath.split('/');
+    keyArr.shift(); // remove '#'
+    const keywords_to_pop = ['required', 'const'];
+    // If it's a keyword that's too deep (e.g. const, required) we should pop it to get the right level for the error message
+    if(keywords_to_pop.includes(keyword)) {
+        keyArr.pop();
+    }
+    const error_leaf = keyArr.reduce((acc, key) => {
+        return acc[key]
+    }, NestedBuildingSchema);
+
+    const error_msg = error_leaf.error_msg
+    // first = false;
     const returnObj = {
         schemaPath, instancePath, keyword, message
     }
-    switch(keyword) {
-        case 'required':
-            returnObj.message = mandatoryMessage;
-            break;
-        default:
-            break;
+    if(error_msg) {
+        return error_msg;
     }
-    return returnObj;
+    switch(keyword) {
+        case 'minimum':
+        case 'maximum':
+            return returnObj.message; // = message;
+        case 'required':
+            return mandatoryMessage; // returnObj.message = mandatoryMessage;
+        case 'enum':
+            return `${returnObj.message}: '${error_leaf.join('\', \'')}'`;
+        default:
+            returnObj.message = undefined;
+            return undefined;
+    }
 }
 
 function getCrossValidationMessages (homeValues, errorMessages) {
     const CrossValidator = new validationRules(homeValues);
-    getAboutObjectCrossValidationMessages(homeValues.about, errorMessages, CrossValidator)
+    getAboutObjectCrossValidationMessages(homeValues, errorMessages, CrossValidator)
+    getZoneCrossValidationMessages(homeValues, errorMessages);
 }
 
 /**
  * Helper function to add the validation messages easily to the object
  * @param {object} errorMessageObj Container for the validation messages of a certain type (e.g. Blocker)
- * @param {string} path Path in the nested schema to the error area
+ * @param {string} path Path in the nested schema to the error area in the building object
  * @param {string} message Validation error message
  */
 function addErrorMessage(errorMessageObj, path, message) {
-    if(errorMessageObj[path] === undefined) {
-        errorMessageObj[path] = [];
+    if(message) {
+        if (errorMessageObj[path] === undefined) {
+            errorMessageObj[path] = [];
+        }
+        errorMessageObj[path].push(message);
     }
-    errorMessageObj[path].push(message);
 }
 
 /**
  * Cross validations for the "About" object in the nested JSON Schema
  */
-function getAboutObjectCrossValidationMessages(about, errorMessages, CrossValidator) {
-    const fields = ['shape', 'year_built', 'number_bedrooms', 'num_floor_above_grade',
-        'floor_to_ceiling_height', 'conditioned_floor_area', 'orientation', 'blower_door_test',
-        'envelope_leakage', 'town_house_walls', 'air_sealing_present', 'comments'];
+function getAboutObjectCrossValidationMessages(building, errorMessages, CrossValidator) {
+    const {about} = building;
+    // Since we need to make sure the year built and the assessment date aren't in the future, JS validation here.
+    const fields = ['year_built', 'assessment_date'];
     for(const index in fields) {
         const field = fields[index]
         if(![null, undefined].includes(about[field])) {
             const validationResult = CrossValidator[field](about[field])
             if(validationResult && validationResult['message']) {
-                addErrorMessage(validationResult['type'], `about/${field}`, validationResult['message']);
+                addErrorMessage(errorMessages[validationResult['type']], `/building/about/${field}`, validationResult['message']);
             }
         }
     }
 }
 
-function getZoneCrossValidationMessages(zone, errorMessages, CrossValidator) {
+function getZoneCrossValidationMessages(homeValues, errorMessages) {
+    additionalZoneCrossValidation(homeValues.zone, homeValues.about, errorMessages);
+    additionalSystemCrossValidation(homeValues.systems, errorMessages)
+}
+
+function additionalZoneCrossValidation (zone, about, errorMessages) {
     // zone wall
+    getAdditionalWallZoneValidations(zone, about, errorMessages);
 
     // zone roof
+    getAdditionalRoofZoneValidations(zone, about, errorMessages);
 
     // zone floor
-
-    // zone skylight
+    getAdditionalFloorZoneValidations(zone, about, errorMessages);
 }
 
-function getAdditionalNestedRequiredFields (homeValues, errorMessages) {
-    // About
-    getAdditionalAboutNestedRequiredFields(homeValues.about, errorMessages);
-
-    // Zone
-    getAdditionalZoneNestedRequiredFields(homeValues.zone, homeValues.about, errorMessages)
-
-    // Systems
-}
-
-function getAdditionalAboutNestedRequiredFields(about, errorMessages) {
-    // If the shape is townhouse
-    if(about.shape === 'town_house') {
-        // Require town_house_walls
-        if(!ENUMS.townHouseWallOrientations.includes(about.town_house_walls)) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/about/town_house_walls', 'Position is required if home is a Townhouse or Duplex')
-        }
-    }
-}
-
-function getAdditionalZoneNestedRequiredFields (zone, about, errorMessages) {
-    // zone wall
-    getAdditionalWallFields(zone, about, errorMessages)
-
-    // zone roof
-    zone.zone_roof.forEach((roof, index) => (
-        getAdditionalRoofFields(roof, index, errorMessages)
-    ));
-
-    // zone floor
-    zone.zone_floor.forEach((floor, index) => (
-        getAdditionalFloorFields(floor, index, errorMessages)
-    ));
-}
-
-function getAdditionalWallFields(zone, about, errorMessages) {
-    const {wall_construction_same, zone_wall} = zone;
+function getAdditionalWallZoneValidations(zone, about, errorMessages) {
+    const {zone_wall} = zone;
     // First, we need to verify that all the walls are in a different position
     const sides = zone_wall.map(wall => wall.side);
-    const duplicate_sides = sides.filter((side, i) => sides.indexOf(side) !== i)
-    // const unique_sides = [...new Set(zone_wall.map(wall => wall.side))];
+    const duplicate_sides = sides.filter((side, i) => sides.indexOf(side) !== i);
     if(duplicate_sides.length !== 0) {
         duplicate_sides.forEach((side) => (
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
-        ))
-    }  else {
-        // Once we have validated that, continue with other checks.
-        const {shape, town_house_walls} = about;
-        // If all the walls are the same construction, we only check the assembly on the front wall.
-        let walls_to_check = ['front'];
-        // Otherwise...
-        if(!wall_construction_same) {
-            // If shape = town_house
-            if (shape === 'town_house') {
-                // Identify the walls we need to check for construction type on
-                walls_to_check = town_house_walls.split('_');
-            }
-            // Otherwise, we have to check every wall
-            else {
-                walls_to_check = ENUMS.zoneWallSides;
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/building/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
+        ));
+    }
+
+    // Window validations
+    checkWindowAreaValid(zone, about, errorMessages);
+
+}
+
+function checkWindowAreaValid(zone, about, errorMessages) {
+    const {zone_wall} = zone
+    zone_wall.forEach((wall, index) => {
+        const {side, zone_window} = wall;
+        const wall_area = getWallArea(zone, about, ['front', 'back'].includes(side))
+        if(zone_window && wall_area) {
+            const {window_area} = zone_window;
+            if(window_area && window_area > wall_area) {
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`);
             }
         }
+    })
+}
 
+function getWallLength(zone, about, is_front_back) {
+    const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
+    if(conditioned_footprint) {
+        return Math.floor(
+            (is_front_back
+                ? Math.sqrt((5 * conditioned_footprint) / 3)
+                : Math.sqrt((3 * conditioned_footprint) / 5)
+            )
+        );
+    }
+    return false;
+}
 
-
-        const zone_walls_to_check = [...new Set(zone_wall.filter(wall => walls_to_check.includes(wall.side)))];
-        // If we don't have all the walls we expect, report the error and we
-        if(zone_walls_to_check.length !== walls_to_check.length) {
-            errorMessages[ENUMS.BLOCKER][`/zone/zone_wall`].push('Mismatch in zone walls provided and zone walls found to check. Ensure that all zone walls have been identified. If they are all the same construction, please indicate that as well');
+function getWallArea(zone, about, is_front_back) {
+    const length = getWallLength(zone, about, is_front_back);
+    const height = about.floor_to_ceiling_height || false;
+    const stories = about.num_floor_above_grade || false;
+    if(length && height && stories) {
+        let one_story_area = length * height;
+        if(is_front_back) {
+            one_story_area -= 20;
         }
+        return Math.floor(one_story_area * stories);
+    }
+    return false;
+
+
+}
+
+function getAdditionalRoofZoneValidations(zone, about, errorMessages) {
+    const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
+    const {zone_roof} = zone;
+
+    // Roof area
+    checkRoofArea(zone, conditioned_footprint, errorMessages, 'roof_area');
+    // Ceiling area
+    checkRoofArea(zone, conditioned_footprint, errorMessages, 'ceiling_area');
+    // Knee wall area
+    checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages);
+    // Skylight area
+    checkSkylightArea(zone_roof, conditioned_footprint, errorMessages);
+}
+
+function checkSkylightArea(zone_roof_array, conditioned_footprint, errorMessages) {
+    // Skylights must be smaller than the conditioned footprint
+    let zone_skylight_area = 0
+    zone_roof_array.forEach((roof) => {
+        const {zone_skylight} = roof;
+        if(zone_skylight && zone_skylight.skylight_area) {
+            zone_skylight_area += zone_skylight.skylight_area
+        }
+    });
+    if(zone_skylight_area > conditioned_footprint) {
+        zone_roof_array.forEach((roof, index) => {
+            if(roof.zone_skylight && roof.zone_skylight.skylight_area) {
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
+            }
+        })
     }
 }
 
-function getAdditionalRoofFields (roof, index, errorMessages) {
-    // If we have a roof type specified
-    if(roof.roof_type) {
-        // require roof assembly code
-        if(!ENUMS.roofAssemblyCode.includes(roof.roof_assembly_code)) {
-            errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/roof_assembly_code`].push('Roof Assembly is a required roof value')
-        }
-        // require roof color
-        if(!ENUMS.roofColor.includes(roof.roof_color)) {
-            errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/roof_color`].push('Roof Color is a required roof value')
-        }
-        // if color = cool_color
-        else if(roof.roof_color === 'cool_color') {
-            // require aborptance
-            if([undefined, null].includes(roof.roof_absorptance)) {
-                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/roof_absorptance`].push('Roof Absorptance is required when Roof Color is Cool')
+function checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages) {
+    const max_knee_wall_area = (2 * conditioned_footprint) / 3;
+    const combined_knee_wall_area = getCombinedArea(zone_roof.map((roof) => (roof.knee_wall)), 'area');
+    if(combined_knee_wall_area > max_knee_wall_area) {
+        zone_roof.forEach((roof, index) => {
+            if(roof.knee_wall && roof.knee_wall.area) {
+                addErrorMessage(errorMessages[ENUMS.ERROR], `building/zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`);
             }
-        }
-        // if type = vented_attic
-        if(roof.roof_type === 'vented_attic') {
-            // require ceiling area
-            if([undefined, null].includes(roof.ceiling_area)) {
-                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/ceiling_area`].push('Attic floor area is required for this roof type')
-            }
-            // require ceiling assembly code
-            if(!ENUMS.ceilingAssemblyCode.includes(roof.ceiling_assembly_code)) {
-                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/ceiling_assembly_code`].push('Attic floor insulation is required for this roof type')
-            }
-            // if knee_wall
-            if(![undefined, null].includes(roof.knee_wall)) {
-                // require knee wall assembly code
-                if(!ENUMS.kneeWallAssemblyCodes.includes(roof.knee_wall.assembly_code)) {
-                    errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/knee_wall/assembly_code`].push('Knee wall assembly is required for this roof type')
+        })
+    }
+}
+
+function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
+    const roof_type = type === 'roof_area' ? 'cath_ceiling' : 'vented_attic';
+    const combined_type = type === 'roof_area' ? 'roof' : 'ceiling';
+    const {zone_roof} = zone;
+    const combined_area_invalid = checkCombinedAreaInvalid(zone);
+    if(!combined_area_invalid) {
+        const combinedRoofCeilArea = getCombinedRoofCeilingArea(zone_roof);
+        const conditioned_area_invalid = checkConditionedAreaValid(combinedRoofCeilArea, conditioned_footprint, combined_type);
+        if(conditioned_area_invalid) {
+            zone_roof.forEach((roof, index) => {
+                if(roof.roof_type === roof_type) {
+                    addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_roof/${index}/${type}`, conditioned_area_invalid);
                 }
+            })
+        }
+    }
+    else {
+        zone_roof.forEach((roof, index) => {
+            if(roof.roof_type === roof_type) {
+                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_roof/${index}/${type}`, combined_area_invalid);
+            }
+        })
+    }
+}
+
+function checkFloorArea(zone, conditioned_footprint, errorMessages) {
+    const {zone_floor} = zone;
+    const combined_area_invalid = checkCombinedAreaInvalid(zone);
+    if(!combined_area_invalid) {
+        const combined_floor_area = getCombinedFloorArea(zone_floor);
+        const conditioned_area_invalid = checkConditionedAreaValid(combined_floor_area, conditioned_footprint, 'floor');
+        if(conditioned_area_invalid) {
+            zone_floor.forEach((floor, index) => {
+                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/floor_area`, conditioned_area_invalid);
+            })
+        }
+    }
+    else {
+        zone_floor.forEach((roof, index) => {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/floor_area`, combined_area_invalid);
+        })
+    }
+}
+
+function checkFoundationLevel(zone_floor_array, errorMessages) {
+    zone_floor_array.forEach((floor, index) => {
+        const {foundation_type, foundation_insulation_level} = floor;
+        if(!nullOrUndefined.includes(foundation_type) && !nullOrUndefined.includes(foundation_insulation_level)) {
+            if(foundation_type === 'slab_on_grade' && ![0, 5].includes(foundation_insulation_level)) {
+                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0 or R-5 for Slab on Grade Foundation');
+            } else if(![0, 11, 19].includes(foundation_insulation_level)) {
+                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0, R-11, or R-19 for current foundation type');
             }
         }
-        // if type = cath ceiling
-        else if (roof.roof_type === 'cath_ceiling') {
-            // require ceiling area
-            if([undefined, null].includes(roof.ceiling_area)) {
-                errorMessages[ENUMS.BLOCKER][`/zone/zone_roof/${index}/ceiling_area`].push('Ceiling area is required for this roof type')
-            }
+    });
+}
+
+function checkConditionedAreaValid(combined_area, conditioned_footprint, area_type) {
+    const min = conditioned_footprint * 0.95;
+    const max = conditioned_footprint * 2.5;
+    if(!((min < combined_area) && (combined_area < max))) {
+        return `
+            This home's minimum footprint is approximately ${conditioned_footprint}sqft, but you
+            have specified ${combined_area}sqft of total ${area_type} area. The allowed range
+            is (${Math.ceil(min)}sqft - ${Math.floor(max)}sqft).
+            Please adjust any incorrect values. *The footprint is calculated as
+            (<total area> - <conditioned basement area>) / <number of floors>
+        `;
+    }
+}
+
+function getAdditionalFloorZoneValidations(zone, about, errorMessages) {
+    const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
+
+    // Conditioned Footprint for home must be greater than 250 sq ft.
+    if(conditioned_footprint < 250) {
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], '/about/conditioned_floor_area', `Home footprint must be greater than 250 sq ft. Current footprint is ${conditioned_footprint} sq ft.`);
+    }
+
+    // Floor area is within bounds of conditioned floor area
+    checkFloorArea(zone, conditioned_footprint, errorMessages);
+
+    // Validate foundation insulation level is correct for foundation type
+    checkFoundationLevel(zone.zone_floor, errorMessages);
+}
+
+function getCombinedArea(array_obj, field_name) {
+    let combined_area = 0;
+    array_obj.filter((obj) => (!nullOrUndefined.includes(obj))).forEach((obj) => {
+        if(!nullOrUndefined.includes(obj[field_name])) {
+            combined_area += obj[field_name]
         }
-        // If we have a skylight in the roof, we need to perform the skylight validations
-        if(roof.zone_skylight) {
-            getAdditionalSkylightFields(roof.zone_skylight, index, errorMessages)
+    });
+    return Math.floor(combined_area);
+}
+
+function getCombinedFloorArea(zone_floor_array) {
+    return getCombinedArea(zone_floor_array, 'floor_area');
+}
+
+function getCombinedCeilingArea(zone_roof_array) {
+    return getCombinedArea(zone_roof_array, 'ceiling_area');
+}
+
+function getCombinedRoofArea(zone_roof_array) {
+    return getCombinedArea(zone_roof_array, 'roof_area');
+}
+
+function getCombinedRoofCeilingArea(zone_roof_array) {
+    return getCombinedRoofArea(zone_roof_array) + getCombinedCeilingArea(zone_roof_array);
+}
+
+function checkCombinedAreaInvalid(zone) {
+    const combined_floor = getCombinedFloorArea(zone.zone_floor);
+    const combined_roof_ceiling = getCombinedRoofCeilingArea(zone.zone_roof);
+    return (combined_roof_ceiling <= (combined_floor * .95)) ? "The roof does not cover the floor" : false;
+}
+
+function getBuildingConditionedFootprint(about, zone) {
+    const {zone_floor} = zone;
+    const {conditioned_floor_area, num_floor_above_grade} = about;
+    let conditioned_basement_area = 0;
+    // For conditioned footprint, we need to subtract the area of any conditioned basement floors
+    zone_floor.filter((floor) => (
+        floor.foundation_type === 'cond_basement'
+    )).forEach((floor) => (
+        conditioned_basement_area += floor.floor_area
+    ));
+    const footprint_area = conditioned_floor_area - conditioned_basement_area;
+    return Math.floor(footprint_area / num_floor_above_grade);
+}
+
+function additionalSystemCrossValidation(systems, errorMessages) {
+    const {hvac, domestic_hot_water, generation} = systems;
+    if(hvac) {
+        checkHvacFraction(hvac, errorMessages);
+        hvac.forEach((hvac_system, index) => {
+            checkHeatingCoolingTypeValid(hvac_system, index, errorMessages);
+            checkHeatingEfficiencyValid(hvac_system, index, errorMessages);
+            checkCoolingEfficiencyValid(hvac_system, index, errorMessages);
+            checkSystemYearValid(hvac_system, index, errorMessages);
+            checkHvacDistribution(hvac_system, index, errorMessages);
+        });
+    }
+    if(domestic_hot_water) {
+        checkHotWaterCategoryValid(domestic_hot_water, hvac, errorMessages);
+        checkHotWaterFuelValid(domestic_hot_water, errorMessages);
+        checkHotWaterEfficiencyValid(domestic_hot_water, errorMessages);
+        checkHotWaterYearValid(domestic_hot_water, errorMessages);
+        checkHotWaterEnergyFactorValid(domestic_hot_water, errorMessages);
+    }
+    if(generation && generation.solar_electric) {
+        checkSolarElectricYearValid(generation.solar_electric, errorMessages);
+    }
+}
+
+function checkHvacFraction(hvac, errorMessages) {
+    let total_fraction = 0;
+    hvac.forEach((hvac_system) => {
+        if(hvac_system.hvac_fraction) {
+            total_fraction += hvac_system.hvac_fraction;
+        }
+    });
+    if(total_fraction !== 1) {
+        hvac.forEach((hvac_system, index) => {
+            if (hvac_system.hvac_fraction) {
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`);
+            }
+        });
+    }
+}
+
+function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
+    const {heating, cooling} = hvac_system;
+    if(heating && cooling) {
+        const heating_type = heating.type;
+        const heating_fuel = heating.fuel_primary;
+        const cooling_type = cooling.type;
+        // At least one needs to have a type set.
+        if((heating_type === 'none') && (cooling_type === 'none')) {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
+        }
+        // Validate that the fuel type is correct for the heating type
+        if((!heating_type || heating_type === 'none') && !heating_fuel) {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
+        }
+        else if(ENUMS.heatingFuelToType[heating_fuel] && !ENUMS.heatingFuelToType[heating_fuel].includes(heating_type)) {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
+        }
+
+        // Validate the cooling type is valid for the heating type
+        let heat_cool_valid = true
+        switch(cooling_type) {
+            // If cooling is heat_pump or gchp, heating type must match, be wood_stove, or be none
+            case 'heat_pump':
+            case 'gchp':
+                if(![cooling_type, 'wood_stove', 'none'].includes(heating_type)) {
+                    heat_cool_valid = false;
+                }
+                break;
+            case 'mini_split':
+                if(['heat_pump', 'gchp'].includes(heating_type)){
+                    heat_cool_valid = false;
+                }
+                break;
+            case 'split_dx':
+                if(['heat_pump', 'gchp', 'mini_split'].includes(heating_type)){
+                    heat_cool_valid = false;
+                }
+                break;
+            case 'dec':
+                if(['gchp'].includes(heating_type)){
+                    heat_cool_valid = false;
+                }
+                break;
+        }
+        if(!heat_cool_valid) {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`);
         }
     }
 }
 
-function getAdditionalFloorFields (floor, index, errorMessages) {
-    // If floor area > 0 (required by JSON Schema)
-    if(![undefined, null].includes(floor.floor_area) && floor.floor_area > 0) {
-        // require foundation type
-        if(!ENUMS.foundationType.includes(floor.foundation_type)) {
-            errorMessages[ENUMS.BLOCKER][`/zone/zone_floor/${index}/foundation_type`].push('Foundation type is required for this floor')
-
+function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
+    const {heating} = hvac_system;
+    if(heating) {
+        const {type, primary_fuel, efficiency_method} = heating;
+        if(efficiency_method &&
+            ([...nullOrUndefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
+            (type === 'central_furnace' && primary_fuel === 'electric'))
+        ) {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
         }
-        // require foundation insulation level
-        if(!ENUMS.foundationInsulationLevels.includes(floor.foundation_insulation_level)) {
-            errorMessages[ENUMS.BLOCKER][`/zone/zone_floor/${index}/foundation_insulation_level`].push('Foundation insulation level is required for this floor')
-
-        }
-        // require floor assembly code IF foundation type is not slab on grade
-        if(floor.foundation_type !== 'slab_on_grade' && !ENUMS.floorAssemblyCode.includes(floor.floor_assembly_code)) {
-            errorMessages[ENUMS.BLOCKER][`/zone/zone_floor/${index}/floor_assembly_code`].push('Foundation assembly code is required for this floor')
-
+        if(efficiency_method === 'shipment_weighted') {
+            if(type === 'wall_furnace' && primary_fuel !== 'natural_gas') {
+                addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
+            }
+            if(['mini_split', 'gchp'].includes(type)) {
+                addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
+            }
         }
     }
 }
 
-function getAdditionalSkylightFields (skylight, roof_index, errorMessages) {
-    // If we have a skylight area and it's not 0
-    if(skylight.skylight_area && skylight.skylight_area !== 0) {
-        // Skylight method is required
-        if(!skylight.skylight_method) {
-            // ERROR:  Skylight method is required
-            errorMessages[ENUMS.BLOCKER].zone_roof[roof_index].zone_skylight.skylight_method = 'This is a required skylight field';
-        } else
-            // Skylight method is code
-        if (skylight.skylight_method === 'code' && !skylight.skylight_code) {
-            // If there is not 'code'
-            errorMessages[ENUMS.BLOCKER].zone_roof[roof_index].zone_skylight.skylight_code = 'Skylight specs are required if known';
+function checkCoolingEfficiencyValid(hvac_system, index, errorMessages) {
+    const {cooling} = hvac_system;
+    if(cooling) {
+        const {type, efficiency_method} = cooling;
+        if(efficiency_method && [...nullOrUndefined, 'none', 'dec'].includes(type)) {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
         }
-        // Else, is custom
-        else {
-            ['skylight_u_value', 'skylight_shgc'].forEach((item) => {
-                if(!skylight[item]) {
-                    errorMessages[ENUMS.BLOCKER].zone_roof[roof_index].zone_skylight[item] = 'Field is required if skylight specs unknown'
+        if(efficiency_method !== 'user' && ['mini_split', 'gchp'].includes(type)) {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
+        }
+    }
+}
+
+function checkSystemYearValid(hvac_system, index, errorMessages) {
+    ['heating', 'cooling'].forEach((accessor) => {
+        const item = hvac_system[accessor];
+        if(item && item.year && (1970 > item.year || (new Date()).getFullYear() < item.year)) {
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/hvac/${index}/${accessor}/year`, `Invalid year, must be between 1970 and ${(new Date()).getFullYear()}`)
+        }
+    })
+}
+
+function checkHvacDistribution(hvac_system, index, errorMessages) {
+    const {hvac_distribution} = hvac_system;
+    if(hvac_distribution) {
+        const {leakage_method, leakage_to_outside, duct} = hvac_distribution;
+        if(leakage_to_outside && leakage_method === 'qualitative') {
+            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'");
+        }
+        // If we have ducts, we need to ensure the fraction is 100%
+        if(duct) {
+            let total_fraction = 0;
+            duct.forEach((duct_item) => {
+                if(duct_item.fraction) {
+                    total_fraction += duct_item.fraction;
                 }
             });
+            if(total_fraction !== 1) {
+                duct.forEach((duct_item, sub_i) => {
+                    if(duct_item.fraction) {
+                        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/hvac/${index}/hvac_distribution/duct/${sub_i}/fraction`, `Total Duct Fraction must equal 100%`);
+                    }
+                })
+            }
         }
+    }
+}
+
+function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
+    const {category} = hot_water;
+    const hvac_types = [];
+    hvac.forEach((system) => {
+        const {heating, cooling} = system;
+        heating && hvac_types.push(heating.type);
+        cooling && hvac_types.push(cooling.type);
+    });
+    if(!hvac_types.includes('boiler') && category === 'combined') {
+        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
+    }
+}
+
+function checkHotWaterFuelValid(hot_water, errorMessages) {
+    const {type, fuel_primary} = hot_water;
+    if(['tankless_coil', 'indirect'].includes(type) && !nullOrUndefined.includes(fuel_primary)) {
+        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
+    } else if(type === 'heat_pump' && fuel_primary !== 'electric') {
+        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
+    }
+}
+
+function checkHotWaterEfficiencyValid(hot_water, errorMessages) {
+    const {type, efficiency_method} = hot_water;
+    if(['heat_pump', 'tankless', 'tankless_coil'].includes(type) && efficiency_method === 'shipment_weighted') {
+        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type');
+    }
+}
+
+function checkHotWaterYearValid(hot_water, errorMessages) {
+    const {year} = hot_water;
+    if(year && (1972 > year || (new Date()).getFullYear() < year)) {
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
+    }
+}
+
+function checkHotWaterEnergyFactorValid(hot_water, errorMessages) {
+    const {type, energy_factor} = hot_water;
+    if(["indirect", "tankless_coil"].includes(type) && !nullOrUndefined.includes(energy_factor)) {
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`);
+    }
+    let min,max;
+    if (type === 'storage') {
+        [min, max] = [0.45, 0.95];
+    } else if (type === 'tankless') {
+        [min, max] = [0.45, 0.99];
+    } else if (type === 'heat_pump') {
+        [min, max] = [1, 4];
+    }
+    if(energy_factor && (energy_factor < min || energy_factor > max)) {
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/domestic_hot_water/energy_factor`, `${energy_factor} is outside the allowed range (${min} - ${max})`);
+    }
+}
+
+function checkSolarElectricYearValid(solar_electric, errorMessages) {
+    const {year} = solar_electric;
+    if(year && (2000 > year || (new Date()).getFullYear() < year)) {
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/generation/solar_electric/year`, `Invalid year, must be between 2000 and ${(new Date()).getFullYear()}`)
     }
 }
 

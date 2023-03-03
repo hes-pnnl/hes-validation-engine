@@ -1,8 +1,4 @@
 
-const ENUMS = require('./validation_enums.node')
-
-// TODO: This needs to come from a real Source Of Truth, rather than just hard coded copy from the github project below
-
 module.exports = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://github.com/NREL/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json",
@@ -131,7 +127,7 @@ module.exports = {
                             "description": "Floor to ceiling height (feet)"
                         },
                         "conditioned_floor_area": {
-                            "type": "integer",
+                            "type": "number",
                             "minimum": 250,
                             "maximum": 25000,
                             "description": "Total conditioned floor area (square feet)"
@@ -164,11 +160,13 @@ module.exports = {
                                 }
                             },
                             "then": {
-                                "required": ["town_house_walls"]
+                                "required": ["town_house_walls"],
+                                "error_msg": "If the building has a 'town_house' shape, you must identify the 'town_house_walls'"
                             },
                             "else": {
                                 "not": {
-                                    "required": ["town_house_walls"]
+                                    "required": ["town_house_walls"],
+                                    "error_msg": "If the building is not a 'town_house' shape, 'town_house_walls' must not be set"
                                 }
                             }
                         },
@@ -176,7 +174,8 @@ module.exports = {
                             "if": {
                                 "properties": {
                                     "blower_door_test": {"const": true}
-                                }
+                                },
+                                "error_msg": "If 'blower_door_test' is true, 'air_sealing_present' must not be set and 'envelope_leakage' must be set"
                             },
                             "then": {
                                 "allOf": [
@@ -195,7 +194,8 @@ module.exports = {
                             "if": {
                                 "properties": {
                                     "blower_door_test": {"const": false}
-                                }
+                                },
+                                "error_msg": "If 'blower_door_test' is false, 'air_sealing_present' must be set and 'envelope_leakage' must not be set"
                             },
                             "then": {
                                 "allOf": [
@@ -352,11 +352,6 @@ module.exports = {
                                             "solar_screen": {
                                                 "type": "boolean",
                                                 "description": "Does this skylight have a solar screen?"
-                                            },
-                                            "storm_type": {
-                                                "type": "string",
-                                                "enum": ["clear", "low-e"],
-                                                "description": "Type of storm for this skylight"
                                             }
                                         },
                                         "allOf": [
@@ -365,7 +360,8 @@ module.exports = {
                                                     "properties": {
                                                         "skylight_area": {"exclusiveMinimum": 0}
                                                     },
-                                                    "required": ["skylight_area"]
+                                                    "required": ["skylight_area"],
+                                                    "error_msg": "Skylights require a construction method"
                                                 },
                                                 "then": {
                                                     "required": ["skylight_method"]
@@ -377,7 +373,8 @@ module.exports = {
                                                         "skylight_area": {"exclusiveMinimum": 0},
                                                         "skylight_method": {"const": "code"}
                                                     },
-                                                    "required": ["skylight_area", "skylight_method"]
+                                                    "required": ["skylight_area", "skylight_method"],
+                                                    "error_msg": "Skylights of 'Code' type construction must have an assembly code and not custom U values or Solar Heat Gain Coefficients"
                                                 },
                                                 "then": {
                                                     "allOf": [
@@ -403,7 +400,8 @@ module.exports = {
                                                         "skylight_area": {"exclusiveMinimum": 0},
                                                         "skylight_method": {"const": "custom"}
                                                     },
-                                                    "required": ["skylight_area", "skylight_method"]
+                                                    "required": ["skylight_area", "skylight_method"],
+                                                    "error_msg": "Skylights of 'Custom' type construction must have custom U values and Solar Heat Gain Coefficients and not have an assembly code "
                                                 },
                                                 "then": {
                                                     "allOf": [
@@ -433,7 +431,8 @@ module.exports = {
                                             "properties": {
                                                 "roof_type": {"const": "vented_attic"}
                                             },
-                                            "required": ["roof_type"]
+                                            "required": ["roof_type"],
+                                            "error_msg": "Attic floor area and attic floor insulation are required for Vented Attics"
                                         },
                                         "then": {
                                             "required": ["ceiling_area", "ceiling_assembly_code"]
@@ -444,7 +443,8 @@ module.exports = {
                                             "properties": {
                                                 "roof_type": {"enum": ["cath_ceiling"]}
                                             },
-                                            "required": ["roof_type"]
+                                            "required": ["roof_type"],
+                                            "error_msg": "Ceiling area and and insulation type are not applicable for Cathedral Ceilings"
                                         },
                                         "then": {
                                             "not": { "required": ["ceiling_area", "ceiling_assembly_code"]}
@@ -455,7 +455,8 @@ module.exports = {
                                             "properties": {
                                                 "roof_color": {"enum": ["cool_color"]}
                                             },
-                                            "required": ["roof_color"]
+                                            "required": ["roof_color"],
+                                            "error_msg": "Roof absorptance is required when Roof Color is Cool"
                                         },
                                         "then": {
                                             "required": ["roof_absorptance"]
@@ -466,7 +467,8 @@ module.exports = {
                                             "properties": {
                                                 "roof_color": {"not": {"enum": ["cool_color"]}}
                                             },
-                                            "required": ["roof_color"]
+                                            "required": ["roof_color"],
+                                            "error_msg": "Roof absorptance is only applicable when Roof Color is Cool"
                                         },
                                         "then": {
                                             "not": {"required": ["roof_absorptance"]}
@@ -474,7 +476,8 @@ module.exports = {
                                     },
                                     {
                                         "if": {
-                                            "required": ["knee_wall"]
+                                            "required": ["knee_wall"],
+                                            "error_msg": "Knee walls are only allowed for vented attics"
                                         },
                                         "then": {
                                             "properties": {
@@ -533,7 +536,8 @@ module.exports = {
                                             "properties": {
                                                 "floor_name": {"enum": ["floor1", "floor2"]}
                                             },
-                                            "required": ["floor_name"]
+                                            "required": ["floor_name"],
+                                            "error_msg": "You must name floors which you have identified the area for"
                                         },
                                         "then": {
                                             "required": ["floor_area"]
@@ -545,7 +549,8 @@ module.exports = {
                                                 "floor_name": {"enum": ["floor1", "floor2"]},
                                                 "floor_area": {"exclusiveMinimum": 0}
                                             },
-                                            "required": ["floor_name", "floor_area"]
+                                            "required": ["floor_name", "floor_area"],
+                                            "error_msg": "Identified floors  must have a foundation type and insulation level specified"
                                         },
                                         "then": {
                                             "allOf": [
@@ -557,7 +562,8 @@ module.exports = {
                                                         "properties": {
                                                             "foundation_type": {"const": "slab_on_grade"}
                                                         },
-                                                        "required": ["foundation_type"]
+                                                        "required": ["foundation_type"],
+                                                        "error_msg": "Floor assembly code not applicable for slab on grade foundations"
                                                     },
                                                     "then": {
                                                         "not": {
@@ -668,11 +674,6 @@ module.exports = {
                                             "solar_screen": {
                                                 "type": "boolean",
                                                 "description": "Does this window have a solar screen?"
-                                            },
-                                            "storm_type": {
-                                                "type": "string",
-                                                "enum": ["clear", "low-e"],
-                                                "description": "Type of storm for this window"
                                             }
                                         }
                                     }
@@ -737,10 +738,6 @@ module.exports = {
                                             "efficiency": {
                                                 "type": "number",
                                                 "$comment": "Additional requirements for this property apply based on the heating system type"
-                                            },
-                                            "efficiency_level": {
-                                                "type": "string",
-                                                "description": "Efficiency level upgrade of the heating system (Optional)"
                                             }
                                         },
                                         "allOf": [
@@ -769,11 +766,6 @@ module.exports = {
                                                                 "description": "AFUE of heating equipment (only used if efficiency_method is user)"
                                                             }
                                                         }
-                                                    },
-                                                    "properties": {
-                                                        "efficiency_level": {
-                                                            "enum": ["energy_star"]
-                                                        }
                                                     }
                                                 }
                                             },
@@ -788,23 +780,6 @@ module.exports = {
                                                             "minimum": 6,
                                                             "maximum": 20,
                                                             "description": "HSPF of heating equipment (only used if efficiency_method is user)"
-                                                        }
-                                                    },
-                                                    "if":{
-                                                        "properties": {"type": {"const": "heat_pump"}}
-                                                    },
-                                                    "then": {
-                                                        "properties": {
-                                                            "efficiency_level": {
-                                                                "enum": ["energy_star", "cee_tier1", "cee_tier2", "cee_tier3"]
-                                                            }
-                                                        }
-                                                    },
-                                                    "else": {
-                                                        "properties": {
-                                                            "efficiency_level": {
-                                                                "enum": ["energy_star", "cee_tier1"]
-                                                            }
                                                         }
                                                     }
                                                 }
@@ -862,10 +837,6 @@ module.exports = {
                                             "efficiency": {
                                                 "type": "number",
                                                 "$comment": "Additional requirements for this property apply based on the cooling system type"
-                                            },
-                                            "efficiency_level": {
-                                                "type": "string",
-                                                "description": "Efficiency level upgrade of the cooling system (Optional)"
                                             }
                                         },
                                         "allOf": [
@@ -881,23 +852,6 @@ module.exports = {
                                                             "maximum": 40,
                                                             "description": "SEER of cooling equipment (only used if efficiency_method is user)"
                                                         }
-                                                    },
-                                                    "if":{
-                                                        "properties": {"type": {"const": "heat_pump"}}
-                                                    },
-                                                    "then": {
-                                                        "properties": {
-                                                            "efficiency_level": {
-                                                                "enum": ["energy_star", "cee_tier1", "cee_tier2", "cee_tier3"]
-                                                            }
-                                                        }
-                                                    },
-                                                    "else": {
-                                                        "properties": {
-                                                            "efficiency_level": {
-                                                                "enum": ["energy_star", "cee_tier1", "cee_tier2"]
-                                                            }
-                                                        }
                                                     }
                                                 }
                                             },
@@ -912,23 +866,6 @@ module.exports = {
                                                             "minimum": 8,
                                                             "maximum": 40,
                                                             "description": "EER of cooling equipment (only used if efficiency_method is user)"
-                                                        }
-                                                    },
-                                                    "if":{
-                                                        "properties": {"type": {"const": "mini_split"}}
-                                                    },
-                                                    "then": {
-                                                        "properties": {
-                                                            "efficiency_level": {
-                                                                "enum": ["energy_star", "cee_tier1"]
-                                                            }
-                                                        }
-                                                    },
-                                                    "else": {
-                                                        "properties": {
-                                                            "efficiency_level": {
-                                                                "enum": ["energy_star"]
-                                                            }
                                                         }
                                                     }
                                                 }
@@ -1053,18 +990,6 @@ module.exports = {
                                                                 }
                                                             }
                                                         ]
-                                                    }
-                                                },
-                                                {
-                                                    "not": {
-                                                        "properties": {
-                                                            "heating": {
-                                                                "properties": {
-                                                                    "efficiency_level": {"enum": ["energy_star", "cee_tier1", "cee_tier2", "cee_tier3"]}
-                                                                },
-                                                                "required": ["efficiency_level"]
-                                                            }
-                                                        }
                                                     }
                                                 }
                                             ]
@@ -1266,18 +1191,6 @@ module.exports = {
                                                                 "properties": {
                                                                     "type": {"enum": ["none", "dec"]}
                                                                 }
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    "not": {
-                                                        "properties": {
-                                                            "cooling": {
-                                                                "properties": {
-                                                                    "efficiency_level": {"enum": ["energy_star", "cee_tier1", "cee_tier2", "cee_tier3"]}
-                                                                },
-                                                                "required": ["efficiency_level"]
                                                             }
                                                         }
                                                     }
@@ -1877,11 +1790,6 @@ module.exports = {
                                 "energy_factor": {
                                     "type": "number",
                                     "description": "Energy factor of water heater (only used if efficiency_method is user or uef)"
-                                },
-                                "efficiency_level": {
-                                    "type": "string",
-                                    "enum": ["energy_star"],
-                                    "description": "Efficiency level upgrade of the domestic hot water system (Optional)"
                                 }
                             },
                             "allOf": [
@@ -1907,14 +1815,6 @@ module.exports = {
                                                     "category": {"const": "unit"}
                                                 },
                                                 "required": ["category"]
-                                            },
-                                            {
-                                                "not": {
-                                                    "properties": {
-                                                        "efficiency_level": {"const": "energy_star"}
-                                                    },
-                                                    "required": ["efficiency_level"]
-                                                }
                                             }
                                         ]
                                     },
@@ -2649,6 +2549,350 @@ module.exports = {
                     }
                 }
             ]
+        },
+        "applicable_upgrades": {
+            "type": "array",
+            "description": "Inputs about the applicable upgrades",
+            "additionalProperties": false,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "upgrade_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "ID of the upgrade"
+                    },
+                    "upgrade_code": {
+                        "type": "string",
+                        "enum": [
+                            "attic_insulation",
+                            "floor_insulation",
+                            "roof_absorptance",
+                            "roof_sheathing",
+                            "knee_wall_insulation",
+                            "wall_insulation",
+                            "wall_sheathing",
+                            "skylight",
+                            "skylight_storm",
+                            "window",
+                            "window_storm",
+                            "foundation_wall_insulation",
+                            "envelope_sealing",
+                            "duct_insulation",
+                            "duct_sealing",
+                            "heating_efficiency",
+                            "cooling_efficiency",
+                            "hp_efficiency",
+                            "replace_hvac_with_ducted_heat_pump",
+                            "replace_hvac_with_ductless_mini_split",
+                            "replace_heating_with_ng",
+                            "wh_efficiency",
+                            "replace_wh_with_heat_pump",
+                            "replace_wh_fuel_with_ng"
+                        ],
+                        "description": "Upgrades that can be applied to the base building"
+                    },
+                    "insulation_R_value": {
+                        "type": "integer",
+                        "description": "Insulation R value of the upgrade"
+                    },
+                    "solar_absorptance": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "maximum": 1.0,
+                        "description": "Solar absorptance of the upgraded roof."
+                    },
+                    "added_insulation_R_value": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "description": "R value of the added insulation"
+                    },
+                    "window_code": {
+                        "type": "string",
+                        "description": "Construction assembly code for window/skylight upgrades"
+                    },
+                    "storm_type": {
+                        "type": "string",
+                        "enum": ["low-e", "clear"],
+                        "description": "Storm type for window/skylight storm upgrades"
+                    },
+                    "leakage_reduction": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "maximum": 1.0,
+                        "description": "Fractional reduction of leakage for sealing upgrades"
+                    },
+                    "cooling_efficiency_unit": {
+                        "type": "string",
+                        "enum": ["seer", "eer"],
+                        "description": "Unit of cooling efficiency for upgraded cooling/heat pump system"
+                    },
+                    "cooling_efficiency_value": {
+                        "type": "number",
+                        "minimum": 8.0,
+                        "maximum": 40.0,
+                        "description": "Cooling efficiency value for upgraded cooling/heat pump system"
+                    },
+                    "heating_efficiency_unit": {
+                        "type": "string",
+                        "enum": ["hspf", "afue"],
+                        "description": "Unit of heating efficiency for upgraded heating/heat pump system"
+                    },
+                    "heating_efficiency_value": {
+                        "type": "number",
+                        "minimum": 0.6,
+                        "maximum": 20.0,
+                        "description": "Heating efficiency value for upgraded heating/heat pump system"
+                    },
+                    "wh_efficiency_unit": {
+                        "type": "string",
+                        "enum": ["energy_factor", "uniform_energy_factor"],
+                        "description": "Unit of efficiency for upgraded domestic hot water systems"
+                    },
+                    "wh_efficiency_value": {
+                        "type": "number",
+                        "minimum": 0.45,
+                        "maximum": 4.0,
+                        "description": "Efficiency value for upgraded domestic hot water systems"
+                    },
+                    "instance_ids": {
+                        "type": ["array", "null"],
+                        "minItems": 1,
+                        "description": "Array of instances that upgrade applies to"
+                    }
+                },
+                "allOf": [
+                    {
+                        "required": [
+                            "upgrade_id",
+                            "upgrade_code",
+                            "instance_ids"
+                        ]
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "attic_insulation",
+                                        "floor_insulation",
+                                        "knee_wall_insulation",
+                                        "wall_insulation",
+                                        "foundation_wall_insulation",
+                                        "duct_insulation"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "required": [
+                                "insulation_R_value"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "const": "roof_absorptance"
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "required": [
+                                "solar_absorptance"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "roof_sheathing",
+                                        "wall_sheathing"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "required": [
+                                "added_insulation_R_value"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "skylight",
+                                        "window"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "required": [
+                                "window_code"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "skylight_storm",
+                                        "window_storm"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "required": [
+                                "storm_type"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "envelope_sealing",
+                                        "duct_sealing"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "required": [
+                                "leakage_reduction"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "heating_efficiency",
+                                        "replace_heating_with_ng"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "properties": {
+                                "heating_efficiency_unit": {"const": "afue"}
+                            },
+                            "required": [
+                                "heating_efficiency_unit",
+                                "heating_efficiency_value"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "cooling_efficiency"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "properties": {
+                                "cooling_efficiency_unit": {"enum": ["seer", "eer"]}
+                            },
+                            "required": [
+                                "cooling_efficiency_unit",
+                                "cooling_efficiency_value"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "hp_efficiency",
+                                        "replace_hvac_with_ducted_heat_pump",
+                                        "replace_hvac_with_ductless_mini_split"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "properties": {
+                                "cooling_efficiency_unit": {"const": "seer"},
+                                "heating_efficiency_unit": {"const": "hspf"}
+                            },
+                            "required": [
+                                "cooling_efficiency_unit",
+                                "cooling_efficiency_value",
+                                "heating_efficiency_unit",
+                                "heating_efficiency_value"
+                            ]
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "upgrade_code": {
+                                    "enum": [
+                                        "wh_efficiency",
+                                        "replace_wh_with_heat_pump",
+                                        "replace_wh_fuel_with_ng"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "upgrade_code"
+                            ]
+                        },
+                        "then": {
+                            "properties": {
+                                "wh_efficiency_unit": {"enum": ["energy_factor", "uniform_energy_factor"]}
+                            },
+                            "required": [
+                                "wh_efficiency_unit",
+                                "wh_efficiency_value"
+                            ]
+                        }
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -2695,9 +2939,9 @@ module.exports = {
                         "side": {"const": "right"}
                     },
                     "required": ["side"]
-                }
-            },
-            "error_msg": "zone_wall/side[\"right\"] not allowed"
+                },
+                "error_msg": "zone_wall/side[\"right\"] not allowed"
+            }
         },
         "def_left_wall_not_allowed_constraint": {
             "not": {
@@ -2706,9 +2950,9 @@ module.exports = {
                         "side": {"const": "left"}
                     },
                     "required": ["side"]
-                }
-            },
-            "error_msg": "zone_wall/side[\"left\"] not allowed"
+                },
+                "error_msg": "zone_wall/side[\"left\"] not allowed"
+            }
         },
         "def_back_wall_has_same_construction_constraint": {
             "contains": {
@@ -2718,9 +2962,9 @@ module.exports = {
                 "required": ["side"],
                 "not": {
                     "required": ["wall_assembly_code"]
-                }
-            },
-            "error_msg": "\"wall_assembly_code\" is not allowed for zone_wall/side[\"back\"]"
+                },
+                "error_msg": "\"wall_assembly_code\" is not allowed for zone_wall/side[\"back\"]"
+            }
         },
         "def_left_wall_has_same_construction_constraint": {
             "contains": {
@@ -2730,9 +2974,9 @@ module.exports = {
                 "required": ["side"],
                 "not": {
                     "required": ["wall_assembly_code"]
-                }
-            },
-            "error_msg": "\"wall_assembly_code\" is not allowed for zone_wall/side[\"left\"]"
+                },
+                "error_msg": "\"wall_assembly_code\" is not allowed for zone_wall/side[\"left\"]"
+            }
         },
         "def_right_wall_has_same_construction_constraint": {
             "contains": {
@@ -2742,9 +2986,9 @@ module.exports = {
                 "required": ["side"],
                 "not": {
                     "required": ["wall_assembly_code"]
-                }
-            },
-            "error_msg": "\"wall_assembly_code\" is not allowed for zone_wall/side[\"right\"]"
+                },
+                "error_msg": "\"wall_assembly_code\" is not allowed for zone_wall/side[\"right\"]"
+            }
         },
         "def_front_window_constraint": {
             "allOf": [
@@ -2756,9 +3000,9 @@ module.exports = {
                                 "required": ["window_area", "window_method"]
                             }
                         },
-                        "required": ["side", "zone_window"]
-                    },
-                    "error_msg": "zone_wall/side[\"front\"]/zone_window requires \"window_area\" and \"window_method\""
+                        "required": ["side", "zone_window"],
+                        "error_msg": "zone_wall/side[\"front\"]/zone_window requires \"window_area\" and \"window_method\""
+                    }
                 },
                 {
                     "if": {
@@ -2784,9 +3028,9 @@ module.exports = {
                                             "required": ["window_code"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"front\"]/zone_window requires \"window_code\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"front\"]/zone_window requires \"window_code\""
+                                }
                             },
                             {
                                 "contains": {
@@ -2805,9 +3049,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"front\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"front\"]/zone_window"
+                                }
                             }
                         ]
                     }
@@ -2836,9 +3080,9 @@ module.exports = {
                                             "required": ["window_u_value", "window_shgc"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"front\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"front\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                }
                             },
                             {
                                 "contains": {
@@ -2850,9 +3094,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"front\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"front\"]/zone_window"
+                                }
                             }
                         ]
                     }
@@ -2869,9 +3113,9 @@ module.exports = {
                                 "required": ["window_area", "window_method"]
                             }
                         },
-                        "required": ["side", "zone_window"]
-                    },
-                    "error_msg": "zone_wall/side[\"back\"]/zone_window requires \"window_area\" and \"window_method\""
+                        "required": ["side", "zone_window"],
+                        "error_msg": "zone_wall/side[\"back\"]/zone_window requires \"window_area\" and \"window_method\""
+                    }
                 },
                 {
                     "if": {
@@ -2897,9 +3141,9 @@ module.exports = {
                                             "required": ["window_code"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"back\"]/zone_window requires \"window_code\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"back\"]/zone_window requires \"window_code\""
+                                }
                             },
                             {
                                 "contains": {
@@ -2918,9 +3162,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"back\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"back\"]/zone_window"
+                                }
                             }
                         ]
                     }
@@ -2949,9 +3193,9 @@ module.exports = {
                                             "required": ["window_u_value", "window_shgc"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"back\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"back\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                }
                             },
                             {
                                 "contains": {
@@ -2963,9 +3207,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"back\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"back\"]/zone_window"
+                                }
                             }
                         ]
                     }
@@ -2982,9 +3226,9 @@ module.exports = {
                                 "required": ["window_area", "window_method"]
                             }
                         },
-                        "required": ["side", "zone_window"]
-                    },
-                    "error_msg": "zone_wall/side[\"right\"]/zone_window requires \"window_area\" and \"window_method\""
+                        "required": ["side", "zone_window"],
+                        "error_msg": "zone_wall/side[\"right\"]/zone_window requires \"window_area\" and \"window_method\""
+                    }
                 },
                 {
                     "if": {
@@ -3010,9 +3254,9 @@ module.exports = {
                                             "required": ["window_code"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"right\"]/zone_window requires \"window_code\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"right\"]/zone_window requires \"window_code\""
+                                }
                             },
                             {
                                 "contains": {
@@ -3031,9 +3275,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"right\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"right\"]/zone_window"
+                                }
                             }
                         ]
                     }
@@ -3062,9 +3306,9 @@ module.exports = {
                                             "required": ["window_u_value", "window_shgc"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"right\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"right\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                }
                             },
                             {
                                 "contains": {
@@ -3076,9 +3320,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"right\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"right\"]/zone_window"
+                                }
                             }
                         ]
                     }
@@ -3095,9 +3339,9 @@ module.exports = {
                                 "required": ["window_area", "window_method"]
                             }
                         },
-                        "required": ["side", "zone_window"]
-                    },
-                    "error_msg": "zone_wall/side[\"left\"]/zone_window requires \"window_area\" and \"window_method\""
+                        "required": ["side", "zone_window"],
+                        "error_msg": "zone_wall/side[\"left\"]/zone_window requires \"window_area\" and \"window_method\""
+                    }
                 },
                 {
                     "if": {
@@ -3123,9 +3367,9 @@ module.exports = {
                                             "required": ["window_code"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"left\"]/zone_window requires \"window_code\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"left\"]/zone_window requires \"window_code\""
+                                }
                             },
                             {
                                 "contains": {
@@ -3144,9 +3388,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"left\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_u_value\" and \"window_shgc\" are not allowed for zone_wall/side[\"left\"]/zone_window"
+                                }
                             }
                         ]
                     }
@@ -3175,9 +3419,9 @@ module.exports = {
                                             "required": ["window_u_value", "window_shgc"]
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "zone_wall/side[\"left\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                    "required": ["side"],
+                                    "error_msg": "zone_wall/side[\"left\"]/zone_window requires \"window_u_value\" and \"window_shgc\""
+                                }
                             },
                             {
                                 "contains": {
@@ -3189,9 +3433,9 @@ module.exports = {
                                             }
                                         }
                                     },
-                                    "required": ["side"]
-                                },
-                                "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"left\"]/zone_window"
+                                    "required": ["side"],
+                                    "error_msg": "\"window_code\" is not allowed for zone_wall/side[\"left\"]/zone_window"
+                                }
                             }
                         ]
                     }

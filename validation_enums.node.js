@@ -449,6 +449,13 @@ module.exports = {
         'wood_stove',
     ],
 
+     ductlessHeatingTypes: [
+        'central_furnace',
+        'gchp',
+        'heat_pump',
+        'split_dx'
+     ],
+
      heatingFuelOptions: [
         'natural_gas',
         'lpg',
