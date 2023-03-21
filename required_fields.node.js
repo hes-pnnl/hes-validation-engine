@@ -9,6 +9,10 @@ const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
 const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
 addFormats(ajv);
+// Add the schema to the validator.
+ajv.addSchema(NestedBuildingSchema);
+// Add the custom keywords "error_msg" to the validator
+ajv.addKeyword('error_msg');
 
 /**
  * Casts string to matching boolean, or null if no exact match
@@ -56,25 +60,25 @@ module.exports = function (homeValues) {
     /* To handle the update where all building information is inside the `building_unit` property and then `building` inside
     return homeValues.building_unit ? getNestedRequiredFields(homeValues.building_unit) : getFlatRequiredFields(homeValues);
      */
-    return homeValues.building ? getNestedRequiredFields(homeValues) : getFlatRequiredFields(homeValues);
+    return homeValues.building ? getNestedValidationMessages(homeValues) : getFlatRequiredFields(homeValues);
 }
 
-function setupAJV () {
-    ajv.addSchema(NestedBuildingSchema);
-    // Add the custom keywords "error_msg"
-    ajv.addKeyword('error_msg');
-    // const schema = ajv.getSchema("https://github.com/NREL/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json")
-    // return ajv.compile(NestedBuildingSchema)
-    return ajv;
-}
-
-function getNestedRequiredFields (homeValues) {
+/**
+ * Perform the HES validation for the nested JSON format. Uses the JSON Schema for initial required field and field
+ * limit validations (e.g. enums, within bounds, etc) and then performs secondary cross validation across the building
+ * as a whole (e.g. the roof area is large enough to cover the floor area)
+ * @param {object} homeValues - JSON object which follows the HES Nested JSON Schema
+ * @return {{blocker: [{string, [string]}], error: [{string, [string]}], warning: [{string, [string]}]}} - Error messages
+ * for the homeValues object, grouped by severity (blocker, error, warning). Messages in each severity group are grouped by
+ * path in the JSON Schema to the error, and can contain multiple errors for a single item in the JSON Schema.
+ */
+function getNestedValidationMessages (homeValues) {
     const errorMessages = {}
     errorMessages[ENUMS.BLOCKER] = {};
     errorMessages[ENUMS.ERROR] = {};
     errorMessages[ENUMS.MANDATORY] = {};
 
-    const nested_validate = setupAJV();
+    const nested_validate = ajv;
     const valid=nested_validate.validate(NestedBuildingSchema, homeValues);
     if(!valid) {
         nested_validate.errors.forEach((error) => {

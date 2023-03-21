@@ -11,6 +11,11 @@ const fs = require('fs');
 let hes_validation_engine = require('./home_audit.node.js');
 let validate_address = hes_validation_engine.validate_address;
 let validate_home_audit = hes_validation_engine.validate_home_audit;
-const obj = JSON.parse(fs.readFileSync(process.argv[2]));
+let input = process.argv[2];
+// If we have a file instead of a string, read the file for running against the validation engine
+if(fs.existsSync(input)) {
+    input = fs.readFileSync(input);
+}
+const obj = JSON.parse(input);
 const result = Object.assign(validate_address(obj), validate_home_audit(obj));
 console.log(JSON.stringify(result));
