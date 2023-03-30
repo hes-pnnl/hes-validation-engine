@@ -60,7 +60,7 @@ module.exports = function (homeValues) {
     /* To handle the update where all building information is inside the `building_unit` property and then `building` inside
     return homeValues.building_unit ? getNestedRequiredFields(homeValues.building_unit) : getFlatRequiredFields(homeValues);
      */
-    return homeValues.building ? getNestedValidationMessages(homeValues) : getFlatRequiredFields(homeValues);
+    return homeValues.about ? getNestedValidationMessages(homeValues) : getFlatRequiredFields(homeValues);
 }
 
 /**
@@ -87,7 +87,7 @@ function getNestedValidationMessages (homeValues) {
             addErrorMessage(errorMessages[ENUMS.BLOCKER], errorPath, convertAJVError(error))
         })
     }
-    getCrossValidationMessages(homeValues.building, errorMessages);
+    getCrossValidationMessages(homeValues, errorMessages);
     return errorMessages
 }
 
@@ -159,7 +159,7 @@ function getAboutObjectCrossValidationMessages(building, errorMessages, CrossVal
         if(![null, undefined].includes(about[field])) {
             const validationResult = CrossValidator[field](about[field])
             if(validationResult && validationResult['message']) {
-                addErrorMessage(errorMessages[validationResult['type']], `/building/about/${field}`, validationResult['message']);
+                addErrorMessage(errorMessages[validationResult['type']], `/about/${field}`, validationResult['message']);
             }
         }
     }
@@ -188,7 +188,7 @@ function getAdditionalWallZoneValidations(zone, about, errorMessages) {
     const duplicate_sides = sides.filter((side, i) => sides.indexOf(side) !== i);
     if(duplicate_sides.length !== 0) {
         duplicate_sides.forEach((side) => (
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/building/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
         ));
     }
 
@@ -205,7 +205,7 @@ function checkWindowAreaValid(zone, about, errorMessages) {
         if(zone_window && wall_area) {
             const {window_area} = zone_window;
             if(window_area && window_area > wall_area) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`);
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`);
             }
         }
     })
@@ -266,7 +266,7 @@ function checkSkylightArea(zone_roof_array, conditioned_footprint, errorMessages
     if(zone_skylight_area > conditioned_footprint) {
         zone_roof_array.forEach((roof, index) => {
             if(roof.zone_skylight && roof.zone_skylight.skylight_area) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
             }
         })
     }
@@ -278,7 +278,7 @@ function checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages) {
     if(combined_knee_wall_area > max_knee_wall_area) {
         zone_roof.forEach((roof, index) => {
             if(roof.knee_wall && roof.knee_wall.area) {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `building/zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`);
+                addErrorMessage(errorMessages[ENUMS.ERROR], `zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`);
             }
         })
     }
@@ -450,7 +450,7 @@ function checkHvacFraction(hvac, errorMessages) {
     if(total_fraction !== 1) {
         hvac.forEach((hvac_system, index) => {
             if (hvac_system.hvac_fraction) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`);
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`);
             }
         });
     }
@@ -464,15 +464,15 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
         const cooling_type = cooling.type;
         // At least one needs to have a type set.
         if((heating_type === 'none') && (cooling_type === 'none')) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
         }
         // Validate that the fuel type is correct for the heating type
         if((!heating_type || heating_type === 'none') && !heating_fuel) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
         }
         else if(ENUMS.heatingFuelToType[heating_fuel] && !ENUMS.heatingFuelToType[heating_fuel].includes(heating_type)) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
         }
 
         // Validate the cooling type is valid for the heating type
@@ -502,7 +502,7 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
                 break;
         }
         if(!heat_cool_valid) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`);
         }
     }
 }
@@ -515,14 +515,14 @@ function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
             ([...nullOrUndefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
             (type === 'central_furnace' && primary_fuel === 'electric'))
         ) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
         }
         if(efficiency_method === 'shipment_weighted') {
             if(type === 'wall_furnace' && primary_fuel !== 'natural_gas') {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
+                addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
             }
             if(['mini_split', 'gchp'].includes(type)) {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
+                addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
             }
         }
     }
@@ -533,10 +533,10 @@ function checkCoolingEfficiencyValid(hvac_system, index, errorMessages) {
     if(cooling) {
         const {type, efficiency_method} = cooling;
         if(efficiency_method && [...nullOrUndefined, 'none', 'dec'].includes(type)) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
         }
         if(efficiency_method !== 'user' && ['mini_split', 'gchp'].includes(type)) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
         }
     }
 }
@@ -545,7 +545,7 @@ function checkSystemYearValid(hvac_system, index, errorMessages) {
     ['heating', 'cooling'].forEach((accessor) => {
         const item = hvac_system[accessor];
         if(item && item.year && (1970 > item.year || (new Date()).getFullYear() < item.year)) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/hvac/${index}/${accessor}/year`, `Invalid year, must be between 1970 and ${(new Date()).getFullYear()}`)
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/${accessor}/year`, `Invalid year, must be between 1970 and ${(new Date()).getFullYear()}`)
         }
     })
 }
@@ -555,7 +555,7 @@ function checkHvacDistribution(hvac_system, index, errorMessages) {
     if(hvac_distribution) {
         const {leakage_method, leakage_to_outside, duct} = hvac_distribution;
         if(leakage_to_outside && leakage_method === 'qualitative') {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'");
+            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'");
         }
         // If we have ducts, we need to ensure the fraction is 100%
         if(duct) {
@@ -568,7 +568,7 @@ function checkHvacDistribution(hvac_system, index, errorMessages) {
             if(total_fraction !== 1) {
                 duct.forEach((duct_item, sub_i) => {
                     if(duct_item.fraction) {
-                        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/hvac/${index}/hvac_distribution/duct/${sub_i}/fraction`, `Total Duct Fraction must equal 100%`);
+                        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/hvac_distribution/duct/${sub_i}/fraction`, `Total Duct Fraction must equal 100%`);
                     }
                 })
             }
@@ -585,37 +585,37 @@ function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
         cooling && hvac_types.push(cooling.type);
     });
     if(!hvac_types.includes('boiler') && category === 'combined') {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
+        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
     }
 }
 
 function checkHotWaterFuelValid(hot_water, errorMessages) {
     const {type, fuel_primary} = hot_water;
     if(['tankless_coil', 'indirect'].includes(type) && !nullOrUndefined.includes(fuel_primary)) {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
+        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
     } else if(type === 'heat_pump' && fuel_primary !== 'electric') {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
+        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
     }
 }
 
 function checkHotWaterEfficiencyValid(hot_water, errorMessages) {
     const {type, efficiency_method} = hot_water;
     if(['heat_pump', 'tankless', 'tankless_coil'].includes(type) && efficiency_method === 'shipment_weighted') {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `building/systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type');
+        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type');
     }
 }
 
 function checkHotWaterYearValid(hot_water, errorMessages) {
     const {year} = hot_water;
     if(year && (1972 > year || (new Date()).getFullYear() < year)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
     }
 }
 
 function checkHotWaterEnergyFactorValid(hot_water, errorMessages) {
     const {type, energy_factor} = hot_water;
     if(["indirect", "tankless_coil"].includes(type) && !nullOrUndefined.includes(energy_factor)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`);
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`);
     }
     let min,max;
     if (type === 'storage') {
@@ -626,14 +626,14 @@ function checkHotWaterEnergyFactorValid(hot_water, errorMessages) {
         [min, max] = [1, 4];
     }
     if(energy_factor && (energy_factor < min || energy_factor > max)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/domestic_hot_water/energy_factor`, `${energy_factor} is outside the allowed range (${min} - ${max})`);
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/energy_factor`, `${energy_factor} is outside the allowed range (${min} - ${max})`);
     }
 }
 
 function checkSolarElectricYearValid(solar_electric, errorMessages) {
     const {year} = solar_electric;
     if(year && (2000 > year || (new Date()).getFullYear() < year)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `building/systems/generation/solar_electric/year`, `Invalid year, must be between 2000 and ${(new Date()).getFullYear()}`)
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/generation/solar_electric/year`, `Invalid year, must be between 2000 and ${(new Date()).getFullYear()}`)
     }
 }
 

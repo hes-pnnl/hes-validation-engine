@@ -1811,7 +1811,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
     let requiredFields = require('./required_fields.node.js')(homeValues);
-    if(homeValues.building) {
+    if(homeValues.about) {
         return requiredFields
     } else {
         return get_validation_messages(homeValues, requiredFields, additionalRules);
@@ -1827,14 +1827,8 @@ function validate_home_audit (homeValues, additionalRules = null) {
 function validate_address (homeValues) {
     // If we are given the new version of the home object, we need to pass the right area to the
     // validation engine
-    // Updated schema will have all information in a `building_unit` property, with the address inside.
-    /*
-    if(homeValues.building_unit) {
-        homeValues = homeValues.building_unit.address;
-    }
-     */
-    if(homeValues.building_address) {
-        homeValues = homeValues.building_address;
+    if(homeValues.address) {
+        homeValues = homeValues.address;
     }
     let mandatoryMessage = "Missing value for mandatory field";
     // Define values that are always required
