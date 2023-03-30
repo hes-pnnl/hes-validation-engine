@@ -391,13 +391,7 @@ function checkConditionedAreaValid(combined_area, conditioned_footprint, area_ty
     const min = conditioned_footprint * 0.95;
     const max = conditioned_footprint * 2.5;
     if(!((min < combined_area) && (combined_area < max))) {
-        return `
-            This home's minimum footprint is approximately ${conditioned_footprint}sqft, but you
-            have specified ${combined_area}sqft of total ${area_type} area. The allowed range
-            is (${Math.ceil(min)}sqft - ${Math.floor(max)}sqft).
-            Please adjust any incorrect values. *The footprint is calculated as
-            (<total area> - <conditioned basement area>) / <number of floors>
-        `;
+        return `This home's minimum footprint is approximately ${conditioned_footprint}sqft, but you have specified ${combined_area}sqft of total ${area_type} area. The allowed range is (${Math.ceil(min)}sqft - ${Math.floor(max)}sqft). Please adjust any incorrect values. *The footprint is calculated as (<total area> - <conditioned basement area>) / <number of floors>`;
     }
 }
 
