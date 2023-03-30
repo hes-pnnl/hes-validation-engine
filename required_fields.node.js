@@ -91,6 +91,12 @@ function getNestedValidationMessages (homeValues) {
     return errorMessages
 }
 
+
+/**
+ * Convert the AJV error into an intelligible error message that the HES system knows how to display
+ * @param {object} errorObj
+ * @return {string|undefined|*}
+ */
 function convertAJVError(errorObj) {
     const {keyword, schemaPath, instancePath, params, message} = errorObj;
     const keyArr = errorObj.schemaPath.split('/');
@@ -126,10 +132,16 @@ function convertAJVError(errorObj) {
     }
 }
 
+/**
+ * Get Cross Validation messages for the building to check for other errors.
+ * @param {object} homeValues
+ * @param {object} errorMessages
+ */
 function getCrossValidationMessages (homeValues, errorMessages) {
     const CrossValidator = new validationRules(homeValues);
     getAboutObjectCrossValidationMessages(homeValues, errorMessages, CrossValidator)
-    getZoneCrossValidationMessages(homeValues, errorMessages);
+    getZoneCrossValidationMessages(homeValues.zone, homeValues.about, errorMessages);
+    getSystemCrossValidation(homeValues.systems, errorMessages)
 }
 
 /**
@@ -165,12 +177,10 @@ function getAboutObjectCrossValidationMessages(building, errorMessages, CrossVal
     }
 }
 
-function getZoneCrossValidationMessages(homeValues, errorMessages) {
-    additionalZoneCrossValidation(homeValues.zone, homeValues.about, errorMessages);
-    additionalSystemCrossValidation(homeValues.systems, errorMessages)
-}
-
-function additionalZoneCrossValidation (zone, about, errorMessages) {
+/**
+ * Cross validation for the "Zone" object in the nested JSON Schema
+ */
+function getZoneCrossValidationMessages (zone, about, errorMessages) {
     // zone wall
     getAdditionalWallZoneValidations(zone, about, errorMessages);
 
@@ -181,6 +191,12 @@ function additionalZoneCrossValidation (zone, about, errorMessages) {
     getAdditionalFloorZoneValidations(zone, about, errorMessages);
 }
 
+/**
+ * Cross validation for zone walls
+ * @param zone
+ * @param about
+ * @param errorMessages
+ */
 function getAdditionalWallZoneValidations(zone, about, errorMessages) {
     const {zone_wall} = zone;
     // First, we need to verify that all the walls are in a different position
@@ -197,6 +213,9 @@ function getAdditionalWallZoneValidations(zone, about, errorMessages) {
 
 }
 
+/**
+ * Zone window must be smaller than the wall area
+ */
 function checkWindowAreaValid(zone, about, errorMessages) {
     const {zone_wall} = zone
     zone_wall.forEach((wall, index) => {
@@ -211,6 +230,9 @@ function checkWindowAreaValid(zone, about, errorMessages) {
     })
 }
 
+/**
+ * Wall must be appropriate length for the conditioned footprint of the building
+ */
 function getWallLength(zone, about, is_front_back) {
     const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
     if(conditioned_footprint) {
@@ -224,6 +246,9 @@ function getWallLength(zone, about, is_front_back) {
     return false;
 }
 
+/**
+ * Checks if the wall area is too bit for the building
+ */
 function getWallArea(zone, about, is_front_back) {
     const length = getWallLength(zone, about, is_front_back);
     const height = about.floor_to_ceiling_height || false;
@@ -240,6 +265,9 @@ function getWallArea(zone, about, is_front_back) {
 
 }
 
+/**
+ * Do the cross validations for the zone roof
+ */
 function getAdditionalRoofZoneValidations(zone, about, errorMessages) {
     const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
     const {zone_roof} = zone;
@@ -254,6 +282,9 @@ function getAdditionalRoofZoneValidations(zone, about, errorMessages) {
     checkSkylightArea(zone_roof, conditioned_footprint, errorMessages);
 }
 
+/**
+ * Check that the skylight isn't too big for the roof
+ */
 function checkSkylightArea(zone_roof_array, conditioned_footprint, errorMessages) {
     // Skylights must be smaller than the conditioned footprint
     let zone_skylight_area = 0
@@ -272,6 +303,9 @@ function checkSkylightArea(zone_roof_array, conditioned_footprint, errorMessages
     }
 }
 
+/**
+ * Check that the knee wall is not too big for the attic
+ */
 function checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages) {
     const max_knee_wall_area = (2 * conditioned_footprint) / 3;
     const combined_knee_wall_area = getCombinedArea(zone_roof.map((roof) => (roof.knee_wall)), 'area');
@@ -284,6 +318,9 @@ function checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages) {
     }
 }
 
+/**
+ * Check that the roof area isn't too big for the roof type
+ */
 function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
     const roof_type = type === 'roof_area' ? 'cath_ceiling' : 'vented_attic';
     const combined_type = type === 'roof_area' ? 'roof' : 'ceiling';
@@ -309,6 +346,9 @@ function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
     }
 }
 
+/**
+ * Check that the floor isn't too small for the combined area
+ */
 function checkFloorArea(zone, conditioned_footprint, errorMessages) {
     const {zone_floor} = zone;
     const combined_area_invalid = checkCombinedAreaInvalid(zone);
@@ -328,6 +368,9 @@ function checkFloorArea(zone, conditioned_footprint, errorMessages) {
     }
 }
 
+/**
+ * Check that the insulation level is appropriate for the foundation type
+ */
 function checkFoundationLevel(zone_floor_array, errorMessages) {
     zone_floor_array.forEach((floor, index) => {
         const {foundation_type, foundation_insulation_level} = floor;
@@ -341,6 +384,9 @@ function checkFoundationLevel(zone_floor_array, errorMessages) {
     });
 }
 
+/**
+ * Check that the conditioned area is within the bounds for the building footprint
+ */
 function checkConditionedAreaValid(combined_area, conditioned_footprint, area_type) {
     const min = conditioned_footprint * 0.95;
     const max = conditioned_footprint * 2.5;
@@ -355,6 +401,9 @@ function checkConditionedAreaValid(combined_area, conditioned_footprint, area_ty
     }
 }
 
+/**
+ * Do the additional validations for the zone floors
+ */
 function getAdditionalFloorZoneValidations(zone, about, errorMessages) {
     const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
 
@@ -370,6 +419,9 @@ function getAdditionalFloorZoneValidations(zone, about, errorMessages) {
     checkFoundationLevel(zone.zone_floor, errorMessages);
 }
 
+/**
+ * Helper to get the conditioned area of a particular field for a building
+ */
 function getCombinedArea(array_obj, field_name) {
     let combined_area = 0;
     array_obj.filter((obj) => (!nullOrUndefined.includes(obj))).forEach((obj) => {
@@ -396,6 +448,9 @@ function getCombinedRoofCeilingArea(zone_roof_array) {
     return getCombinedRoofArea(zone_roof_array) + getCombinedCeilingArea(zone_roof_array);
 }
 
+/**
+ * Check that the roof is large enough to cover the floor area
+ */
 function checkCombinedAreaInvalid(zone) {
     const combined_floor = getCombinedFloorArea(zone.zone_floor);
     const combined_roof_ceiling = getCombinedRoofCeilingArea(zone.zone_roof);
@@ -416,7 +471,12 @@ function getBuildingConditionedFootprint(about, zone) {
     return Math.floor(footprint_area / num_floor_above_grade);
 }
 
-function additionalSystemCrossValidation(systems, errorMessages) {
+/**
+ * Get the Cross validation messages for the system of the JSON Schema
+ * @param {object} systems
+ * @param {object} errorMessages
+ */
+function getSystemCrossValidation(systems, errorMessages) {
     const {hvac, domestic_hot_water, generation} = systems;
     if(hvac) {
         checkHvacFraction(hvac, errorMessages);
@@ -440,6 +500,9 @@ function additionalSystemCrossValidation(systems, errorMessages) {
     }
 }
 
+/**
+ * Check that the HVAC fraction is equal to 1 (100%)
+ */
 function checkHvacFraction(hvac, errorMessages) {
     let total_fraction = 0;
     hvac.forEach((hvac_system) => {
@@ -456,6 +519,9 @@ function checkHvacFraction(hvac, errorMessages) {
     }
 }
 
+/**
+ * Check that the heating and cooling methods are compatible
+ */
 function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
     const {heating, cooling} = hvac_system;
     if(heating && cooling) {
@@ -507,6 +573,9 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
     }
 }
 
+/**
+ * Check that the efficiency method is valid for the heating type
+ */
 function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
     const {heating} = hvac_system;
     if(heating) {
@@ -528,6 +597,9 @@ function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
     }
 }
 
+/**
+ * Check that the efficiency method is valid for the cooling type
+ */
 function checkCoolingEfficiencyValid(hvac_system, index, errorMessages) {
     const {cooling} = hvac_system;
     if(cooling) {
@@ -541,6 +613,9 @@ function checkCoolingEfficiencyValid(hvac_system, index, errorMessages) {
     }
 }
 
+/**
+ * Check that the HVAC system is of a valid year
+ */
 function checkSystemYearValid(hvac_system, index, errorMessages) {
     ['heating', 'cooling'].forEach((accessor) => {
         const item = hvac_system[accessor];
@@ -550,6 +625,9 @@ function checkSystemYearValid(hvac_system, index, errorMessages) {
     })
 }
 
+/**
+ * Check that the total HVAC distribution is 1 (100%)
+ */
 function checkHvacDistribution(hvac_system, index, errorMessages) {
     const {hvac_distribution} = hvac_system;
     if(hvac_distribution) {
@@ -576,6 +654,9 @@ function checkHvacDistribution(hvac_system, index, errorMessages) {
     }
 }
 
+/**
+ * Check that if the hot water is 'combined' the HVAC system has a boiler
+ */
 function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
     const {category} = hot_water;
     const hvac_types = [];
@@ -589,6 +670,9 @@ function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
     }
 }
 
+/**
+ * Check that fuel is appropriate for the hot water system
+ */
 function checkHotWaterFuelValid(hot_water, errorMessages) {
     const {type, fuel_primary} = hot_water;
     if(['tankless_coil', 'indirect'].includes(type) && !nullOrUndefined.includes(fuel_primary)) {
@@ -598,6 +682,9 @@ function checkHotWaterFuelValid(hot_water, errorMessages) {
     }
 }
 
+/**
+ * Check that efficiency is appropriate for the hot water system
+ */
 function checkHotWaterEfficiencyValid(hot_water, errorMessages) {
     const {type, efficiency_method} = hot_water;
     if(['heat_pump', 'tankless', 'tankless_coil'].includes(type) && efficiency_method === 'shipment_weighted') {
@@ -605,6 +692,9 @@ function checkHotWaterEfficiencyValid(hot_water, errorMessages) {
     }
 }
 
+/**
+ * Check that the year is appropriate for the hot water system
+ */
 function checkHotWaterYearValid(hot_water, errorMessages) {
     const {year} = hot_water;
     if(year && (1972 > year || (new Date()).getFullYear() < year)) {
@@ -612,6 +702,9 @@ function checkHotWaterYearValid(hot_water, errorMessages) {
     }
 }
 
+/**
+ * Check that the energy factor is valid for the hot water system
+ */
 function checkHotWaterEnergyFactorValid(hot_water, errorMessages) {
     const {type, energy_factor} = hot_water;
     if(["indirect", "tankless_coil"].includes(type) && !nullOrUndefined.includes(energy_factor)) {
@@ -630,6 +723,9 @@ function checkHotWaterEnergyFactorValid(hot_water, errorMessages) {
     }
 }
 
+/**
+ * Check that the solar electric system is of a valid year
+ */
 function checkSolarElectricYearValid(solar_electric, errorMessages) {
     const {year} = solar_electric;
     if(year && (2000 > year || (new Date()).getFullYear() < year)) {
