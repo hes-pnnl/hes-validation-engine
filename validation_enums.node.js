@@ -74,7 +74,7 @@ module.exports = {
         'test',
         'corrected',
         'mentor',
-        'preruction',
+        'preconstruction',
         // Note that the 'void' option is omitted by default when rendering assessment type input because it
         // is only available to administrators using the "batch update" feature
         'void',
