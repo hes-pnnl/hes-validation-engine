@@ -1,6 +1,6 @@
 {
     "name": "hes-validation-engine",
-    "version": "1.5.0",
+    "version": "2.0.0",
     "description": "Validation Engine for HEScore Project",
     "main": "home_audit.node.js",
     "scripts": {
@@ -15,5 +15,10 @@
     "bugs": {
         "url": "https://github.com/hes-pnnl/hes-validation-engine/issues"
     },
-    "homepage": "https://github.com/hes-pnnl/hes-validation-engine#readme"
+    "homepage": "https://github.com/hes-pnnl/hes-validation-engine#readme",
+    "dependencies": {
+        "ajv": "^8.11.0",
+        "ajv-formats": "^2.1.1",
+        "jsonschema": "^1.4.1"
+    }
 }

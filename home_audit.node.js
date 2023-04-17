@@ -1482,6 +1482,7 @@ let validationRules = {
         // If heating/cooling system does not require ducts, we need to ensure the
         // user has not entered values for ducts
         let ductTypes = ['central_furnace', 'heat_pump', 'gchp', 'split_dx'];
+
         if (!ductTypes.includes(_homeValues['heating_type_'+sys]) && !ductTypes.includes(_homeValues['cooling_type_'+sys])) {
             if(!TypeRules._is_empty(value)) {
                 return new Validation(
@@ -1809,9 +1810,12 @@ function get_validation_messages (homeValues, requiredFields, additionalRules) {
 function validate_home_audit (homeValues, additionalRules = null) {
     // Pass homeValues into the scope of this file so that validation rules can reference it
     // without us having to explicitly pass it to every function
-    let requiredFields = require('./required_fields.node')(homeValues);
-
-    return get_validation_messages(homeValues, requiredFields, additionalRules);
+    let requiredFields = require('./required_fields.node.js')(homeValues);
+    if(homeValues.about) {
+        return requiredFields
+    } else {
+        return get_validation_messages(homeValues, requiredFields, additionalRules);
+    }
 }
 
 /**
@@ -1821,6 +1825,11 @@ function validate_home_audit (homeValues, additionalRules = null) {
  * validation rules were violated, an empty object is returned.
  */
 function validate_address (homeValues) {
+    // If we are given the new version of the home object, we need to pass the right area to the
+    // validation engine
+    if(homeValues.address) {
+        homeValues = homeValues.address;
+    }
     let mandatoryMessage = "Missing value for mandatory field";
     // Define values that are always required
     let requiredFields = {
