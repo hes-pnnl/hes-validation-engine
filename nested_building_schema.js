@@ -730,8 +730,12 @@ module.exports = {
                             },
                             "foundation_insulation_level": {
                                 "type": "integer",
-                                "minimum": 0,
-                                "maximum": 19,
+                                "enum": [
+                                    0,
+                                    5,
+                                    11,
+                                    19
+                                ],
                                 "description": "Foundation wall / slab edge insulation R-value (sf-hr-F/Btu)"
                             },
                             "floor_assembly_code": {
