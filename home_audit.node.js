@@ -629,7 +629,8 @@ let validationRules = {
     _roof_area: function(value, num) {
         if(_homeValues['roof_type_'+ num] === 'cath_ceiling') {
             //Check that roof area is within legal bounds per API
-            if (TypeRules._int(value, 4, 25000, false) === undefined) {
+            const constraintsError = TypeRules._float(value, 4, 25000);
+            if (constraintsError === undefined) {
                 let combinedAreaCheck = this._check_combined_area();
                 //Check that roof area is not less than floor area
                 if (!combinedAreaCheck) {
@@ -644,7 +645,7 @@ let validationRules = {
                 }
             } else {
                 //This is a blocker case and will prevent saving
-                return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
+                return new Validation(constraintsError, BLOCKER);
             }
         }
     },
@@ -657,7 +658,8 @@ let validationRules = {
     _ceiling_area: function(value, num) {
         if(_homeValues['roof_type_'+ num] === 'vented_attic') {
             //Check that roof area is within legal bounds per API
-            if (TypeRules._int(value, 4, 25000, false) === undefined) {
+            const constraintsError = TypeRules._float(value, 4, 25000);
+            if (constraintsError === undefined) {
                 let combinedAreaCheck = this._check_combined_area();
                 //Check that roof area is not less than floor area
                 if (!combinedAreaCheck) {
@@ -672,7 +674,7 @@ let validationRules = {
                 }
             } else {
                 //This is a blocker case and will prevent saving
-                return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
+                return new Validation(constraintsError, BLOCKER);
             }
         }
     },
@@ -723,7 +725,7 @@ let validationRules = {
         return this._knee_wall_area(value);
     },
     _knee_wall_area: function(value) {
-        const constraintsError = TypeRules._int(value, 4, 5000, false);
+        const constraintsError = TypeRules._float(value, 4, 5000);
         if (constraintsError === undefined) {
             let footprintArea = this._get_footprint_area();
             let max_knee_wall_area = 2*footprintArea/3;
@@ -757,7 +759,8 @@ let validationRules = {
     },
     _floor_area: function(value) {
         //Check that floor area is within legal bounds per API
-        if (TypeRules._int(value, 4, 25000, false) === undefined) {
+        const constraintsError = TypeRules._float(value, 4, 25000);
+        if (constraintsError === undefined) {
             let combinedAreaCheck = this._check_combined_area();
             //Check that floor area is not greater than roof area
             if (!combinedAreaCheck) {
@@ -776,7 +779,7 @@ let validationRules = {
                 return new Validation(checkFootprint, BLOCKER);
             }
             //This is a blocker case and will prevent saving
-            return new Validation(TypeRules._int(value, 1, 25000), BLOCKER);
+            return new Validation(constraintsError, BLOCKER);
         }
     },
 
