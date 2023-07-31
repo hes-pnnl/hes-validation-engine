@@ -1768,7 +1768,7 @@ function get_validation_messages (homeValues, requiredFields, additionalRules) {
     result[ERROR] = {};
     result[MANDATORY] = {};
 
-    for (var fieldName in requiredFields) {
+    for (const fieldName in requiredFields) {
         //Because we have two validation rules for one user input, here we check for potential duplicate messages
         if (undefined === homeValues[fieldName] || '' === homeValues[fieldName] || null === homeValues[fieldName]) {
             if ((fieldName === 'heating_fuel_1' && (homeValues['heating_type_1'] === 'none' || TypeRules._is_empty(homeValues['heating_type_1']))) ||
@@ -1815,7 +1815,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
     // without us having to explicitly pass it to every function
     let requiredFields = require('./required_fields.node.js')(homeValues);
     if(homeValues.about) {
-        return requiredFields
+        return requiredFields;
     } else {
         return get_validation_messages(homeValues, requiredFields, additionalRules);
     }
@@ -1830,7 +1830,7 @@ function validate_home_audit (homeValues, additionalRules = null) {
 function validate_address (homeValues) {
     // If we are given the new version of the home object, we need to pass the right area to the
     // validation engine
-    if(homeValues.address) {
+    if(typeof homeValues.address === 'object') {
         homeValues = homeValues.address;
     }
     let mandatoryMessage = "Missing value for mandatory field";
