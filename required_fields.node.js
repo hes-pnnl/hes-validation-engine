@@ -4,7 +4,7 @@
 let TypeRules = require('./type_rules.node');
 let validationRules = require('./validation_rules');
 const ENUMS = require('./validation_enums.node')
-const NestedBuildingSchema = require('./nested_building_schema');
+const NestedBuildingSchema = require('./hescore_json_schema');
 const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
 const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
