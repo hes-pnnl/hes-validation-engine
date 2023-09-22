@@ -18,4 +18,4 @@ if(fs.existsSync(input)) {
 }
 const obj = JSON.parse(input);
 const result = Object.assign(validate_address(obj), validate_home_audit(obj));
-console.log(JSON.stringify(result));
+console.log(JSON.stringify(result, null, 2));

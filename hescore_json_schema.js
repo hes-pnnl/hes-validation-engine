@@ -1137,13 +1137,16 @@ module.exports = {
                                             "window_method": { "const": "code" }
                                         },
                                         "required": ["window_code"],
+                                        "error_msg": "Window code is required for window method 'code'.",
                                         "not": {
                                             "anyOf": [
                                                 {
-                                                    "required": ["window_u_value"]
+                                                    "required": ["window_u_value"],
+                                                    "error_msg": "Window u value is not applicable for window method 'code'.",
                                                 },
                                                 {
-                                                    "required": ["window_shgc"]
+                                                    "required": ["window_shgc"],
+                                                    "error_msg": "Window shgc is not applicable for window method 'code'.",
                                                 }
                                             ]
                                         }
@@ -1153,8 +1156,10 @@ module.exports = {
                                             "window_method": { "const": "custom" }
                                         },
                                         "required": ["window_u_value", "window_shgc"],
+                                        "error_msg": "Window u value and window shgc is required for window method 'custom'.",
                                         "not": {
-                                            "required": ["window_code"]
+                                            "required": ["window_code"],
+                                            "error_msg": "Window code is not applicable for window method 'custom'."
                                         }
                                     }
                                 ]
@@ -1173,7 +1178,8 @@ module.exports = {
                                             ]
                                         }
                                     },
-                                    "required": ["adjacent_to"]
+                                    "required": ["adjacent_to"],
+                                    "error_msg": "You must provide wall assembly code for walls adjacent to outside, other heated space, other multifamily buffer space, and other non freezing spac."
                                 },
                                 "then": {
                                     "required": ["wall_assembly_code"]
@@ -1184,7 +1190,8 @@ module.exports = {
                                     "properties": {
                                         "adjacent_to": { "const": "other_unit" }
                                     },
-                                    "required": ["adjacent_to"]
+                                    "required": ["adjacent_to"],
+                                    "error_msg": "Wall assembly code is not applicable for walls adjacent to other unit."
                                 },
                                 "then": {
                                     "not": { "required": ["wall_assembly_code"] }
@@ -1195,7 +1202,8 @@ module.exports = {
                                     "properties": {
                                         "adjacent_to": { "enum": ["outside"] }
                                     },
-                                    "required": ["adjacent_to"]
+                                    "required": ["adjacent_to"],
+                                    "error_msg": "zone window is only applicable for wall adjacent to outside and not applicable for others."
                                 },
                                 "then": {
                                     "required": ["zone_window"]
@@ -1217,7 +1225,8 @@ module.exports = {
                                             ]
                                         }
                                     },
-                                    "required": ["adjacent_to"]
+                                    "required": ["adjacent_to"],
+                                    "error_msg": "You must provide wall assembly code for walls adjacent to outside, other heated space, other multifamily buffer space, and other non freezing spac."
                                 },
                                 "then": {
                                     "properties": {
@@ -1619,7 +1628,8 @@ module.exports = {
                                         "hvac_name": {
                                             "enum": ["hvac1", "hvac2"]
                                         }
-                                    }
+                                    },
+                                    "error_msg": "All identified hvac require a hvac fraction."
                                 },
                                 "then": {
                                     "required": ["hvac_fraction"]
@@ -1631,7 +1641,8 @@ module.exports = {
                                         "properties": {
                                             "hvac_fraction": { "const": 0 }
                                         }
-                                    }
+                                    },
+                                    "error_msg": "All havc with hvac fraction not 0 require a heating type."
                                 },
                                 "then": {
                                     "properties": {
@@ -1662,7 +1673,8 @@ module.exports = {
                                                 }
                                             }
                                         }
-                                    ]
+                                    ],
+                                    "error_msg": "heating type not none require a fuel primary."
                                 },
                                 "then": {
                                     "properties": {
@@ -1726,7 +1738,7 @@ module.exports = {
                                                 ]
                                             }
                                         }
-                                    ]
+                                    ],
                                 },
                                 "then": {
                                     "properties": {
@@ -1800,7 +1812,8 @@ module.exports = {
                                                 ]
                                             }
                                         }
-                                    ]
+                                    ],
+                                    "error_msg": "heating efficiency method shipment weighted require feilds year. Efficiency and efficiency unit are not applicable"
                                 },
                                 "then": {
                                     "allOf": [
@@ -1916,7 +1929,8 @@ module.exports = {
                                         "properties": {
                                             "hvac_fraction": { "const": 0 }
                                         }
-                                    }
+                                    },
+                                    "error_msg": "All havc with hvac fraction not 0 require a cooling type."
                                 },
                                 "then": {
                                     "properties": {
@@ -1949,7 +1963,8 @@ module.exports = {
                                                 }
                                             }
                                         }
-                                    ]
+                                    ],
+                                    "error_msg": "cooling type not none or dec require a efficiency method"
                                 },
                                 "then": {
                                     "properties": {
@@ -1992,7 +2007,8 @@ module.exports = {
                                                 }
                                             }
                                         }
-                                    ]
+                                    ],
+                                    "error_msg": "cooling efficiency method shipment weighted require feilds year. Efficiency and efficiency unit are not applicable"
                                 },
                                 "then": {
                                     "allOf": [
@@ -2489,7 +2505,8 @@ module.exports = {
                                         "enum": ["indirect", "tankless_coil"]
                                     }
                                 },
-                                "required": ["type"]
+                                "required": ["type"],
+                                "erroe_msg": ""
                             },
                             "then": {
                                 "properties": {
