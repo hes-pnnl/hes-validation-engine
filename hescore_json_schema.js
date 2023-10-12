@@ -1160,33 +1160,37 @@ module.exports = {
                     description: "Does this window have a solar screen?",
                   },
                 },
-                oneOf: [
-                  {
-                    properties: {
-                      window_method: { const: "code" },
-                    },
-                    required: ["window_code"],
-                    error_msg:
-                      "Window code is required for window method 'code'.",
-                    not: {
-                      anyOf: [
-                        {
-                          required: ["window_u_value"],
-                          error_msg:
-                            "Window u value is not applicable for window method 'code'.",
-                        },
-                        {
-                          required: ["window_shgc"],
-                          error_msg:
-                            "Window shgc is not applicable for window method 'code'.",
-                        },
-                      ],
-                    },
+                if: {
+                  properties: {
+                    window_method: { const: "code" },
                   },
-                  {
+                },
+                then: {
+                  required: ["window_code"],
+                  error_msg:
+                    "Window code is required for window method 'code'.",
+                  not: {
+                    anyOf: [
+                      {
+                        required: ["window_u_value"],
+                        error_msg:
+                          "Window u value is not applicable for window method 'code'.",
+                      },
+                      {
+                        required: ["window_shgc"],
+                        error_msg:
+                          "Window shgc is not applicable for window method 'code'.",
+                      },
+                    ],
+                  },
+                },
+                else: {
+                  if: {
                     properties: {
                       window_method: { const: "custom" },
                     },
+                  },
+                  then: {
                     required: ["window_u_value", "window_shgc"],
                     error_msg:
                       "Window u value and window shgc is required for window method 'custom'.",
@@ -1196,7 +1200,10 @@ module.exports = {
                         "Window code is not applicable for window method 'custom'.",
                     },
                   },
-                ],
+                  else: {
+                    error_msg: "Invalid window method specified.",
+                  },
+                },
               },
             },
             allOf: [
@@ -2483,6 +2490,8 @@ module.exports = {
                     },
                   },
                   required: ["hvac_distribution"],
+                  error_msg:
+                    "HVAC distribution information is required with given heating type.",
                 },
               },
               {
@@ -2510,6 +2519,8 @@ module.exports = {
                     },
                   },
                   required: ["hvac_distribution"],
+                  error_msg:
+                    "HVAC distribution information is required with given cooling type.",
                 },
               },
               {
@@ -2558,6 +2569,8 @@ module.exports = {
                 then: {
                   not: {
                     required: ["hvac_distribution"],
+                    error_msg:
+                      "HVAC distribution information is not required with the given heating and cooling type.",
                   },
                 },
               },
@@ -3328,6 +3341,7 @@ module.exports = {
             allOf: [
               {
                 required: ["name", "fraction"],
+                error_msg: "name and fraction are required for all duct.",
               },
               {
                 if: {
@@ -3356,10 +3370,12 @@ module.exports = {
             allOf: [
               {
                 required: ["sealed"],
+                error_msg: "sealed field is required if leakage method is qualitative.",
               },
               {
                 not: {
                   required: ["leakage_to_outside"],
+                  error_msg: "leakage to outside is not required if leakage method is qualitative.",
                 },
               },
             ],
@@ -3376,10 +3392,12 @@ module.exports = {
             allOf: [
               {
                 required: ["leakage_to_outside"],
+                error_msg: "leakage to outside is required if leakage method is quantitative.",
               },
               {
                 not: {
                   required: ["sealed"],
+                  error_msg: "sealed field is  not required if leakage method is quantitative.",
                 },
               },
             ],
