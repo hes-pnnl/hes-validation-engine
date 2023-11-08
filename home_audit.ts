@@ -2,8 +2,13 @@
  * required_fields.node.js - Validates that required home audit fields have a value.
  */
 let TypeRules = require('./type_rules.node');
-let validationRules = require('./validation_rules');
-const ENUMS = require('./validation_enums.node')
+const Validation = require("./validation.node");
+const ENUMS = require('./validation_enums.node');
+
+const ERROR = ENUMS.ERROR;
+const BLOCKER = ENUMS.BLOCKER;
+const MANDATORY = ENUMS.MANDATORY;
+
 const NestedBuildingSchema = require('./hescore_json_schema');
 const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
@@ -30,9 +35,9 @@ function castBool(value) {
     }
 }
 
-nullOrUndefined = [null, undefined];
+const nullOrUndefined = [null, undefined];
 
-mandatoryMessage = "Missing value for mandatory field";
+const mandatoryMessage = "Missing value for mandatory field";
 
 module.exports = function (homeValues) {
     // If we are given the new version of the home object, we need to validate the nested version instead
@@ -117,8 +122,7 @@ function convertAJVError(errorObj) {
  * @param {object} errorMessages
  */
 function getCrossValidationMessages (homeValues, errorMessages) {
-    const CrossValidator = new validationRules(homeValues);
-    getAboutObjectCrossValidationMessages(homeValues, errorMessages, CrossValidator)
+    getAboutObjectCrossValidationMessages(homeValues, errorMessages)
     getZoneCrossValidationMessages(homeValues.zone, homeValues.about, errorMessages);
     getSystemCrossValidation(homeValues.systems, errorMessages)
 }
@@ -141,20 +145,20 @@ function addErrorMessage(errorMessageObj, path, message) {
 /**
  * Cross validations for the "About" object in the nested JSON Schema
  */
-function getAboutObjectCrossValidationMessages(building, errorMessages, CrossValidator) {
+function getAboutObjectCrossValidationMessages(building, errorMessages) {
     const {about} = building;
     // Since we need to make sure the year built and the assessment date aren't in the future, JS validation here.
     const fields = ['year_built', 'assessment_date'];
-    for(const index in fields) {
-        const field = fields[index]
-        if(![null, undefined].includes(about[field])) {
-            const validationResult = CrossValidator[field](about[field])
-            if(validationResult && validationResult['message']) {
-                addErrorMessage(errorMessages[validationResult['type']], `/about/${field}`, validationResult['message']);
-            }
-        }
+    const assessmentDateValidation = new Validation(TypeRules._date(about[fields[1]], Date.parse('2010-01-01'), Date.now()), BLOCKER);
+    const yearValidation = new Validation(TypeRules._int(about[fields[0]], 1600, (new Date()).getFullYear()), BLOCKER);
+    if(assessmentDateValidation && assessmentDateValidation['message']){
+        addErrorMessage(errorMessages[assessmentDateValidation['type']], `/about/${about[fields[1]]}`, assessmentDateValidation['message']);
+    }
+    if(yearValidation && yearValidation['message']){
+        addErrorMessage(errorMessages[yearValidation['type']], `/about/${about[fields[0]]}`, yearValidation['message']);
     }
 }
+
 
 /**
  * Cross validation for the "Zone" object in the nested JSON Schema
