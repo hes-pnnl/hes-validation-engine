@@ -295,7 +295,7 @@ function checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages) {
     if(combined_knee_wall_area > max_knee_wall_area) {
         zone_roof.forEach((roof, index) => {
             if(roof.knee_wall && roof.knee_wall.area) {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`);
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`);
             }
         })
     }
@@ -315,7 +315,7 @@ function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
         if(conditioned_area_invalid) {
             zone_roof.forEach((roof, index) => {
                 if(roof.roof_type === roof_type) {
-                    addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_roof/${index}/${type}`, conditioned_area_invalid);
+                    addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_roof/${index}/${type}`, conditioned_area_invalid);
                 }
             })
         }
@@ -323,7 +323,7 @@ function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
     else {
         zone_roof.forEach((roof, index) => {
             if(roof.roof_type === roof_type) {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_roof/${index}/${type}`, combined_area_invalid);
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_roof/${index}/${type}`, combined_area_invalid);
             }
         })
     }
@@ -340,13 +340,13 @@ function checkFloorArea(zone, conditioned_footprint, errorMessages) {
         const conditioned_area_invalid = checkConditionedAreaValid(combined_floor_area, conditioned_footprint, 'floor');
         if(conditioned_area_invalid) {
             zone_floor.forEach((floor, index) => {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/floor_area`, conditioned_area_invalid);
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/floor_area`, conditioned_area_invalid);
             })
         }
     }
     else {
         zone_floor.forEach((roof, index) => {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/floor_area`, combined_area_invalid);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/floor_area`, combined_area_invalid);
         })
     }
 }
@@ -359,9 +359,9 @@ function checkFoundationLevel(zone_floor_array, errorMessages) {
         const {foundation_type, foundation_insulation_level} = floor;
         if(!nullOrUndefined.includes(foundation_type) && !nullOrUndefined.includes(foundation_insulation_level)) {
             if(foundation_type === 'slab_on_grade' && ![0, 5].includes(foundation_insulation_level)) {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0 or R-5 for Slab on Grade Foundation');
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0 or R-5 for Slab on Grade Foundation');
             } else if(![0, 11, 19].includes(foundation_insulation_level)) {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0, R-11, or R-19 for current foundation type');
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0, R-11, or R-19 for current foundation type');
             }
         }
     });
@@ -507,15 +507,15 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
         const cooling_type = cooling.type;
         // At least one needs to have a type set.
         if((heating_type === 'none') && (cooling_type === 'none')) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
         }
         // Validate that the fuel type is correct for the heating type
         if((!heating_type || heating_type === 'none') && !heating_fuel) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
         }
         else if(ENUMS.heatingFuelToType[heating_fuel] && !ENUMS.heatingFuelToType[heating_fuel].includes(heating_type)) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
         }
 
         // Validate the cooling type is valid for the heating type
@@ -545,7 +545,7 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
                 break;
         }
         if(!heat_cool_valid) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`);
         }
     }
 }
@@ -561,14 +561,14 @@ function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
             ([...nullOrUndefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
             (type === 'central_furnace' && primary_fuel === 'electric'))
         ) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
         }
         if(efficiency_method === 'shipment_weighted') {
             if(type === 'wall_furnace' && primary_fuel !== 'natural_gas') {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
             }
             if(['mini_split', 'gchp'].includes(type)) {
-                addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
+                addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
             }
         }
     }
@@ -582,10 +582,10 @@ function checkCoolingEfficiencyValid(hvac_system, index, errorMessages) {
     if(cooling) {
         const {type, efficiency_method} = cooling;
         if(efficiency_method && [...nullOrUndefined, 'none', 'dec'].includes(type)) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
         }
         if(efficiency_method !== 'user' && ['mini_split', 'gchp'].includes(type)) {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
         }
     }
 }
@@ -610,7 +610,7 @@ function checkHvacDistribution(hvac_system, index, errorMessages) {
     if(hvac_distribution) {
         const {leakage_method, leakage_to_outside, duct} = hvac_distribution;
         if(leakage_to_outside && leakage_method === 'qualitative') {
-            addErrorMessage(errorMessages[ENUMS.ERROR], `systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'");
+            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'");
         }
         // If we have ducts, we need to ensure the fraction is 100%
         if(duct) {
@@ -643,7 +643,7 @@ function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
         cooling && hvac_types.push(cooling.type);
     });
     if(!hvac_types.includes('boiler') && category === 'combined') {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
     }
 }
 
@@ -653,9 +653,9 @@ function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
 function checkHotWaterFuelValid(hot_water, errorMessages) {
     const {type, fuel_primary} = hot_water;
     if(['tankless_coil', 'indirect'].includes(type) && !nullOrUndefined.includes(fuel_primary)) {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
     } else if(type === 'heat_pump' && fuel_primary !== 'electric') {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
     }
 }
 
@@ -665,7 +665,7 @@ function checkHotWaterFuelValid(hot_water, errorMessages) {
 function checkHotWaterEfficiencyValid(hot_water, errorMessages) {
     const {type, efficiency_method} = hot_water;
     if(['heat_pump', 'tankless', 'tankless_coil'].includes(type) && efficiency_method === 'shipment_weighted') {
-        addErrorMessage(errorMessages[ENUMS.ERROR], `systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type');
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type');
     }
 }
 
