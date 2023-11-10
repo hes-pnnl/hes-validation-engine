@@ -1,10 +1,21 @@
-{
+const NestedBuildingSchema = require('./hescore_json_schema.js');
+const Ajv = require("ajv");
+const addFormats = require('ajv-formats');
+const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
+addFormats(ajv);
+// Add the schema to the validator.
+ajv.addSchema(NestedBuildingSchema);
+// Add the custom keywords "error_msg" to the validator
+ajv.addKeyword('error_msg');
+
+
+const address = {
     "version": "1.0",
     "address": {
         "address": "",
         "city": "St Louis",
         "state": "MO",
-        "zip_code": "6311"
+        "zip_code": "6301"
     },
     "about": {
         "assessment_type": "test",
@@ -135,3 +146,12 @@
         }
     }
 }
+const nested_validate = ajv;
+const isValid=nested_validate.validate(NestedBuildingSchema, address);
+
+if (isValid) {
+    console.log("Address is valid.");
+  } else {
+    console.log("Address is not valid.");
+    console.log(nested_validate.errors);
+  }

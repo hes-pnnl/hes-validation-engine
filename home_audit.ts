@@ -9,7 +9,7 @@ const ERROR = ENUMS.ERROR;
 const BLOCKER = ENUMS.BLOCKER;
 const MANDATORY = ENUMS.MANDATORY;
 
-const NestedBuildingSchema = require('./hescore_json_schema');
+const NestedBuildingSchema = require('./hescore_json_schema.js');
 const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
 const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
@@ -68,7 +68,7 @@ function getNestedValidationMessages (homeValues) {
         nested_validate.errors.forEach((error) => {
             const {instancePath, params} = error;
             const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], errorPath, convertAJVError(error))
+            addErrorMessage(errorMessages[ENUMS.ERROR], errorPath, convertAJVError(error))
         })
     }
     getCrossValidationMessages(homeValues, errorMessages);
