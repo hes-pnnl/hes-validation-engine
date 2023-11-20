@@ -6,17 +6,15 @@
  * node home_audit.cli.js '{"solar_electric_capacity_known" : "3"}'
  * > {"solar_electric_capacity_known":"3 is outside the allowed range (0 - 1)"}
  */
-import * as fs from 'fs';
-import validateRequiredFields from './home_audit'; // Assuming home_audit.ts is a TypeScript file or has type declarations
+const fs = require('fs');
+
+const validateRequiredFields = require('./home_audit.ts');
 
 let input = process.argv[2];
-
 // If we have a file instead of a string, read the file for running against the validation engine
-if (fs.existsSync(input)) {
-    input = fs.readFileSync(input, 'utf-8');
+if(fs.existsSync(input)) {
+    input = fs.readFileSync(input);
 }
-
 const obj = JSON.parse(input);
 const result = validateRequiredFields(obj);
-
 console.log(JSON.stringify(result, null, 2));
