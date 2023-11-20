@@ -1,17 +1,17 @@
 /**
  * required_fields.node.js - Validates that required home audit fields have a value.
  */
-let TypeRules = require('./type_rules.node');
-const Validation = require("./validation.node");
-const ENUMS = require('./validation_enums.node');
+import TypeRules from './type_rules.node';
+import Validation from "./validation.node";
+import * as ENUMS from './validation_enums.node';
 
 const ERROR = ENUMS.ERROR;
 const BLOCKER = ENUMS.BLOCKER;
 const MANDATORY = ENUMS.MANDATORY;
 
-const NestedBuildingSchema = require('./hescore_json_schema.js');
-const Ajv = require("ajv");
-const addFormats = require('ajv-formats');
+import NestedBuildingSchema from './hescore_json_schema.js';
+import Ajv from "ajv";
+import addFormats from 'ajv-formats';
 const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
 addFormats(ajv);
 // Add the schema to the validator.
@@ -39,12 +39,12 @@ const nullOrUndefined = [null, undefined];
 
 const mandatoryMessage = "Missing value for mandatory field";
 
-module.exports = function (homeValues) {
+export default function validateHomeValues(homeValues: any) { // Replace 'any' with the actual type of homeValues
     // If we are given the new version of the home object, we need to validate the nested version instead
     /* To handle the update where all building information is inside the `building_unit` property and then `building` inside
     return homeValues.building_unit ? getNestedRequiredFields(homeValues.building_unit);
      */
-    return getNestedValidationMessages(homeValues)
+    return getNestedValidationMessages(homeValues);
 }
 
 /**
@@ -64,7 +64,7 @@ function getNestedValidationMessages (homeValues) {
 
     const nested_validate = ajv;
     const valid=nested_validate.validate(NestedBuildingSchema, homeValues);
-    if(!valid) {
+    if(!valid && nested_validate.errors) {
         nested_validate.errors.forEach((error) => {
             const {instancePath, params} = error;
             const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
@@ -514,7 +514,7 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
         if((!heating_type || heating_type === 'none') && !heating_fuel) {
             addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
         }
-        else if(ENUMS.heatingFuelToType[heating_fuel] && !ENUMS.heatingFuelToType[heating_fuel].includes(heating_type)) {
+        else if(ENUMS.HEATING_FUEL && !ENUMS.HEATING_FUEL.includes(heating_type)) {
             addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
         }
 
@@ -636,7 +636,7 @@ function checkHvacDistribution(hvac_system, index, errorMessages) {
  */
 function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
     const {category} = hot_water;
-    const hvac_types = [];
+    const hvac_types: String[] = [];
     hvac.forEach((system) => {
         const {heating, cooling} = system;
         heating && hvac_types.push(heating.type);
