@@ -5,10 +5,6 @@ let TypeRules = require('./type_rules.node');
 const Validation = require("./validation.node");
 const ENUMS = require('./validation_enums.node');
 
-const ERROR = ENUMS.ERROR;
-const BLOCKER = ENUMS.BLOCKER;
-const MANDATORY = ENUMS.MANDATORY;
-
 const NestedBuildingSchema = require('./hescore_json_schema.js');
 const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
@@ -126,8 +122,8 @@ function getAboutObjectCrossValidationMessages(building, errorMessages) {
     const {about} = building;
     // Since we need to make sure the year built and the assessment date aren't in the future, JS validation here.
     const fields = ['year_built', 'assessment_date'];
-    const assessmentDateValidation = new Validation(TypeRules._date(about[fields[1]], Date.parse('2010-01-01'), Date.now()), BLOCKER);
-    const yearValidation = new Validation(TypeRules._int(about[fields[0]], 1600, (new Date()).getFullYear()), BLOCKER);
+    const assessmentDateValidation = new Validation(TypeRules._date(about[fields[1]], Date.parse('2010-01-01'), Date.now()), ENUMS.BLOCKER);
+    const yearValidation = new Validation(TypeRules._int(about[fields[0]], 1600, (new Date()).getFullYear()), ENUMS.BLOCKER);
     if(assessmentDateValidation && assessmentDateValidation['message']){
         addErrorMessage(errorMessages[assessmentDateValidation['type']], `/about/${about[fields[1]]}`, assessmentDateValidation['message']);
     }
