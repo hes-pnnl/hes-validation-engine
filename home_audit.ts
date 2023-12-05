@@ -73,7 +73,6 @@ function convertAJVError(errorObj) {
     }, NestedBuildingSchema);
 
     const error_msg = error_leaf.error_msg
-    // first = false;
     const returnObj = {
         schemaPath, instancePath, keyword, message
     }
@@ -83,9 +82,9 @@ function convertAJVError(errorObj) {
     switch(keyword) {
         case 'minimum':
         case 'maximum':
-            return returnObj.message; // = message;
+            return returnObj.message;
         case 'required':
-            return mandatoryMessage; // returnObj.message = mandatoryMessage;
+            return mandatoryMessage;
         case 'enum':
             return `${returnObj.message}: '${error_leaf.join('\', \'')}'`;
         default:
