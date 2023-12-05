@@ -49,7 +49,7 @@ function getNestedValidationMessages (homeValues) {
 /**
  * Convert the AJV error into an intelligible error message that the HES system knows how to display
  * @param {object} errorObj
- * @return {string}
+ * @return {string|undefined}
  */
 function convertAJVError(errorObj) {
     const {keyword, message, schemaPath} = errorObj;
@@ -75,6 +75,11 @@ function convertAJVError(errorObj) {
             return mandatoryMessage;
         case 'enum':
             return `${message}: '${error_leaf.join('\', \'')}'`;
+        case 'if':
+        case 'not':
+        case 'additionalProperties':
+            // Some keywords indicate errors that we don't want to include in our output
+            return undefined;
         default:
             return message;
     }
