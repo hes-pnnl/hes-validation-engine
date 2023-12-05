@@ -10,7 +10,7 @@ const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
 addFormats(ajv);
 // Add the schema to the validator.
 ajv.addSchema(NestedBuildingSchema);
-// Add the custom keywords "error_msg" to the validator
+// Add the custom keyword "error_msg" to the validator
 ajv.addKeyword('error_msg');
 
 const nullOrUndefined = [null, undefined];
@@ -34,14 +34,12 @@ function getNestedValidationMessages (homeValues) {
     errorMessages[ENUMS.ERROR] = {};
     errorMessages[ENUMS.MANDATORY] = {};
 
-    const nested_validate = ajv;
-    const valid=nested_validate.validate(NestedBuildingSchema, homeValues);
-    if(!valid) {
-        nested_validate.errors.forEach((error) => {
+    if(!ajv.validate(NestedBuildingSchema, homeValues)){
+        ajv.errors.forEach((error) => {
             const {instancePath, params} = error;
             const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
             addErrorMessage(errorMessages[ENUMS.ERROR], errorPath, convertAJVError(error))
-        })
+        });
     }
     getCrossValidationMessages(homeValues, errorMessages);
     return errorMessages
@@ -51,39 +49,34 @@ function getNestedValidationMessages (homeValues) {
 /**
  * Convert the AJV error into an intelligible error message that the HES system knows how to display
  * @param {object} errorObj
- * @return {string|undefined|*}
+ * @return {string}
  */
 function convertAJVError(errorObj) {
-    const {keyword, schemaPath, instancePath, message} = errorObj;
-    const keyArr = errorObj.schemaPath.split('/');
+    const {keyword, message, schemaPath} = errorObj;
+    const keyArr = schemaPath.split('/');
     keyArr.shift(); // remove '#'
-    const keywords_to_pop = ['required', 'const'];
-    // If it's a keyword that's too deep (e.g. const, required) we should pop it to get the right level for the error message
-    if(keywords_to_pop.includes(keyword)) {
+
+    // If it's a keyword that's too deep we should pop it to get the right
+    // level for the error message
+    if(['required', 'const'].includes(keyword)) {
         keyArr.pop();
     }
+
     const error_leaf = keyArr.reduce((acc, key) => {
         return acc[key]
     }, NestedBuildingSchema);
 
-    const error_msg = error_leaf.error_msg
-    const returnObj = {
-        schemaPath, instancePath, keyword, message
+    if(error_leaf.error_msg) {
+        return error_leaf.error_msg;
     }
-    if(error_msg) {
-        return error_msg;
-    }
+
     switch(keyword) {
-        case 'minimum':
-        case 'maximum':
-            return returnObj.message;
         case 'required':
             return mandatoryMessage;
         case 'enum':
-            return `${returnObj.message}: '${error_leaf.join('\', \'')}'`;
+            return `${message}: '${error_leaf.join('\', \'')}'`;
         default:
-            returnObj.message = undefined;
-            return undefined;
+            return message;
     }
 }
 
@@ -173,24 +166,23 @@ function getAdditionalWallZoneValidations(zone, about, errorMessages) {
 
     // Window validations
     checkWindowAreaValid(zone, about, errorMessages);
-
 }
 
 /**
  * Zone window must be smaller than the wall area
  */
 function checkWindowAreaValid(zone, about, errorMessages) {
-    const {zone_wall} = zone
+    const {zone_wall} = zone;
     zone_wall.forEach((wall, index) => {
         const {side, zone_window} = wall;
-        const wall_area = getWallArea(zone, about, ['front', 'back'].includes(side))
+        const wall_area = getWallArea(zone, about, ['front', 'back'].includes(side));
         if(zone_window && wall_area) {
             const {window_area} = zone_window;
             if(window_area && window_area > wall_area) {
                 addErrorMessage(errorMessages[ENUMS.BLOCKER], `zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`);
             }
         }
-    })
+    });
 }
 
 /**
