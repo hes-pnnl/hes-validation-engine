@@ -60,7 +60,7 @@ function getNestedValidationMessages (homeValues) {
  * @return {string|undefined|*}
  */
 function convertAJVError(errorObj) {
-    const {keyword, schemaPath, instancePath, params, message} = errorObj;
+    const {keyword, schemaPath, instancePath, message} = errorObj;
     const keyArr = errorObj.schemaPath.split('/');
     keyArr.shift(); // remove '#'
     const keywords_to_pop = ['required', 'const'];
