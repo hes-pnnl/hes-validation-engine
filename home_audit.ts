@@ -19,22 +19,6 @@ ajv.addSchema(NestedBuildingSchema);
 // Add the custom keywords "error_msg" to the validator
 ajv.addKeyword('error_msg');
 
-/**
- * Casts string to matching boolean, or null if no exact match
- * @param {string|int|bool|null} value
- */
-function castBool(value) {
-    const trueOptions = [1, '1', true, 'true'];
-    const falseOptions = [0, '0', false, 'false'];
-    if(trueOptions.indexOf(value) > -1) {
-        return true;
-    } else if(falseOptions.indexOf(value) > -1) {
-        return false;
-    } else {
-        return null;
-    }
-}
-
 const nullOrUndefined = [null, undefined];
 
 const mandatoryMessage = "Missing value for mandatory field";
