@@ -39,13 +39,7 @@ const nullOrUndefined = [null, undefined];
 
 const mandatoryMessage = "Missing value for mandatory field";
 
-module.exports = function (homeValues) {
-    // If we are given the new version of the home object, we need to validate the nested version instead
-    /* To handle the update where all building information is inside the `building_unit` property and then `building` inside
-    return homeValues.building_unit ? getNestedRequiredFields(homeValues.building_unit);
-     */
-    return getNestedValidationMessages(homeValues)
-}
+module.exports = getNestedValidationMessages;
 
 /**
  * Perform the HES validation for the nested JSON format. Uses the JSON Schema for initial required field and field
