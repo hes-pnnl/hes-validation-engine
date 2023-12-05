@@ -1,8 +1,6 @@
 /**
  * required_fields.node.js - Validates that required home audit fields have a value.
  */
-let TypeRules = require('./type_rules.node');
-const Validation = require("./validation.node");
 const ENUMS = require('./validation_enums.node');
 
 const NestedBuildingSchema = require('./hescore_json_schema.js');
@@ -119,16 +117,25 @@ function addErrorMessage(errorMessageObj, path, message) {
  * Cross validations for the "About" object in the nested JSON Schema
  */
 function getAboutObjectCrossValidationMessages(building, errorMessages) {
-    const {about} = building;
-    // Since we need to make sure the year built and the assessment date aren't in the future, JS validation here.
-    const fields = ['year_built', 'assessment_date'];
-    const assessmentDateValidation = new Validation(TypeRules._date(about[fields[1]], Date.parse('2010-01-01'), Date.now()), ENUMS.BLOCKER);
-    const yearValidation = new Validation(TypeRules._int(about[fields[0]], 1600, (new Date()).getFullYear()), ENUMS.BLOCKER);
-    if(assessmentDateValidation && assessmentDateValidation['message']){
-        addErrorMessage(errorMessages[assessmentDateValidation['type']], `/about/${about[fields[1]]}`, assessmentDateValidation['message']);
+    const {about: {assessment_date: assessmentDate, year_built: yearBuilt}} = building;
+    const today = new Date();
+
+    // The JSON schema ensures that the assessment date is a valid date string, but since it can't validate
+    // minimum or maximum values, we have to do that validation in JavaScript
+    const MIN_ASSESSMENT_DATE = '2010-01-01';
+    const assessmentDateMs = Date.parse(assessmentDate);
+    const minDateMs = Date.parse(MIN_ASSESSMENT_DATE);
+    const todayMs = Date.now();
+    if(assessmentDateMs < minDateMs || assessmentDateMs > todayMs) {
+        const todayFormatted = today.toISOString().split('T')[0];
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `/about/assessment_date`, `${assessmentDate} is outside the allowed range ${MIN_ASSESSMENT_DATE} - ${todayFormatted}`);
     }
-    if(yearValidation && yearValidation['message']){
-        addErrorMessage(errorMessages[yearValidation['type']], `/about/${about[fields[0]]}`, yearValidation['message']);
+
+    // The JSON schema ensures that the year built is greater than the minimum allowed value, which is static,
+    // but since the maximum is dynamic, we have to validate it in JavaScript
+    const maxYear = today.getFullYear();
+    if(yearBuilt > maxYear){
+        addErrorMessage(errorMessages[ENUMS.BLOCKER], `/about/year_built`, `${yearBuilt} is greater than the maximum of ${maxYear}`);
     }
 }
 
