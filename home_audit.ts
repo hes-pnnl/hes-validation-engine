@@ -30,6 +30,9 @@ module.exports = getNestedValidationMessages;
  */
 function getNestedValidationMessages (homeValues) {
     const errorMessages = {}
+
+    // TODO: Only errorMessages[ENUMS.ERROR] is actually ever populated. Can we simplify this structure
+    //  and just put all messages directly into errorMessages?
     errorMessages[ENUMS.BLOCKER] = {};
     errorMessages[ENUMS.ERROR] = {};
     errorMessages[ENUMS.MANDATORY] = {};
