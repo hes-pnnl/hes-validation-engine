@@ -1,4 +1,4 @@
-const NestedBuildingSchema = require('./hescore_json_schema.js');
+const NestedBuildingSchema = require('./schema/hescore_json.schema.js');
 const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
 const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})

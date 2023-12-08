@@ -1,15 +1,10 @@
-/**
- * required_fields.node.js - Validates that required home audit fields have a value.
- */
-const ENUMS = require('./validation_enums.node');
-
-const NestedBuildingSchema = require('./hescore_json_schema.js');
+const HesJsonSchema = require('./schema/hescore_json.schema.js');
 const Ajv = require("ajv");
 const addFormats = require('ajv-formats');
 const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
 addFormats(ajv);
 // Add the schema to the validator.
-ajv.addSchema(NestedBuildingSchema);
+ajv.addSchema(HesJsonSchema);
 // Add the custom keyword "error_msg" to the validator
 ajv.addKeyword('error_msg');
 
@@ -28,24 +23,19 @@ module.exports = getNestedValidationMessages;
  * for the homeValues object, grouped by severity (blocker, error, warning). Messages in each severity group are grouped by
  * path in the JSON Schema to the error, and can contain multiple errors for a single item in the JSON Schema.
  */
+let _errorMessages = {};
 function getNestedValidationMessages (homeValues) {
-    const errorMessages = {}
+    _errorMessages = {}
 
-    // TODO: Only errorMessages[ENUMS.ERROR] is actually ever populated. Can we simplify this structure
-    //  and just put all messages directly into errorMessages?
-    errorMessages[ENUMS.BLOCKER] = {};
-    errorMessages[ENUMS.ERROR] = {};
-    errorMessages[ENUMS.MANDATORY] = {};
-
-    if(!ajv.validate(NestedBuildingSchema, homeValues)){
+    if(!ajv.validate(HesJsonSchema, homeValues)){
         ajv.errors.forEach((error) => {
             const {instancePath, params} = error;
             const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
-            addErrorMessage(errorMessages[ENUMS.ERROR], errorPath, convertAJVError(error))
+            addErrorMessage(errorPath, convertAJVError(error))
         });
     }
-    getCrossValidationMessages(homeValues, errorMessages);
-    return errorMessages
+    getCrossValidationMessages(homeValues);
+    return _errorMessages
 }
 
 
@@ -67,7 +57,7 @@ function convertAJVError(errorObj) {
 
     const error_leaf = keyArr.reduce((acc, key) => {
         return acc[key]
-    }, NestedBuildingSchema);
+    }, HesJsonSchema);
 
     if(error_leaf.error_msg) {
         return error_leaf.error_msg;
@@ -91,33 +81,31 @@ function convertAJVError(errorObj) {
 /**
  * Get Cross Validation messages for the building to check for other errors.
  * @param {object} homeValues
- * @param {object} errorMessages
  */
-function getCrossValidationMessages (homeValues, errorMessages) {
-    getAboutObjectCrossValidationMessages(homeValues, errorMessages)
-    getZoneCrossValidationMessages(homeValues.zone, homeValues.about, errorMessages);
-    getSystemCrossValidation(homeValues.systems, errorMessages)
+function getCrossValidationMessages (homeValues) {
+    getAboutObjectCrossValidationMessages(homeValues)
+    getZoneCrossValidationMessages(homeValues.zone, homeValues.about);
+    getSystemCrossValidation(homeValues.systems)
 }
 
 /**
  * Helper function to add the validation messages easily to the object
- * @param {object} errorMessageObj Container for the validation messages of a certain type (e.g. Blocker)
  * @param {string} path Path in the nested schema to the error area in the building object
  * @param {string} message Validation error message
  */
-function addErrorMessage(errorMessageObj, path, message) {
+function addErrorMessage(path, message) {
     if(message) {
-        if (errorMessageObj[path] === undefined) {
-            errorMessageObj[path] = [];
+        if (_errorMessages[path] === undefined) {
+            _errorMessages[path] = [];
         }
-        errorMessageObj[path].push(message);
+        _errorMessages[path].push(message);
     }
 }
 
 /**
  * Cross validations for the "About" object in the nested JSON Schema
  */
-function getAboutObjectCrossValidationMessages(building, errorMessages) {
+function getAboutObjectCrossValidationMessages(building) {
     const {about: {assessment_date: assessmentDate, year_built: yearBuilt}} = building;
     const today = new Date();
 
@@ -129,14 +117,14 @@ function getAboutObjectCrossValidationMessages(building, errorMessages) {
     const todayMs = Date.now();
     if(assessmentDateMs < minDateMs || assessmentDateMs > todayMs) {
         const todayFormatted = today.toISOString().split('T')[0];
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `/about/assessment_date`, `${assessmentDate} is outside the allowed range ${MIN_ASSESSMENT_DATE} - ${todayFormatted}`);
+        addErrorMessage(`/about/assessment_date`, `${assessmentDate} is outside the allowed range ${MIN_ASSESSMENT_DATE} - ${todayFormatted}`);
     }
 
     // The JSON schema ensures that the year built is greater than the minimum allowed value, which is static,
     // but since the maximum is dynamic, we have to validate it in JavaScript
     const maxYear = today.getFullYear();
     if(yearBuilt > maxYear){
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `/about/year_built`, `${yearBuilt} is greater than the maximum of ${maxYear}`);
+        addErrorMessage(`/about/year_built`, `${yearBuilt} is greater than the maximum of ${maxYear}`);
     }
 }
 
@@ -144,42 +132,36 @@ function getAboutObjectCrossValidationMessages(building, errorMessages) {
 /**
  * Cross validation for the "Zone" object in the nested JSON Schema
  */
-function getZoneCrossValidationMessages (zone, about, errorMessages) {
-    // zone wall
-    getAdditionalWallZoneValidations(zone, about, errorMessages);
-
-    // zone roof
-    getAdditionalRoofZoneValidations(zone, about, errorMessages);
-
-    // zone floor
-    getAdditionalFloorZoneValidations(zone, about, errorMessages);
+function getZoneCrossValidationMessages (zone, about) {
+    getAdditionalWallZoneValidations(zone, about); // zone wall
+    getAdditionalRoofZoneValidations(zone, about); // zone roof
+    getAdditionalFloorZoneValidations(zone, about); // zone floor
 }
 
 /**
  * Cross validation for zone walls
  * @param zone
  * @param about
- * @param errorMessages
  */
-function getAdditionalWallZoneValidations(zone, about, errorMessages) {
+function getAdditionalWallZoneValidations(zone, about) {
     const {zone_wall} = zone;
     // First, we need to verify that all the walls are in a different position
     const sides = zone_wall.map(wall => wall.side);
     const duplicate_sides = sides.filter((side, i) => sides.indexOf(side) !== i);
     if(duplicate_sides.length !== 0) {
         duplicate_sides.forEach((side) => (
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], '/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
+            addErrorMessage('/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
         ));
     }
 
     // Window validations
-    checkWindowAreaValid(zone, about, errorMessages);
+    checkWindowAreaValid(zone, about);
 }
 
 /**
  * Zone window must be smaller than the wall area
  */
-function checkWindowAreaValid(zone, about, errorMessages) {
+function checkWindowAreaValid(zone, about) {
     const {zone_wall} = zone;
     zone_wall.forEach((wall, index) => {
         const {side, zone_window} = wall;
@@ -187,7 +169,7 @@ function checkWindowAreaValid(zone, about, errorMessages) {
         if(zone_window && wall_area) {
             const {window_area} = zone_window;
             if(window_area && window_area > wall_area) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`);
+                addErrorMessage(`zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`);
             }
         }
     });
@@ -231,24 +213,24 @@ function getWallArea(zone, about, is_front_back) {
 /**
  * Do the cross validations for the zone roof
  */
-function getAdditionalRoofZoneValidations(zone, about, errorMessages) {
+function getAdditionalRoofZoneValidations(zone, about) {
     const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
     const {zone_roof} = zone;
 
     // Roof area
-    checkRoofArea(zone, conditioned_footprint, errorMessages, 'roof_area');
+    checkRoofArea(zone, conditioned_footprint, 'roof_area');
     // Ceiling area
-    checkRoofArea(zone, conditioned_footprint, errorMessages, 'ceiling_area');
+    checkRoofArea(zone, conditioned_footprint, 'ceiling_area');
     // Knee wall area
-    checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages);
+    checkKneeWallArea(zone_roof, conditioned_footprint);
     // Skylight area
-    checkSkylightArea(zone_roof, conditioned_footprint, errorMessages);
+    checkSkylightArea(zone_roof, conditioned_footprint);
 }
 
 /**
  * Check that the skylight isn't too big for the roof
  */
-function checkSkylightArea(zone_roof_array, conditioned_footprint, errorMessages) {
+function checkSkylightArea(zone_roof_array, conditioned_footprint) {
     // Skylights must be smaller than the conditioned footprint
     let zone_skylight_area = 0
     zone_roof_array.forEach((roof) => {
@@ -260,7 +242,7 @@ function checkSkylightArea(zone_roof_array, conditioned_footprint, errorMessages
     if(zone_skylight_area > conditioned_footprint) {
         zone_roof_array.forEach((roof, index) => {
             if(roof.zone_skylight && roof.zone_skylight.skylight_area) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
+                addErrorMessage(`zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
             }
         })
     }
@@ -269,13 +251,13 @@ function checkSkylightArea(zone_roof_array, conditioned_footprint, errorMessages
 /**
  * Check that the knee wall is not too big for the attic
  */
-function checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages) {
+function checkKneeWallArea(zone_roof, conditioned_footprint) {
     const max_knee_wall_area = (2 * conditioned_footprint) / 3;
     const combined_knee_wall_area = getCombinedArea(zone_roof.map((roof) => (roof.knee_wall)), 'area');
     if(combined_knee_wall_area > max_knee_wall_area) {
         zone_roof.forEach((roof, index) => {
             if(roof.knee_wall && roof.knee_wall.area) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`);
+                addErrorMessage(`zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`);
             }
         })
     }
@@ -284,7 +266,7 @@ function checkKneeWallArea(zone_roof, conditioned_footprint, errorMessages) {
 /**
  * Check that the roof area isn't too big for the roof type
  */
-function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
+function checkRoofArea(zone, conditioned_footprint, type) {
     const roof_type = type === 'roof_area' ? 'cath_ceiling' : 'vented_attic';
     const combined_type = type === 'roof_area' ? 'roof' : 'ceiling';
     const {zone_roof} = zone;
@@ -295,7 +277,7 @@ function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
         if(conditioned_area_invalid) {
             zone_roof.forEach((roof, index) => {
                 if(roof.roof_type === roof_type) {
-                    addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_roof/${index}/${type}`, conditioned_area_invalid);
+                    addErrorMessage(`/zone/zone_roof/${index}/${type}`, conditioned_area_invalid);
                 }
             })
         }
@@ -303,7 +285,7 @@ function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
     else {
         zone_roof.forEach((roof, index) => {
             if(roof.roof_type === roof_type) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_roof/${index}/${type}`, combined_area_invalid);
+                addErrorMessage(`/zone/zone_roof/${index}/${type}`, combined_area_invalid);
             }
         })
     }
@@ -312,7 +294,7 @@ function checkRoofArea(zone, conditioned_footprint, errorMessages, type) {
 /**
  * Check that the floor isn't too small for the combined area
  */
-function checkFloorArea(zone, conditioned_footprint, errorMessages) {
+function checkFloorArea(zone, conditioned_footprint) {
     const {zone_floor} = zone;
     const combined_area_invalid = checkCombinedAreaInvalid(zone);
     if(!combined_area_invalid) {
@@ -320,13 +302,13 @@ function checkFloorArea(zone, conditioned_footprint, errorMessages) {
         const conditioned_area_invalid = checkConditionedAreaValid(combined_floor_area, conditioned_footprint, 'floor');
         if(conditioned_area_invalid) {
             zone_floor.forEach((floor, index) => {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/floor_area`, conditioned_area_invalid);
+                addErrorMessage(`/zone/zone_floor/${index}/floor_area`, conditioned_area_invalid);
             })
         }
     }
     else {
         zone_floor.forEach((roof, index) => {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/floor_area`, combined_area_invalid);
+            addErrorMessage(`/zone/zone_floor/${index}/floor_area`, combined_area_invalid);
         })
     }
 }
@@ -334,14 +316,14 @@ function checkFloorArea(zone, conditioned_footprint, errorMessages) {
 /**
  * Check that the insulation level is appropriate for the foundation type
  */
-function checkFoundationLevel(zone_floor_array, errorMessages) {
+function checkFoundationLevel(zone_floor_array) {
     zone_floor_array.forEach((floor, index) => {
         const {foundation_type, foundation_insulation_level} = floor;
         if(!nullOrUndefined.includes(foundation_type) && !nullOrUndefined.includes(foundation_insulation_level)) {
             if(foundation_type === 'slab_on_grade' && ![0, 5].includes(foundation_insulation_level)) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0 or R-5 for Slab on Grade Foundation');
+                addErrorMessage(`/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0 or R-5 for Slab on Grade Foundation');
             } else if(![0, 11, 19].includes(foundation_insulation_level)) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0, R-11, or R-19 for current foundation type');
+                addErrorMessage(`/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0, R-11, or R-19 for current foundation type');
             }
         }
     });
@@ -361,19 +343,19 @@ function checkConditionedAreaValid(combined_area, conditioned_footprint, area_ty
 /**
  * Do the additional validations for the zone floors
  */
-function getAdditionalFloorZoneValidations(zone, about, errorMessages) {
+function getAdditionalFloorZoneValidations(zone, about) {
     const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
 
     // Conditioned Footprint for home must be greater than 250 sq ft.
     if(conditioned_footprint < 250) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], '/about/conditioned_floor_area', `Home footprint must be greater than 250 sq ft. Current footprint is ${conditioned_footprint} sq ft.`);
+        addErrorMessage('/about/conditioned_floor_area', `Home footprint must be greater than 250 sq ft. Current footprint is ${conditioned_footprint} sq ft.`);
     }
 
     // Floor area is within bounds of conditioned floor area
-    checkFloorArea(zone, conditioned_footprint, errorMessages);
+    checkFloorArea(zone, conditioned_footprint);
 
     // Validate foundation insulation level is correct for foundation type
-    checkFoundationLevel(zone.zone_floor, errorMessages);
+    checkFoundationLevel(zone.zone_floor);
 }
 
 /**
@@ -431,36 +413,35 @@ function getBuildingConditionedFootprint(about, zone) {
 /**
  * Get the Cross validation messages for the system of the JSON Schema
  * @param {object} systems
- * @param {object} errorMessages
  */
-function getSystemCrossValidation(systems, errorMessages) {
+function getSystemCrossValidation(systems) {
     const {hvac, domestic_hot_water, generation} = systems;
     if(hvac) {
-        checkHvacFraction(hvac, errorMessages);
+        checkHvacFraction(hvac);
         hvac.forEach((hvac_system, index) => {
-            checkHeatingCoolingTypeValid(hvac_system, index, errorMessages);
-            checkHeatingEfficiencyValid(hvac_system, index, errorMessages);
-            checkCoolingEfficiencyValid(hvac_system, index, errorMessages);
-            checkSystemYearValid(hvac_system, index, errorMessages);
-            checkHvacDistribution(hvac_system, index, errorMessages);
+            checkHeatingCoolingTypeValid(hvac_system, index);
+            checkHeatingEfficiencyValid(hvac_system, index);
+            checkCoolingEfficiencyValid(hvac_system, index);
+            checkSystemYearValid(hvac_system, index);
+            checkHvacDistribution(hvac_system, index);
         });
     }
     if(domestic_hot_water) {
-        checkHotWaterCategoryValid(domestic_hot_water, hvac, errorMessages);
-        checkHotWaterFuelValid(domestic_hot_water, errorMessages);
-        checkHotWaterEfficiencyValid(domestic_hot_water, errorMessages);
-        checkHotWaterYearValid(domestic_hot_water, errorMessages);
-        checkHotWaterEnergyFactorValid(domestic_hot_water, errorMessages);
+        checkHotWaterCategoryValid(domestic_hot_water, hvac);
+        checkHotWaterFuelValid(domestic_hot_water);
+        checkHotWaterEfficiencyValid(domestic_hot_water);
+        checkHotWaterYearValid(domestic_hot_water);
+        checkHotWaterEnergyFactorValid(domestic_hot_water);
     }
     if(generation && generation.solar_electric) {
-        checkSolarElectricYearValid(generation.solar_electric, errorMessages);
+        checkSolarElectricYearValid(generation.solar_electric);
     }
 }
 
 /**
  * Check that the HVAC fraction is equal to 1 (100%)
  */
-function checkHvacFraction(hvac, errorMessages) {
+function checkHvacFraction(hvac) {
     let total_fraction = 0;
     hvac.forEach((hvac_system) => {
         if(hvac_system.hvac_fraction) {
@@ -470,7 +451,7 @@ function checkHvacFraction(hvac, errorMessages) {
     if(total_fraction !== 1) {
         hvac.forEach((hvac_system, index) => {
             if (hvac_system.hvac_fraction) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`);
+                addErrorMessage(`systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`);
             }
         });
     }
@@ -479,7 +460,34 @@ function checkHvacFraction(hvac, errorMessages) {
 /**
  * Check that the heating and cooling methods are compatible
  */
-function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
+const HEATING_FUEL_TO_TYPE = {
+    'natural_gas': [
+        'central_furnace',
+        'wall_furnace',
+        'boiler'
+    ],
+    'lpg': [
+        'central_furnace',
+        'wall_furnace',
+        'boiler'
+    ],
+    'fuel_oil': [
+        'central_furnace',
+        'wall_furnace',
+        'boiler'
+    ],
+    'electric': [
+        'central_furnace',
+        'heat_pump',
+        'mini_split',
+        'gchp',
+        'baseboard',
+        'boiler'
+    ],
+    'cord_wood': ['wood_stove'],
+    'pellet_wood': ['wood_stove'],
+}
+function checkHeatingCoolingTypeValid(hvac_system, index) {
     const {heating, cooling} = hvac_system;
     if(heating && cooling) {
         const heating_type = heating.type;
@@ -487,15 +495,15 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
         const cooling_type = cooling.type;
         // At least one needs to have a type set.
         if((heating_type === 'none') && (cooling_type === 'none')) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
+            addErrorMessage(`systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
+            addErrorMessage(`systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
         }
         // Validate that the fuel type is correct for the heating type
         if((!heating_type || heating_type === 'none') && !heating_fuel) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
+            addErrorMessage(`systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
         }
-        else if(ENUMS.heatingFuelToType[heating_fuel] && !ENUMS.heatingFuelToType[heating_fuel].includes(heating_type)) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
+        else if(HEATING_FUEL_TO_TYPE[heating_fuel] && !HEATING_FUEL_TO_TYPE[heating_fuel].includes(heating_type)) {
+            addErrorMessage(`systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
         }
 
         // Validate the cooling type is valid for the heating type
@@ -525,7 +533,7 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
                 break;
         }
         if(!heat_cool_valid) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`);
+            addErrorMessage(`systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`);
         }
     }
 }
@@ -533,7 +541,7 @@ function checkHeatingCoolingTypeValid(hvac_system, index, errorMessages) {
 /**
  * Check that the efficiency method is valid for the heating type
  */
-function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
+function checkHeatingEfficiencyValid(hvac_system, index) {
     const {heating} = hvac_system;
     if(heating) {
         const {type, primary_fuel, efficiency_method} = heating;
@@ -541,14 +549,14 @@ function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
             ([...nullOrUndefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
             (type === 'central_furnace' && primary_fuel === 'electric'))
         ) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
+            addErrorMessage(`systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
         }
         if(efficiency_method === 'shipment_weighted') {
             if(type === 'wall_furnace' && primary_fuel !== 'natural_gas') {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
+                addErrorMessage(`systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
             }
             if(['mini_split', 'gchp'].includes(type)) {
-                addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
+                addErrorMessage(`systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
             }
         }
     }
@@ -557,15 +565,15 @@ function checkHeatingEfficiencyValid(hvac_system, index, errorMessages) {
 /**
  * Check that the efficiency method is valid for the cooling type
  */
-function checkCoolingEfficiencyValid(hvac_system, index, errorMessages) {
+function checkCoolingEfficiencyValid(hvac_system, index) {
     const {cooling} = hvac_system;
     if(cooling) {
         const {type, efficiency_method} = cooling;
         if(efficiency_method && [...nullOrUndefined, 'none', 'dec'].includes(type)) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
+            addErrorMessage(`systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
         }
         if(efficiency_method !== 'user' && ['mini_split', 'gchp'].includes(type)) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
+            addErrorMessage(`systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
         }
     }
 }
@@ -573,11 +581,11 @@ function checkCoolingEfficiencyValid(hvac_system, index, errorMessages) {
 /**
  * Check that the HVAC system is of a valid year
  */
-function checkSystemYearValid(hvac_system, index, errorMessages) {
+function checkSystemYearValid(hvac_system, index) {
     ['heating', 'cooling'].forEach((accessor) => {
         const item = hvac_system[accessor];
         if(item && item.year && (1970 > item.year || (new Date()).getFullYear() < item.year)) {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/${accessor}/year`, `Invalid year, must be between 1970 and ${(new Date()).getFullYear()}`)
+            addErrorMessage(`systems/hvac/${index}/${accessor}/year`, `Invalid year, must be between 1970 and ${(new Date()).getFullYear()}`)
         }
     })
 }
@@ -585,12 +593,12 @@ function checkSystemYearValid(hvac_system, index, errorMessages) {
 /**
  * Check that the total HVAC distribution is 1 (100%)
  */
-function checkHvacDistribution(hvac_system, index, errorMessages) {
+function checkHvacDistribution(hvac_system, index) {
     const {hvac_distribution} = hvac_system;
     if(hvac_distribution) {
         const {leakage_method, leakage_to_outside, duct} = hvac_distribution;
         if(leakage_to_outside && leakage_method === 'qualitative') {
-            addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'");
+            addErrorMessage(`systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'");
         }
         // If we have ducts, we need to ensure the fraction is 100%
         if(duct) {
@@ -603,7 +611,7 @@ function checkHvacDistribution(hvac_system, index, errorMessages) {
             if(total_fraction !== 1) {
                 duct.forEach((duct_item, sub_i) => {
                     if(duct_item.fraction) {
-                        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/hvac/${index}/hvac_distribution/duct/${sub_i}/fraction`, `Total Duct Fraction must equal 100%`);
+                        addErrorMessage(`systems/hvac/${index}/hvac_distribution/duct/${sub_i}/fraction`, `Total Duct Fraction must equal 100%`);
                     }
                 })
             }
@@ -614,7 +622,7 @@ function checkHvacDistribution(hvac_system, index, errorMessages) {
 /**
  * Check that if the hot water is 'combined' the HVAC system has a boiler
  */
-function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
+function checkHotWaterCategoryValid(hot_water, hvac) {
     const {category} = hot_water;
     const hvac_types = [];
     hvac.forEach((system) => {
@@ -623,49 +631,49 @@ function checkHotWaterCategoryValid(hot_water, hvac, errorMessages) {
         cooling && hvac_types.push(cooling.type);
     });
     if(!hvac_types.includes('boiler') && category === 'combined') {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
+        addErrorMessage(`systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
     }
 }
 
 /**
  * Check that fuel is appropriate for the hot water system
  */
-function checkHotWaterFuelValid(hot_water, errorMessages) {
+function checkHotWaterFuelValid(hot_water) {
     const {type, fuel_primary} = hot_water;
     if(['tankless_coil', 'indirect'].includes(type) && !nullOrUndefined.includes(fuel_primary)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
+        addErrorMessage(`systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
     } else if(type === 'heat_pump' && fuel_primary !== 'electric') {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
+        addErrorMessage(`systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
     }
 }
 
 /**
  * Check that efficiency is appropriate for the hot water system
  */
-function checkHotWaterEfficiencyValid(hot_water, errorMessages) {
+function checkHotWaterEfficiencyValid(hot_water) {
     const {type, efficiency_method} = hot_water;
     if(['heat_pump', 'tankless', 'tankless_coil'].includes(type) && efficiency_method === 'shipment_weighted') {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type');
+        addErrorMessage(`systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type');
     }
 }
 
 /**
  * Check that the year is appropriate for the hot water system
  */
-function checkHotWaterYearValid(hot_water, errorMessages) {
+function checkHotWaterYearValid(hot_water) {
     const {year} = hot_water;
     if(year && (1972 > year || (new Date()).getFullYear() < year)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
+        addErrorMessage(`systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
     }
 }
 
 /**
  * Check that the energy factor is valid for the hot water system
  */
-function checkHotWaterEnergyFactorValid(hot_water, errorMessages) {
+function checkHotWaterEnergyFactorValid(hot_water) {
     const {type, energy_factor} = hot_water;
     if(["indirect", "tankless_coil"].includes(type) && !nullOrUndefined.includes(energy_factor)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`);
+        addErrorMessage(`systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`);
     }
     let min,max;
     if (type === 'storage') {
@@ -676,16 +684,16 @@ function checkHotWaterEnergyFactorValid(hot_water, errorMessages) {
         [min, max] = [1, 4];
     }
     if(energy_factor && (energy_factor < min || energy_factor > max)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/domestic_hot_water/energy_factor`, `${energy_factor} is outside the allowed range (${min} - ${max})`);
+        addErrorMessage(`systems/domestic_hot_water/energy_factor`, `${energy_factor} is outside the allowed range (${min} - ${max})`);
     }
 }
 
 /**
  * Check that the solar electric system is of a valid year
  */
-function checkSolarElectricYearValid(solar_electric, errorMessages) {
+function checkSolarElectricYearValid(solar_electric) {
     const {year} = solar_electric;
     if(year && (2000 > year || (new Date()).getFullYear() < year)) {
-        addErrorMessage(errorMessages[ENUMS.BLOCKER], `systems/generation/solar_electric/year`, `Invalid year, must be between 2000 and ${(new Date()).getFullYear()}`)
+        addErrorMessage(`systems/generation/solar_electric/year`, `Invalid year, must be between 2000 and ${(new Date()).getFullYear()}`)
     }
 }

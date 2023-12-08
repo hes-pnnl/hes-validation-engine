@@ -17,15 +17,7 @@ module.exports = {
       properties: {
         address: { type: "string" },
         city: { type: "string" },
-        state: {
-            type: "string",
-            enum: [
-                "AA", "AE", "AL", "AK", "AP", "AS", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "FM", "GA", "GU", "HI",
-                "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MH", "MI", "MN", "MP", "MS", "MO", "MT", "NE",
-                "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "PR", "PW", "RI", "SC", "SD", "TN", "TX",
-                "UT", "VT", "VA", "WA", "WV", "WI", "WY"
-            ],
-        },
+        state: { type: "string" },
         zip_code: {
           type: "string",
           pattern: "^[0-9]{5}$",
