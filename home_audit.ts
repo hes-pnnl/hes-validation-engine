@@ -493,16 +493,8 @@ function checkHeatingCoolingTypeValid(hvac_system, index) {
         const heating_type = heating.type;
         const heating_fuel = heating.fuel_primary;
         const cooling_type = cooling.type;
-        // At least one needs to have a type set.
-        if((heating_type === 'none') && (cooling_type === 'none')) {
-            addErrorMessage(`systems/hvac/${index}/heating/type`, `Heating Type is required if there is no Cooling type`);
-            addErrorMessage(`systems/hvac/${index}/cooling/type`, `Cooling Type is required if there is no Heating type`);
-        }
-        // Validate that the fuel type is correct for the heating type
-        if((!heating_type || heating_type === 'none') && !heating_fuel) {
-            addErrorMessage(`systems/hvac/${index}/heating/fuel_primary`, `Cannot enter heating type without fuel`);
-        }
-        else if(HEATING_FUEL_TO_TYPE[heating_fuel] && !HEATING_FUEL_TO_TYPE[heating_fuel].includes(heating_type)) {
+
+        if(HEATING_FUEL_TO_TYPE[heating_fuel] && !HEATING_FUEL_TO_TYPE[heating_fuel].includes(heating_type)) {
             addErrorMessage(`systems/hvac/${index}/heating/fuel_primary`, `${heating_fuel} is not an appropriate fuel for heating type ${heating_type}`);
         }
 
