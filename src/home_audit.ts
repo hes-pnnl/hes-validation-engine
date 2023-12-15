@@ -31,6 +31,7 @@ interface ErrorMessages {
  */
 let _errorMessages: ErrorMessages = {};
 
+// TODO: It's not really worth converting this to TypeScript unless we type the home values object and its children
 export function getNestedValidationMessages(homeValues: object): ErrorMessages {
     _errorMessages = {};
 
@@ -164,9 +165,8 @@ function checkWindowSidesValid(zone_wall: object): void {
 /**
  * Zone window must be smaller than the wall area
  */
-function checkWindowAreaValid(zone, about) {
-    const {zone_wall} = zone;
-    zone_wall.forEach((wall, index) => {
+function checkWindowAreaValid(zone: object, about:object) {
+    zone.zone_wall.forEach((wall, index) => {
         const {side, zone_window} = wall;
         const wall_area = getWallArea(zone, about, ['front', 'back'].includes(side));
         if(zone_window && wall_area) {
@@ -181,8 +181,8 @@ function checkWindowAreaValid(zone, about) {
 /**
  * Wall must be appropriate length for the conditioned footprint of the building
  */
-function getWallLength(zone, about, is_front_back) {
-    const conditioned_footprint = getBuildingConditionedFootprint(about, zone);
+function getWallLength(zone:object, about:object, is_front_back:boolean):number|false {
+    const conditioned_footprint:number = getBuildingConditionedFootprint(about, zone);
     if(conditioned_footprint) {
         return Math.floor(
             (is_front_back
@@ -197,10 +197,10 @@ function getWallLength(zone, about, is_front_back) {
 /**
  * Checks if the wall area is too bit for the building
  */
-function getWallArea(zone, about, is_front_back) {
+function getWallArea(zone:object, about:object, is_front_back) {
     const length = getWallLength(zone, about, is_front_back);
-    const height = about.floor_to_ceiling_height || false;
-    const stories = about.num_floor_above_grade || false;
+    const height = about?.floor_to_ceiling_height;
+    const stories = about?.num_floor_above_grade;
     if(length && height && stories) {
         let one_story_area = length * height;
         if(is_front_back) {
@@ -297,7 +297,7 @@ function checkRoofArea(zone, conditioned_footprint, type) {
 /**
  * Check that the floor isn't too small for the combined area
  */
-function checkFloorArea(zone, conditioned_footprint) {
+function checkFloorArea(zone:object, conditioned_footprint:number) {
     const {zone_floor} = zone;
     const combined_area_invalid = checkCombinedAreaInvalid(zone);
     if(!combined_area_invalid) {
@@ -319,7 +319,7 @@ function checkFloorArea(zone, conditioned_footprint) {
 /**
  * Check that the insulation level is appropriate for the foundation type
  */
-function checkFoundationLevel(zone_floor_array) {
+function checkFoundationLevel(zone_floor_array:object[]) {
     zone_floor_array.forEach((floor, index) => {
         const {foundation_type, foundation_insulation_level} = floor;
         if(!nullOrUndefined.includes(foundation_type) && !nullOrUndefined.includes(foundation_insulation_level)) {
@@ -335,7 +335,7 @@ function checkFoundationLevel(zone_floor_array) {
 /**
  * Check that the conditioned area is within the bounds for the building footprint
  */
-function checkConditionedAreaValid(combined_area, conditioned_footprint, area_type) {
+function checkConditionedAreaValid(combined_area:number, conditioned_footprint:number, area_type:string) {
     const min = conditioned_footprint * 0.95;
     const max = conditioned_footprint * 2.5;
     if(!((min < combined_area) && (combined_area < max))) {
@@ -393,14 +393,13 @@ function getCombinedRoofCeilingArea(zone_roof_array) {
 /**
  * Check that the roof is large enough to cover the floor area
  */
-function checkCombinedAreaInvalid(zone) {
+function checkCombinedAreaInvalid(zone:object): string|false {
     const combined_floor = getCombinedFloorArea(zone.zone_floor);
     const combined_roof_ceiling = getCombinedRoofCeilingArea(zone.zone_roof);
     return (combined_roof_ceiling <= (combined_floor * .95)) ? "The roof does not cover the floor" : false;
 }
 
-function getBuildingConditionedFootprint(about, zone) {
-    const {zone_floor} = zone;
+function getBuildingConditionedFootprint(about:object, { zone_floor }) {
     const {conditioned_floor_area, num_floor_above_grade} = about;
     let conditioned_basement_area = 0;
     // For conditioned footprint, we need to subtract the area of any conditioned basement floors
