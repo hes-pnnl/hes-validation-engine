@@ -1,51 +1,61 @@
-const HesJsonSchema = require('./schema/hescore_json.schema.js');
-const Ajv = require("ajv");
-const addFormats = require('ajv-formats');
-const ajv = new Ajv({allErrors: true, strictTypes: false, strictSchema: false})
+import HesJsonSchema from '../schema/hescore_json.schema.js';
+import Ajv from 'ajv';
+import { ErrorObject as AjvErrorObject } from 'ajv/dist/types';
+import addFormats from 'ajv-formats';
+
+const ajv = new Ajv({ allErrors: true, strictTypes: false, strictSchema: false });
 addFormats(ajv);
-// Add the schema to the validator.
+
+// Add the schema to the validator
 ajv.addSchema(HesJsonSchema);
 // Add the custom keyword "error_msg" to the validator
 ajv.addKeyword('error_msg');
 
-const nullOrUndefined = [null, undefined];
+const nullOrUndefined: (null | undefined)[] = [null, undefined];
+const mandatoryMessage: string = "Missing value for mandatory field";
 
-const mandatoryMessage = "Missing value for mandatory field";
-
-module.exports = getNestedValidationMessages;
+interface ErrorMessages {
+    // Keys are paths to the field triggering the error, values are arrays of strings describing the error(s)
+    // triggered by that field
+    [key: string]: string[]|undefined;
+}
 
 /**
  * Perform the HES validation for the nested JSON format. Uses the JSON Schema for initial required field and field
  * limit validations (e.g. enums, within bounds, etc) and then performs secondary cross validation across the building
  * as a whole (e.g. the roof area is large enough to cover the floor area)
  * @param {object} homeValues - JSON object which follows the HES Nested JSON Schema
- * @return {{blocker: [{string, [string]}], error: [{string, [string]}], warning: [{string, [string]}]}} - Error messages
+ * @return Error messages
  * for the homeValues object, grouped by severity (blocker, error, warning). Messages in each severity group are grouped by
  * path in the JSON Schema to the error, and can contain multiple errors for a single item in the JSON Schema.
  */
-let _errorMessages = {};
-function getNestedValidationMessages (homeValues) {
-    _errorMessages = {}
+let _errorMessages: ErrorMessages = {};
+
+export function getNestedValidationMessages(homeValues: object): ErrorMessages {
+    _errorMessages = {};
 
     if(!ajv.validate(HesJsonSchema, homeValues)){
         ajv.errors.forEach((error) => {
-            const {instancePath, params} = error;
-            const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
+            const {
+                instancePath,
+                params: { missingProperty }
+            } = error;
+            const errorPath = missingProperty ? `${instancePath}/${missingProperty}` : instancePath;
             addErrorMessage(errorPath, convertAJVError(error))
         });
     }
-    getCrossValidationMessages(homeValues);
-    return _errorMessages
-}
 
+    getCrossValidationMessages(homeValues);
+    return _errorMessages;
+}
 
 /**
  * Convert the AJV error into an intelligible error message that the HES system knows how to display
- * @param {object} errorObj
+ * @param {AjvErrorObject} errorObj
  * @return {string|undefined}
  */
-function convertAJVError(errorObj) {
-    const {keyword, message, schemaPath} = errorObj;
+function convertAJVError(errorObj: AjvErrorObject): string | undefined {
+    const { keyword, message, schemaPath } = errorObj;
     const keyArr = schemaPath.split('/');
     keyArr.shift(); // remove '#'
 
@@ -55,15 +65,16 @@ function convertAJVError(errorObj) {
         keyArr.pop();
     }
 
-    const error_leaf = keyArr.reduce((acc, key) => {
-        return acc[key]
-    }, HesJsonSchema);
+    const error_leaf: any = keyArr.reduce(
+        (acc: any, key: string) => acc[key],
+        HesJsonSchema
+    );
 
     if(error_leaf.error_msg) {
         return error_leaf.error_msg;
     }
 
-    switch(keyword) {
+    switch (keyword) {
         case 'required':
             return mandatoryMessage;
         case 'enum':
@@ -82,7 +93,7 @@ function convertAJVError(errorObj) {
  * Get Cross Validation messages for the building to check for other errors.
  * @param {object} homeValues
  */
-function getCrossValidationMessages (homeValues) {
+function getCrossValidationMessages (homeValues: object) {
     getAboutObjectCrossValidationMessages(homeValues)
     getZoneCrossValidationMessages(homeValues.zone, homeValues.about);
     getSystemCrossValidation(homeValues.systems)
@@ -93,9 +104,9 @@ function getCrossValidationMessages (homeValues) {
  * @param {string} path Path in the nested schema to the error area in the building object
  * @param {string} message Validation error message
  */
-function addErrorMessage(path, message) {
+function addErrorMessage(path: string, message: string) {
     if(message) {
-        if (_errorMessages[path] === undefined) {
+        if (!(path in _errorMessages)) {
             _errorMessages[path] = [];
         }
         _errorMessages[path].push(message);
@@ -105,25 +116,24 @@ function addErrorMessage(path, message) {
 /**
  * Cross validations for the "About" object in the nested JSON Schema
  */
-function getAboutObjectCrossValidationMessages(building) {
+function getAboutObjectCrossValidationMessages(building: object) {
     const {about: {assessment_date: assessmentDate, year_built: yearBuilt}} = building;
     const today = new Date();
 
     // The JSON schema ensures that the assessment date is a valid date string, but since it can't validate
     // minimum or maximum values, we have to do that validation in JavaScript
-    const MIN_ASSESSMENT_DATE = '2010-01-01';
-    const assessmentDateMs = Date.parse(assessmentDate);
-    const minDateMs = Date.parse(MIN_ASSESSMENT_DATE);
-    const todayMs = Date.now();
-    if(assessmentDateMs < minDateMs || assessmentDateMs > todayMs) {
-        const todayFormatted = today.toISOString().split('T')[0];
+    const MIN_ASSESSMENT_DATE:string = '2010-01-01';
+    const assessmentDateMs: number = Date.parse(assessmentDate);
+    const minDateMs: number = Date.parse(MIN_ASSESSMENT_DATE);
+    const todayMs: number = Date.now();
+
+    if (assessmentDateMs < minDateMs || assessmentDateMs > todayMs) {
+        const todayFormatted: string = today.toISOString().split('T')[0];
         addErrorMessage(`/about/assessment_date`, `${assessmentDate} is outside the allowed range ${MIN_ASSESSMENT_DATE} - ${todayFormatted}`);
     }
 
-    // The JSON schema ensures that the year built is greater than the minimum allowed value, which is static,
-    // but since the maximum is dynamic, we have to validate it in JavaScript
-    const maxYear = today.getFullYear();
-    if(yearBuilt > maxYear){
+    const maxYear: number = today.getFullYear();
+    if (yearBuilt > maxYear) {
         addErrorMessage(`/about/year_built`, `${yearBuilt} is greater than the maximum of ${maxYear}`);
     }
 }
@@ -132,30 +142,23 @@ function getAboutObjectCrossValidationMessages(building) {
 /**
  * Cross validation for the "Zone" object in the nested JSON Schema
  */
-function getZoneCrossValidationMessages (zone, about) {
-    getAdditionalWallZoneValidations(zone, about); // zone wall
-    getAdditionalRoofZoneValidations(zone, about); // zone roof
-    getAdditionalFloorZoneValidations(zone, about); // zone floor
+function getZoneCrossValidationMessages(zone:object, about:object) {
+    checkWindowSidesValid(zone.zone_wall);
+    checkWindowAreaValid(zone, about);
+
+    getAdditionalRoofZoneValidations(zone, about);
+    getAdditionalFloorZoneValidations(zone, about);
 }
 
-/**
- * Cross validation for zone walls
- * @param zone
- * @param about
- */
-function getAdditionalWallZoneValidations(zone, about) {
-    const {zone_wall} = zone;
-    // First, we need to verify that all the walls are in a different position
-    const sides = zone_wall.map(wall => wall.side);
-    const duplicate_sides = sides.filter((side, i) => sides.indexOf(side) !== i);
-    if(duplicate_sides.length !== 0) {
-        duplicate_sides.forEach((side) => (
-            addErrorMessage('/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
-        ));
-    }
+function checkWindowSidesValid(zone_wall: object): void {
+    const sides: string[] = zone_wall.map(wall => wall.side);
+    const duplicateSides: string[] = sides.filter(
+        (side, index) => sides.indexOf(side) !== index
+    );
 
-    // Window validations
-    checkWindowAreaValid(zone, about);
+    duplicateSides.forEach(side =>
+        addErrorMessage('/zone/zone_wall', `Duplicate wall side "${side}" detected. Ensure that each zone wall has a unique side`)
+    );
 }
 
 /**
