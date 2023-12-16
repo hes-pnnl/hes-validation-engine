@@ -83,9 +83,9 @@ function convertAJVError(errorObj) {
  * @param {object} homeValues
  */
 function getCrossValidationMessages (homeValues) {
-    getAboutObjectCrossValidationMessages(homeValues)
+    getAboutObjectCrossValidationMessages(homeValues);
     getZoneCrossValidationMessages(homeValues.zone, homeValues.about);
-    getSystemCrossValidation(homeValues.systems)
+    getSystemCrossValidation(homeValues.systems);
 }
 
 /**
