@@ -272,7 +272,7 @@ function checkRoofArea(zone, conditioned_footprint, type) {
     const {zone_roof} = zone;
     const combined_area_invalid = checkCombinedAreaInvalid(zone);
     if(!combined_area_invalid) {
-        const combinedRoofCeilArea = getCombinedRoofCeilingArea(zone_roof);
+        const combinedRoofCeilArea = getCombinedArea_roof_and_ceiling(zone_roof);
         const conditioned_area_invalid = checkConditionedAreaValid(combinedRoofCeilArea, conditioned_footprint, combined_type);
         if(conditioned_area_invalid) {
             zone_roof.forEach((roof, index) => {
@@ -298,7 +298,7 @@ function checkFloorArea(zone, conditioned_footprint) {
     const {zone_floor} = zone;
     const combined_area_invalid = checkCombinedAreaInvalid(zone);
     if(!combined_area_invalid) {
-        const combined_floor_area = getCombinedFloorArea(zone_floor);
+        const combined_floor_area = getCombinedArea_floor(zone_floor);
         const conditioned_area_invalid = checkConditionedAreaValid(combined_floor_area, conditioned_footprint, 'floor');
         if(conditioned_area_invalid) {
             zone_floor.forEach((floor, index) => {
@@ -371,28 +371,28 @@ function getCombinedArea(array_obj, field_name) {
     return Math.floor(combined_area);
 }
 
-function getCombinedFloorArea(zone_floor_array) {
+function getCombinedArea_floor(zone_floor_array) {
     return getCombinedArea(zone_floor_array, 'floor_area');
 }
 
-function getCombinedCeilingArea(zone_roof_array) {
+function getCombinedArea_ceiling(zone_roof_array) {
     return getCombinedArea(zone_roof_array, 'ceiling_area');
 }
 
-function getCombinedRoofArea(zone_roof_array) {
+function getCombinedArea_roof(zone_roof_array) {
     return getCombinedArea(zone_roof_array, 'roof_area');
 }
 
-function getCombinedRoofCeilingArea(zone_roof_array) {
-    return getCombinedRoofArea(zone_roof_array) + getCombinedCeilingArea(zone_roof_array);
+function getCombinedArea_roof_and_ceiling(zone_roof_array) {
+    return getCombinedArea_roof(zone_roof_array) + getCombinedArea_ceiling(zone_roof_array);
 }
 
 /**
  * Check that the roof is large enough to cover the floor area
  */
 function checkCombinedAreaInvalid(zone) {
-    const combined_floor = getCombinedFloorArea(zone.zone_floor);
-    const combined_roof_ceiling = getCombinedRoofCeilingArea(zone.zone_roof);
+    const combined_floor = getCombinedArea_floor(zone.zone_floor);
+    const combined_roof_ceiling = getCombinedArea_roof_and_ceiling(zone.zone_roof);
     return (combined_roof_ceiling <= (combined_floor * .95)) ? "The roof does not cover the floor" : false;
 }
 
