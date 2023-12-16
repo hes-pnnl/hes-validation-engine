@@ -10,8 +10,6 @@ ajv.addKeyword('error_msg');
 
 const nullOrUndefined = [null, undefined];
 
-const mandatoryMessage = "Missing value for mandatory field";
-
 module.exports = getNestedValidationMessages;
 
 /**
@@ -65,7 +63,7 @@ function convertAJVError(errorObj) {
 
     switch(keyword) {
         case 'required':
-            return mandatoryMessage;
+            return "Missing value for mandatory field";
         case 'enum':
             return `${message}: '${error_leaf.join('\', \'')}'`;
         case 'if':
