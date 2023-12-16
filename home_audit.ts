@@ -8,7 +8,7 @@ ajv.addSchema(HesJsonSchema);
 // Add the custom keyword "error_msg" to the validator
 ajv.addKeyword('error_msg');
 
-const nullOrUndefined = [null, undefined];
+const NULL_OR_UNDEFINED = [null, undefined];
 
 module.exports = getNestedValidationMessages;
 
@@ -317,7 +317,7 @@ function checkFloorArea(zone, conditioned_footprint) {
 function checkFoundationLevel(zone_floor_array) {
     zone_floor_array.forEach((floor, index) => {
         const {foundation_type, foundation_insulation_level} = floor;
-        if(!nullOrUndefined.includes(foundation_type) && !nullOrUndefined.includes(foundation_insulation_level)) {
+        if(!NULL_OR_UNDEFINED.includes(foundation_type) && !NULL_OR_UNDEFINED.includes(foundation_insulation_level)) {
             if(foundation_type === 'slab_on_grade' && ![0, 5].includes(foundation_insulation_level)) {
                 addErrorMessage(`/zone/zone_floor/${index}/foundation_insulation_level`, 'Insulation must be R-0 or R-5 for Slab on Grade Foundation');
             } else if(![0, 11, 19].includes(foundation_insulation_level)) {
@@ -361,8 +361,8 @@ function getAdditionalFloorZoneValidations(zone, about) {
  */
 function getCombinedArea(array_obj, field_name) {
     let combined_area = 0;
-    array_obj.filter((obj) => (!nullOrUndefined.includes(obj))).forEach((obj) => {
-        if(!nullOrUndefined.includes(obj[field_name])) {
+    array_obj.filter((obj) => (!NULL_OR_UNDEFINED.includes(obj))).forEach((obj) => {
+        if(!NULL_OR_UNDEFINED.includes(obj[field_name])) {
             combined_area += obj[field_name]
         }
     });
@@ -536,7 +536,7 @@ function checkHeatingEfficiencyValid(hvac_system, index) {
     if(heating) {
         const {type, primary_fuel, efficiency_method} = heating;
         if(efficiency_method &&
-            ([...nullOrUndefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
+            ([...NULL_OR_UNDEFINED, 'baseboard', 'wood_stove', 'none'].includes(type) ||
             (type === 'central_furnace' && primary_fuel === 'electric'))
         ) {
             addErrorMessage(`systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
@@ -559,7 +559,7 @@ function checkCoolingEfficiencyValid(hvac_system, index) {
     const {cooling} = hvac_system;
     if(cooling) {
         const {type, efficiency_method} = cooling;
-        if(efficiency_method && [...nullOrUndefined, 'none', 'dec'].includes(type)) {
+        if(efficiency_method && [...NULL_OR_UNDEFINED, 'none', 'dec'].includes(type)) {
             addErrorMessage(`systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
         }
         if(efficiency_method !== 'user' && ['mini_split', 'gchp'].includes(type)) {
@@ -630,7 +630,7 @@ function checkHotWaterCategoryValid(hot_water, hvac) {
  */
 function checkHotWaterFuelValid(hot_water) {
     const {type, fuel_primary} = hot_water;
-    if(['tankless_coil', 'indirect'].includes(type) && !nullOrUndefined.includes(fuel_primary)) {
+    if(['tankless_coil', 'indirect'].includes(type) && !NULL_OR_UNDEFINED.includes(fuel_primary)) {
         addErrorMessage(`systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump');
     } else if(type === 'heat_pump' && fuel_primary !== 'electric') {
         addErrorMessage(`systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump');
@@ -662,7 +662,7 @@ function checkHotWaterYearValid(hot_water) {
  */
 function checkHotWaterEnergyFactorValid(hot_water) {
     const {type, energy_factor} = hot_water;
-    if(["indirect", "tankless_coil"].includes(type) && !nullOrUndefined.includes(energy_factor)) {
+    if(["indirect", "tankless_coil"].includes(type) && !NULL_OR_UNDEFINED.includes(energy_factor)) {
         addErrorMessage(`systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`);
     }
     let min,max;
