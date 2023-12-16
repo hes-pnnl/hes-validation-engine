@@ -57,6 +57,8 @@ function convertAJVError(errorObj) {
         return acc[key]
     }, HesJsonSchema);
 
+    // This property can be set in the schema to override the default error
+    // with a rule-specific error message.
     if(error_leaf.error_msg) {
         return error_leaf.error_msg;
     }
