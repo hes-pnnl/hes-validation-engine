@@ -365,7 +365,7 @@ function getCombinedArea(array_obj, field_name) {
     let combined_area = 0;
     array_obj.filter((obj) => (!NULL_OR_UNDEFINED.includes(obj))).forEach((obj) => {
         if(!NULL_OR_UNDEFINED.includes(obj[field_name])) {
-            combined_area += obj[field_name]
+            combined_area += obj[field_name];
         }
     });
     return Math.floor(combined_area);
