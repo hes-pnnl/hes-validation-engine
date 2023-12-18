@@ -7,7 +7,7 @@ module.exports = {
   properties: {
     version: {
       type: "string",
-      const: "1.0",
+      const: "2.0",
       description:
         "The version of the building unit schema. Use semantic versioning.",
     },

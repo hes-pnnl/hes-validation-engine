@@ -31,8 +31,10 @@ function getNestedValidationMessages (homeValues) {
             const errorPath = params.missingProperty ? `${instancePath}/${params.missingProperty}` : instancePath;
             addErrorMessage(errorPath, convertAJVError(error))
         });
+    } else {
+        // Don't perform cross-object validation unless the building JSON is valid
+        getCrossValidationMessages(homeValues);
     }
-    getCrossValidationMessages(homeValues);
     return _errorMessages
 }
 
@@ -399,15 +401,12 @@ function checkCombinedAreaInvalid(zone) {
 function getBuildingConditionedFootprint(about, zone) {
     const {zone_floor} = zone;
     const {conditioned_floor_area, num_floor_above_grade} = about;
-    let conditioned_basement_area = 0;
     // For conditioned footprint, we need to subtract the area of any conditioned basement floors
-    zone_floor.filter((floor) => (
-        floor.foundation_type === 'cond_basement'
-    )).forEach((floor) => (
-        conditioned_basement_area += floor.floor_area
-    ));
-    const footprint_area = conditioned_floor_area - conditioned_basement_area;
-    return Math.floor(footprint_area / num_floor_above_grade);
+    const conditioned_basement_area = zone_floor.reduce((area, floor) => (
+        area + (floor.foundation_type === 'cond_basement' ? floor.floor_area : 0)
+    ), 0);
+    const above_grade_area = conditioned_floor_area - conditioned_basement_area;
+    return Math.floor(above_grade_area / (num_floor_above_grade || 1));
 }
 
 /**
