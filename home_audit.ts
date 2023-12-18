@@ -100,7 +100,11 @@ function addErrorMessage(path, message) {
         if (_errorMessages[path] === undefined) {
             _errorMessages[path] = [];
         }
-        _errorMessages[path].push(message);
+        // NOTE: Because of potential duplicate $refs in the schema to the same rules,
+        // we de-duplicate the error message here
+        if(!_errorMessages[path].includes(message)) {
+            _errorMessages[path].push(message);
+        }
     }
 }
 
