@@ -5,19 +5,20 @@ import { ErrorObject as AjvErrorObject } from 'ajv/dist/types';
 import addFormats from 'ajv-formats';
 
 type Zone = Building["zone"];
-type Floor = Zone["zone_floor"][number];
+type Floor = Exclude<Zone["zone_floor"], undefined>[number];
 type Wall = Zone['zone_wall'][number];
 type Roof = Zone["zone_roof"][number];
+type KneeWall = Roof["knee_wall"];
 type About = Building["about"];
 type Systems = Building["systems"];
 type HotWater = Systems["domestic_hot_water"];
 type HVACSystem = Systems["hvac"][number];
-type HeatingSystem = HVACSystem["heating"];
+type HeatingSystem = Exclude<HVACSystem["heating"], undefined>;
 type HeatingType = HeatingSystem["type"];
-type CoolingSystem = HVACSystem["cooling"];
+type CoolingSystem = Exclude<HVACSystem["cooling"], undefined>;
 type CoolingType = CoolingSystem["type"];
-type DistributionSystem = HVACSystem["hvac_distribution"];
-type SolarElectric = Systems["generation"]["solar_electric"];
+type DistributionSystem = Exclude<HVACSystem["hvac_distribution"], undefined>;
+type SolarElectric = Exclude<Systems["generation"], undefined>["solar_electric"];
 
 const ajv:Ajv = new Ajv({ allErrors: true, strictTypes: false, strictSchema: false });
 addFormats(ajv);
@@ -55,17 +56,22 @@ export function getNestedValidationMessages(homeValues: Building): ErrorMessages
 
     // Don't perform cross-object validation unless the building JSON is valid
     if(!ajv.validate(HesJsonSchema, homeValues)){
-        ajv.errors.forEach((error) => {
-            const {
-                instancePath,
-                params: { missingProperty }
-            } = error;
-            const errorPath = missingProperty ? `${instancePath}/${missingProperty}` : instancePath;
-            const errorMessage = getMessageFromAjvError(error);
-            if (errorMessage) {
-                addErrorMessage(errorPath, errorMessage);
-            }
-        });
+        // if ajv.validate() returns false, then ajv.errors should always be populated,
+        // but TypeScript doesn't like us calling forEach on a value that's not guaranteed
+        // to be set
+        if (ajv.errors) {
+            ajv.errors.forEach((error) => {
+                const {
+                    instancePath,
+                    params: { missingProperty }
+                } = error;
+                const errorPath = missingProperty ? `${instancePath}/${missingProperty}` : instancePath;
+                const errorMessage = getMessageFromAjvError(error);
+                if (errorMessage) {
+                    addErrorMessage(errorPath, errorMessage);
+                }
+            });
+        }
     } else {
         getCrossValidationMessages(homeValues);
     }
@@ -279,18 +285,18 @@ function getAdditionalRoofZoneValidations(floors: Floor[], roofs: Roof[], about:
 /**
  * Check that the skylight isn't too big for the roof
  */
-function checkSkylightArea(zone_roof_array, conditioned_footprint): void
+function checkSkylightArea(roofs: Roof[], conditioned_footprint: number): void
 {
     // Skylights must be smaller than the conditioned footprint
     let zone_skylight_area = 0
-    zone_roof_array.forEach((roof) => {
+    roofs.forEach((roof) => {
         const {zone_skylight} = roof;
         if(zone_skylight && zone_skylight.skylight_area) {
             zone_skylight_area += zone_skylight.skylight_area
         }
     });
     if(zone_skylight_area > conditioned_footprint) {
-        zone_roof_array.forEach((roof, index) => {
+        roofs.forEach((roof, index) => {
             if(roof.zone_skylight && roof.zone_skylight.skylight_area) {
                 addErrorMessage(`zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
             }
@@ -304,7 +310,13 @@ function checkSkylightArea(zone_roof_array, conditioned_footprint): void
 function checkKneeWallArea(roofs:Roof[], conditioned_footprint:number): void
 {
     const max_knee_wall_area = (2 * conditioned_footprint) / 3;
-    const combined_knee_wall_area = getSumOfObjectPropertiesByFieldName(roofs.map((roof) => (roof.knee_wall)), 'area');
+    const knee_walls:object[] = [];
+    roofs.forEach(roof => {
+        if (roof.knee_wall) {
+            knee_walls.push(roof.knee_wall);
+        }
+    });
+    const combined_knee_wall_area = getSumOfObjectPropertiesByFieldName(knee_walls, 'area');
     if(combined_knee_wall_area > max_knee_wall_area) {
         roofs.forEach((roof, index) => {
             if(roof.knee_wall && roof.knee_wall.area) {
@@ -485,7 +497,7 @@ function getBuildingConditionedFootprint(
 {
     // For conditioned footprint, we need to subtract the area of any conditioned basement floors
     const conditioned_basement_area = floors.reduce((area:number, floor) =>
-        area + (floor.foundation_type === 'cond_basement' ? floor.floor_area : 0)
+        area + (floor.foundation_type === 'cond_basement' && floor.floor_area || 0)
     , 0);
     const above_grade_area = conditioned_floor_area - conditioned_basement_area;
     return Math.floor(above_grade_area / (num_floor_above_grade || 1));
