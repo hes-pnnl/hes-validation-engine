@@ -8,7 +8,6 @@ type Zone = Building["zone"];
 type Floor = Exclude<Zone["zone_floor"], undefined>[number];
 type Wall = Zone['zone_wall'][number];
 type Roof = Zone["zone_roof"][number];
-type KneeWall = Roof["knee_wall"];
 type About = Building["about"];
 type Systems = Building["systems"];
 type HotWater = Systems["domestic_hot_water"];
@@ -18,7 +17,7 @@ type HeatingType = HeatingSystem["type"];
 type CoolingSystem = Exclude<HVACSystem["cooling"], undefined>;
 type CoolingType = CoolingSystem["type"];
 type DistributionSystem = Exclude<HVACSystem["hvac_distribution"], undefined>;
-type SolarElectric = Exclude<Systems["generation"], undefined>["solar_electric"];
+type SolarElectric = Exclude<Exclude<Systems["generation"], undefined>["solar_electric"], undefined>;
 
 const ajv:Ajv = new Ajv({ allErrors: true, strictTypes: false, strictSchema: false });
 addFormats(ajv);
@@ -444,10 +443,10 @@ function getAdditionalFloorZoneValidations(floors: Floor[], roofs: Roof[], about
 /**
  * Iterates over an array of objects, calculating the sum of a given field name from each object
  */
-function getSumOfObjectPropertiesByFieldName(objects:object[], field_name:string):number
+function getSumOfObjectPropertiesByFieldName(objects:{[key: string]: any}[], field_name:string):number
 {
     const combined_area = objects.reduce(
-        (val, obj) => val + (obj[field_name] || 0),
+        (val, obj) => val + (assertNumeric(obj[field_name]) || 0),
         0
     );
     return Math.floor(combined_area);
@@ -523,7 +522,6 @@ function getSystemCrossValidation({hvac:hvacs, domestic_hot_water, generation}:S
             if (heating && cooling) {
                 checkHeatingCoolingTypeValid(heating.type, cooling.type, index);
             }
-            checkSystemYear(heating, cooling, index);
             if (hvac_distribution) {
                 checkHvacDistribution(hvac_distribution, index);
             }
@@ -585,6 +583,11 @@ const HEATING_FUEL_TO_TYPE = {
 };
 function checkHeatingFuelValidForHeatingType({fuel_primary, type}:HeatingSystem, index:number): void
 {
+    // According to the type definitions, it is possible for fuel_primary or type to be undefined.
+    if (!fuel_primary || !type) {
+        return;
+    }
+
     if(HEATING_FUEL_TO_TYPE[fuel_primary] && !HEATING_FUEL_TO_TYPE[fuel_primary].includes(type)) {
         addErrorMessage(
             `systems/hvac/${index}/heating/fuel_primary`,
@@ -604,22 +607,22 @@ function checkHeatingCoolingTypeValid(heating_type:HeatingType, cooling_type:Coo
         // If cooling is heat_pump or gchp, heating type must match, be wood_stove, or be none
         case 'heat_pump':
         case 'gchp':
-            if(![cooling_type, 'wood_stove', 'none'].includes(heating_type)) {
+            if(!heating_type || ![cooling_type, 'wood_stove', 'none'].includes(heating_type)) {
                 heat_cool_valid = false;
             }
             break;
         case 'mini_split':
-            if(['heat_pump', 'gchp'].includes(heating_type)){
+            if(!heating_type || ['heat_pump', 'gchp'].includes(heating_type)){
                 heat_cool_valid = false;
             }
             break;
         case 'split_dx':
-            if(['heat_pump', 'gchp', 'mini_split'].includes(heating_type)){
+            if(!heating_type || ['heat_pump', 'gchp', 'mini_split'].includes(heating_type)){
                 heat_cool_valid = false;
             }
             break;
         case 'dec':
-            if(['gchp'].includes(heating_type)){
+            if(!heating_type || ['gchp'].includes(heating_type)){
                 heat_cool_valid = false;
             }
             break;
@@ -632,19 +635,19 @@ function checkHeatingCoolingTypeValid(heating_type:HeatingType, cooling_type:Coo
 /**
  * Check that the efficiency method is valid for the heating type
  */
-function checkHeatingEfficiencyValid({type, primary_fuel, efficiency_method}:HeatingSystem, index:number): void
+function checkHeatingEfficiencyValid({type, fuel_primary, efficiency_method}:HeatingSystem, index:number): void
 {
     if(efficiency_method &&
         ([null, undefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
-        (type === 'central_furnace' && primary_fuel === 'electric'))
+        (type === 'central_furnace' && fuel_primary === 'electric'))
     ) {
         addErrorMessage(`systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`);
     }
     if(efficiency_method === 'shipment_weighted') {
-        if(type === 'wall_furnace' && primary_fuel !== 'natural_gas') {
+        if(type === 'wall_furnace' && fuel_primary !== 'natural_gas') {
             addErrorMessage(`systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
         }
-        if(['mini_split', 'gchp'].includes(type)) {
+        if(type && ['mini_split', 'gchp'].includes(type)) {
             addErrorMessage(`systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
         }
     }
@@ -659,7 +662,7 @@ function checkCoolingEfficiencyValid(cooling:CoolingSystem, index:number): void
     if(efficiency_method && [null, undefined, 'none', 'dec'].includes(type)) {
         addErrorMessage(`systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`);
     }
-    if(efficiency_method !== 'user' && ['mini_split', 'gchp'].includes(type)) {
+    if(efficiency_method !== 'user' && type && ['mini_split', 'gchp'].includes(type)) {
         addErrorMessage(`systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`);
     }
 }
@@ -671,7 +674,7 @@ const MIN_SYSTEM_YEAR = 1970;
 const MAX_SYSTEM_YEAR = (new Date()).getFullYear(); // this year
 function checkSystemYear({year}:HeatingSystem|CoolingSystem, name:'heating'|'cooling', index:number): void
 {
-    if(MIN_SYSTEM_YEAR > year || year > MAX_SYSTEM_YEAR) {
+    if(year === undefined || MIN_SYSTEM_YEAR > year || year > MAX_SYSTEM_YEAR) {
         addErrorMessage(
             `systems/hvac/${index}/${name}/year`,
             `Invalid year, must be between ${MIN_SYSTEM_YEAR} and ${MAX_SYSTEM_YEAR}`
@@ -711,11 +714,11 @@ function checkHvacDistribution(hvac_distribution:DistributionSystem, index:numbe
  */
 function checkHotWaterCategoryValid({category}:HotWater, hvacs:HVACSystem[]): void
 {
-    const hvac_types = [];
+    const hvac_types:string[] = [];
     hvacs.forEach((system) => {
         const {heating, cooling} = system;
-        heating && hvac_types.push(heating.type);
-        cooling && hvac_types.push(cooling.type);
+        heating?.type && hvac_types.push(heating.type);
+        cooling?.type && hvac_types.push(cooling.type);
     });
     if(!hvac_types.includes('boiler') && category === 'combined') {
         addErrorMessage(`systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category');
@@ -762,7 +765,8 @@ function checkHotWaterEnergyFactorValid({type, energy_factor}:HotWater): void
     if(["indirect", "tankless_coil"].includes(type) && isNullOrUndefined(energy_factor)) {
         addErrorMessage(`systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`);
     }
-    let min,max;
+    let min:number|null = null;
+    let max:number|null = null;
     if (type === 'storage') {
         [min, max] = [0.45, 0.95];
     } else if (type === 'tankless') {
@@ -770,7 +774,7 @@ function checkHotWaterEnergyFactorValid({type, energy_factor}:HotWater): void
     } else if (type === 'heat_pump') {
         [min, max] = [1, 4];
     }
-    if(energy_factor && (energy_factor < min || energy_factor > max)) {
+    if(min !== null && max !== null && energy_factor && (energy_factor < min || energy_factor > max)) {
         addErrorMessage(`systems/domestic_hot_water/energy_factor`, `${energy_factor} is outside the allowed range (${min} - ${max})`);
     }
 }
@@ -783,4 +787,20 @@ function checkSolarElectricYearValid({year}:SolarElectric): void
     if(year && (2000 > year || (new Date()).getFullYear() < year)) {
         addErrorMessage(`systems/generation/solar_electric/year`, `Invalid year, must be between 2000 and ${(new Date()).getFullYear()}`)
     }
+}
+
+/**
+ * Given a number, just returns that number. Given a string, asserts that the string is numeric
+ * and returns the number contained in the string
+ */
+function assertNumeric(value:number | string): number
+{
+    if (typeof value === "string") {
+        value = Number(value);
+        if (isNaN(value)) {
+            throw new Error(`${value} is not a valid numeric string`);
+        }
+    }
+
+    return value;
 }
