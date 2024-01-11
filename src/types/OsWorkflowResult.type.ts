@@ -41,14 +41,14 @@ export enum EndUse {
 }
 
 export interface SimulationResult {
-    quantity: number;
-    resource_type: ResourceType;
-    period_type?: PeriodType;
-    period_number?: number;
-    end_use?: EndUse;
-    units?: number;
+    quantity: number
+    resource_type: ResourceType
+    period_type?: PeriodType
+    period_number?: number
+    end_use?: EndUse
+    units?: number
 }
 
 export interface OsWorkflowResult {
-    end_use: SimulationResult[];
+    end_use: SimulationResult[]
 }

@@ -9,46 +9,46 @@
  */
 
 export interface HomeEnergyScore {
-    building_unit: HEScoreJSONSchema;
-    building_upgrades?: HEScoreUpgradesSchema;
+    building_unit: HEScoreJSONSchema
+    building_upgrades?: HEScoreUpgradesSchema
 }
 export interface HEScoreJSONSchema {
     /**
      * The version of the building unit schema. Use semantic versioning.
      */
-    version: '1.0';
+    version: '1.0'
     address: {
-        address: string;
-        city: string;
-        state: string;
-        zip_code: string;
+        address: string
+        city: string
+        state: string
+        zip_code: string
         /**
          *  Allows an organization to assign an ID to the building for that organization's internal use. This field has no impact within the HES system, except that it can be filtered on in some of the retrieve_* methods.
          */
-        external_building_id?: string;
-    };
+        external_building_id?: string
+    }
     hpwes?: {
         /**
          * The date on which HPwES upgrade installation began, in YYYY-MM-DD format
          */
-        improvement_installation_start_date?: string;
+        improvement_installation_start_date?: string
         /**
          * The date on which HPwES upgrade installation was completed, in YYYY-MM-DD format
          */
-        improvement_installation_completion_date?: string;
+        improvement_installation_completion_date?: string
         /**
          * Five-digit postal code of the contractor installing the HPwES upgrades
          */
-        contractor_zip_code?: string;
+        contractor_zip_code?: string
         /**
          * The name of the contracting business installing the HPwES upgrades
          */
-        contractor_business_name?: string;
+        contractor_business_name?: string
         /**
          * Whether or not the HPwES upgrades were performed for a homeowner participating in an income-eligible program
          */
-        is_income_eligible_program?: boolean;
-    };
+        is_income_eligible_program?: boolean
+    }
     about: {
         assessment_type:
             | 'initial'
@@ -58,64 +58,64 @@ export interface HEScoreJSONSchema {
             | 'test'
             | 'corrected'
             | 'mentor'
-            | 'preconstruction';
+            | 'preconstruction'
         /**
          * Date the assessment was performed
          */
-        assessment_date: string;
+        assessment_date: string
         /**
          * Free text comment field
          */
-        comments?: string | null;
+        comments?: string | null
         /**
          * Pass through field for use by api users
          */
-        comment_api_only?: string;
+        comment_api_only?: string
         /**
          * House shape
          */
-        shape: 'rectangle' | 'town_house';
+        shape: 'rectangle' | 'town_house'
         /**
          * Which townhouse walls are exposed (only used if shape is town_house)
          */
-        town_house_walls?: 'back_front' | 'back_right_front' | 'back_front_left';
+        town_house_walls?: 'back_front' | 'back_right_front' | 'back_front_left'
         /**
          * Year building was built
          */
-        year_built: number;
+        year_built: number
         /**
          * Number of bedrooms in house
          */
-        number_bedrooms: number;
+        number_bedrooms: number
         /**
          * Number of floors above grade
          */
-        num_floor_above_grade: number;
+        num_floor_above_grade: number
         /**
          * Floor to ceiling height (feet)
          */
-        floor_to_ceiling_height: number;
+        floor_to_ceiling_height: number
         /**
          * Total conditioned floor area (square feet)
          */
-        conditioned_floor_area: number;
+        conditioned_floor_area: number
         /**
          * Orientation of the front door
          */
-        orientation: 'north' | 'north_east' | 'east' | 'south_east' | 'south' | 'south_west' | 'west' | 'north_west';
+        orientation: 'north' | 'north_east' | 'east' | 'south_east' | 'south' | 'south_west' | 'west' | 'north_west'
         /**
          * Was a blower door test performed on this house?
          */
-        blower_door_test: boolean;
+        blower_door_test: boolean
         /**
          * Has the building been air sealed? (only used if blower_door_test is false)
          */
-        air_sealing_present?: boolean;
+        air_sealing_present?: boolean
         /**
          * Building air leakage measured with a blower door (CFM50) (only used if blower_door_test is true)
          */
-        envelope_leakage?: number;
-    };
+        envelope_leakage?: number
+    }
     zone: {
         /**
          * Inputs about the construction of the roof(s)
@@ -130,15 +130,15 @@ export interface HEScoreJSONSchema {
                       /**
                        * Name of this roof instance
                        */
-                      roof_name: 'roof1' | 'roof2';
+                      roof_name: 'roof1' | 'roof2'
                       /**
                        * Area of ceiling (attic floor), used if roof_type = vented_attic
                        */
-                      ceiling_area?: number;
+                      ceiling_area?: number
                       /**
                        * Area of the roof, used if roof_type = cath_ceiling
                        */
-                      roof_area?: number;
+                      roof_area?: number
                       /**
                        * Roof construction assembly code
                        */
@@ -242,19 +242,19 @@ export interface HEScoreJSONSchema {
                           | 'rfps21wo'
                           | 'rfps21rc'
                           | 'rfps21lc'
-                          | 'rfps21tg';
+                          | 'rfps21tg'
                       /**
                        * Color of roof exterior surface
                        */
-                      roof_color: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color';
+                      roof_color: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color'
                       /**
                        * Absorptance of exterior surface (only used if roof_color is cool_color)
                        */
-                      roof_absorptance?: number;
+                      roof_absorptance?: number
                       /**
                        * Type of roof
                        */
-                      roof_type: 'vented_attic' | 'cath_ceiling';
+                      roof_type: 'vented_attic' | 'cath_ceiling'
                       /**
                        * Ceiling construction assembly code (required unless roof_type is cath_ceiling)
                        */
@@ -275,7 +275,7 @@ export interface HEScoreJSONSchema {
                           | 'ecwf44'
                           | 'ecwf49'
                           | 'ecwf55'
-                          | 'ecwf60';
+                          | 'ecwf60'
                       /**
                        * Knee wall inputs
                        */
@@ -283,7 +283,7 @@ export interface HEScoreJSONSchema {
                           /**
                            * Knee wall area
                            */
-                          area: number;
+                          area: number
                           /**
                            * Knee wall assembly code
                            */
@@ -295,8 +295,8 @@ export interface HEScoreJSONSchema {
                               | 'kwwf13'
                               | 'kwwf15'
                               | 'kwwf19'
-                              | 'kwwf21';
-                      };
+                              | 'kwwf21'
+                      }
                       /**
                        * Inputs about the skylights on this roof
                        */
@@ -304,11 +304,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of skylights (square feet)
                            */
-                          skylight_area?: number;
+                          skylight_area?: number
                           /**
                            * Construction method to use for skylights
                            */
-                          skylight_method?: 'code' | 'custom';
+                          skylight_method?: 'code' | 'custom'
                           /**
                            * Assembly code for skylights (only used if skylight_method is code)
                            */
@@ -330,20 +330,20 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
                            */
-                          skylight_u_value?: number;
+                          skylight_u_value?: number
                           /**
                            * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
                            */
-                          skylight_shgc?: number;
+                          skylight_shgc?: number
                           /**
                            * Does this skylight have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   }
               ]
             | [
@@ -351,15 +351,15 @@ export interface HEScoreJSONSchema {
                       /**
                        * Name of this roof instance
                        */
-                      roof_name: 'roof1' | 'roof2';
+                      roof_name: 'roof1' | 'roof2'
                       /**
                        * Area of ceiling (attic floor), used if roof_type = vented_attic
                        */
-                      ceiling_area?: number;
+                      ceiling_area?: number
                       /**
                        * Area of the roof, used if roof_type = cath_ceiling
                        */
-                      roof_area?: number;
+                      roof_area?: number
                       /**
                        * Roof construction assembly code
                        */
@@ -463,19 +463,19 @@ export interface HEScoreJSONSchema {
                           | 'rfps21wo'
                           | 'rfps21rc'
                           | 'rfps21lc'
-                          | 'rfps21tg';
+                          | 'rfps21tg'
                       /**
                        * Color of roof exterior surface
                        */
-                      roof_color: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color';
+                      roof_color: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color'
                       /**
                        * Absorptance of exterior surface (only used if roof_color is cool_color)
                        */
-                      roof_absorptance?: number;
+                      roof_absorptance?: number
                       /**
                        * Type of roof
                        */
-                      roof_type: 'vented_attic' | 'cath_ceiling';
+                      roof_type: 'vented_attic' | 'cath_ceiling'
                       /**
                        * Ceiling construction assembly code (required unless roof_type is cath_ceiling)
                        */
@@ -496,7 +496,7 @@ export interface HEScoreJSONSchema {
                           | 'ecwf44'
                           | 'ecwf49'
                           | 'ecwf55'
-                          | 'ecwf60';
+                          | 'ecwf60'
                       /**
                        * Knee wall inputs
                        */
@@ -504,7 +504,7 @@ export interface HEScoreJSONSchema {
                           /**
                            * Knee wall area
                            */
-                          area: number;
+                          area: number
                           /**
                            * Knee wall assembly code
                            */
@@ -516,8 +516,8 @@ export interface HEScoreJSONSchema {
                               | 'kwwf13'
                               | 'kwwf15'
                               | 'kwwf19'
-                              | 'kwwf21';
-                      };
+                              | 'kwwf21'
+                      }
                       /**
                        * Inputs about the skylights on this roof
                        */
@@ -525,11 +525,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of skylights (square feet)
                            */
-                          skylight_area?: number;
+                          skylight_area?: number
                           /**
                            * Construction method to use for skylights
                            */
-                          skylight_method?: 'code' | 'custom';
+                          skylight_method?: 'code' | 'custom'
                           /**
                            * Assembly code for skylights (only used if skylight_method is code)
                            */
@@ -551,34 +551,34 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
                            */
-                          skylight_u_value?: number;
+                          skylight_u_value?: number
                           /**
                            * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
                            */
-                          skylight_shgc?: number;
+                          skylight_shgc?: number
                           /**
                            * Does this skylight have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   },
                   {
                       /**
                        * Name of this roof instance
                        */
-                      roof_name: 'roof1' | 'roof2';
+                      roof_name: 'roof1' | 'roof2'
                       /**
                        * Area of ceiling (attic floor), used if roof_type = vented_attic
                        */
-                      ceiling_area?: number;
+                      ceiling_area?: number
                       /**
                        * Area of the roof, used if roof_type = cath_ceiling
                        */
-                      roof_area?: number;
+                      roof_area?: number
                       /**
                        * Roof construction assembly code
                        */
@@ -682,19 +682,19 @@ export interface HEScoreJSONSchema {
                           | 'rfps21wo'
                           | 'rfps21rc'
                           | 'rfps21lc'
-                          | 'rfps21tg';
+                          | 'rfps21tg'
                       /**
                        * Color of roof exterior surface
                        */
-                      roof_color: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color';
+                      roof_color: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color'
                       /**
                        * Absorptance of exterior surface (only used if roof_color is cool_color)
                        */
-                      roof_absorptance?: number;
+                      roof_absorptance?: number
                       /**
                        * Type of roof
                        */
-                      roof_type: 'vented_attic' | 'cath_ceiling';
+                      roof_type: 'vented_attic' | 'cath_ceiling'
                       /**
                        * Ceiling construction assembly code (required unless roof_type is cath_ceiling)
                        */
@@ -715,7 +715,7 @@ export interface HEScoreJSONSchema {
                           | 'ecwf44'
                           | 'ecwf49'
                           | 'ecwf55'
-                          | 'ecwf60';
+                          | 'ecwf60'
                       /**
                        * Knee wall inputs
                        */
@@ -723,7 +723,7 @@ export interface HEScoreJSONSchema {
                           /**
                            * Knee wall area
                            */
-                          area: number;
+                          area: number
                           /**
                            * Knee wall assembly code
                            */
@@ -735,8 +735,8 @@ export interface HEScoreJSONSchema {
                               | 'kwwf13'
                               | 'kwwf15'
                               | 'kwwf19'
-                              | 'kwwf21';
-                      };
+                              | 'kwwf21'
+                      }
                       /**
                        * Inputs about the skylights on this roof
                        */
@@ -744,11 +744,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of skylights (square feet)
                            */
-                          skylight_area?: number;
+                          skylight_area?: number
                           /**
                            * Construction method to use for skylights
                            */
-                          skylight_method?: 'code' | 'custom';
+                          skylight_method?: 'code' | 'custom'
                           /**
                            * Assembly code for skylights (only used if skylight_method is code)
                            */
@@ -770,22 +770,22 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
                            */
-                          skylight_u_value?: number;
+                          skylight_u_value?: number
                           /**
                            * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
                            */
-                          skylight_shgc?: number;
+                          skylight_shgc?: number
                           /**
                            * Does this skylight have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   }
-              ];
+              ]
         /**
          * Inputs about the construction of the floor(s)
          *
@@ -799,11 +799,11 @@ export interface HEScoreJSONSchema {
                       /**
                        * Name of this floor instance
                        */
-                      floor_name: 'floor1' | 'floor2';
+                      floor_name: 'floor1' | 'floor2'
                       /**
                        * Area of this foundation type
                        */
-                      floor_area?: number;
+                      floor_area?: number
                       /**
                        * Type of foundation
                        */
@@ -812,11 +812,11 @@ export interface HEScoreJSONSchema {
                           | 'cond_basement'
                           | 'vented_crawl'
                           | 'unvented_crawl'
-                          | 'slab_on_grade';
+                          | 'slab_on_grade'
                       /**
                        * Foundation wall / slab edge insulation R-value (sf-hr-F/Btu)
                        */
-                      foundation_insulation_level?: number;
+                      foundation_insulation_level?: number
                       /**
                        * Floor construction assembly code (only used if foundation_type is not slab_on_grade)
                        */
@@ -832,7 +832,7 @@ export interface HEScoreJSONSchema {
                           | 'efwf25ca'
                           | 'efwf30ca'
                           | 'efwf35ca'
-                          | 'efwf38ca';
+                          | 'efwf38ca'
                   }
               ]
             | [
@@ -840,11 +840,11 @@ export interface HEScoreJSONSchema {
                       /**
                        * Name of this floor instance
                        */
-                      floor_name: 'floor1' | 'floor2';
+                      floor_name: 'floor1' | 'floor2'
                       /**
                        * Area of this foundation type
                        */
-                      floor_area?: number;
+                      floor_area?: number
                       /**
                        * Type of foundation
                        */
@@ -853,11 +853,11 @@ export interface HEScoreJSONSchema {
                           | 'cond_basement'
                           | 'vented_crawl'
                           | 'unvented_crawl'
-                          | 'slab_on_grade';
+                          | 'slab_on_grade'
                       /**
                        * Foundation wall / slab edge insulation R-value (sf-hr-F/Btu)
                        */
-                      foundation_insulation_level?: number;
+                      foundation_insulation_level?: number
                       /**
                        * Floor construction assembly code (only used if foundation_type is not slab_on_grade)
                        */
@@ -873,17 +873,17 @@ export interface HEScoreJSONSchema {
                           | 'efwf25ca'
                           | 'efwf30ca'
                           | 'efwf35ca'
-                          | 'efwf38ca';
+                          | 'efwf38ca'
                   },
                   {
                       /**
                        * Name of this floor instance
                        */
-                      floor_name: 'floor1' | 'floor2';
+                      floor_name: 'floor1' | 'floor2'
                       /**
                        * Area of this foundation type
                        */
-                      floor_area?: number;
+                      floor_area?: number
                       /**
                        * Type of foundation
                        */
@@ -892,11 +892,11 @@ export interface HEScoreJSONSchema {
                           | 'cond_basement'
                           | 'vented_crawl'
                           | 'unvented_crawl'
-                          | 'slab_on_grade';
+                          | 'slab_on_grade'
                       /**
                        * Foundation wall / slab edge insulation R-value (sf-hr-F/Btu)
                        */
-                      foundation_insulation_level?: number;
+                      foundation_insulation_level?: number
                       /**
                        * Floor construction assembly code (only used if foundation_type is not slab_on_grade)
                        */
@@ -912,17 +912,17 @@ export interface HEScoreJSONSchema {
                           | 'efwf25ca'
                           | 'efwf30ca'
                           | 'efwf35ca'
-                          | 'efwf38ca';
+                          | 'efwf38ca'
                   }
-              ];
+              ]
         /**
          * Do all the walls have the same construction?
          */
-        wall_construction_same: boolean;
+        wall_construction_same: boolean
         /**
          * Do all the windows have the same construction?
          */
-        window_construction_same: boolean;
+        window_construction_same: boolean
         /**
          * Inputs about the construction of the walls
          *
@@ -936,7 +936,7 @@ export interface HEScoreJSONSchema {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -1068,7 +1068,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -1076,11 +1076,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -1102,20 +1102,20 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   }
               ]
             | [
@@ -1123,7 +1123,7 @@ export interface HEScoreJSONSchema {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -1255,7 +1255,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -1263,11 +1263,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -1289,26 +1289,26 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   },
                   {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -1440,7 +1440,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -1448,11 +1448,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -1474,20 +1474,20 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   }
               ]
             | [
@@ -1495,7 +1495,7 @@ export interface HEScoreJSONSchema {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -1627,7 +1627,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -1635,11 +1635,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -1661,26 +1661,26 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   },
                   {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -1812,7 +1812,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -1820,11 +1820,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -1846,26 +1846,26 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   },
                   {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -1997,7 +1997,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -2005,11 +2005,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -2031,20 +2031,20 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   }
               ]
             | [
@@ -2052,7 +2052,7 @@ export interface HEScoreJSONSchema {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -2184,7 +2184,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -2192,11 +2192,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -2218,26 +2218,26 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   },
                   {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -2369,7 +2369,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -2377,11 +2377,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -2403,26 +2403,26 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   },
                   {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -2554,7 +2554,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -2562,11 +2562,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -2588,26 +2588,26 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   },
                   {
                       /**
                        * Side this wall faces
                        */
-                      side?: 'front' | 'back' | 'right' | 'left';
+                      side?: 'front' | 'back' | 'right' | 'left'
                       /**
                        * Wall construction assembly code
                        */
@@ -2739,7 +2739,7 @@ export interface HEScoreJSONSchema {
                           | 'ewcb06st'
                           | 'ewcb06br'
                           | 'ewcb06nn'
-                          | 'ewsb00st';
+                          | 'ewsb00st'
                       /**
                        * Inputs about the windows on this wall
                        */
@@ -2747,11 +2747,11 @@ export interface HEScoreJSONSchema {
                           /**
                            * Area of windows on this wall (square feet)
                            */
-                          window_area?: number;
+                          window_area?: number
                           /**
                            * Construction method to use for this window
                            */
-                          window_method?: 'code' | 'custom';
+                          window_method?: 'code' | 'custom'
                           /**
                            * assembly code for this window (only used if window_method is code)
                            */
@@ -2773,23 +2773,23 @@ export interface HEScoreJSONSchema {
                               | 'dseab'
                               | 'dseaw'
                               | 'dseaaw'
-                              | 'thmabw';
+                              | 'thmabw'
                           /**
                            * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
                            */
-                          window_u_value?: number;
+                          window_u_value?: number
                           /**
                            * Solar heat gain coefficient of this window (only used if window_method is custom)
                            */
-                          window_shgc?: number;
+                          window_shgc?: number
                           /**
                            * Does this window have a solar screen?
                            */
-                          solar_screen?: boolean;
-                      };
+                          solar_screen?: boolean
+                      }
                   }
-              ];
-    };
+              ]
+    }
     systems: {
         /**
          * @minItems 0
@@ -2802,11 +2802,11 @@ export interface HEScoreJSONSchema {
                       /**
                        * Name of this system instance
                        */
-                      hvac_name: 'hvac1' | 'hvac2';
+                      hvac_name: 'hvac1' | 'hvac2'
                       /**
                        * Faction of conditioned floor area served by this system
                        */
-                      hvac_fraction?: number;
+                      hvac_fraction?: number
                       /**
                        * Inputs about the heating system
                        */
@@ -2823,21 +2823,21 @@ export interface HEScoreJSONSchema {
                               | 'gchp'
                               | 'wood_stove'
                               | 'mini_split'
-                              | 'none';
+                              | 'none'
                           /**
                            * Primary heating fuel
                            */
-                          fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil' | 'cord_wood' | 'pellet_wood';
+                          fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil' | 'cord_wood' | 'pellet_wood'
                           /**
                            * Method to determine heating efficiency
                            */
-                          efficiency_method?: 'user' | 'shipment_weighted';
+                          efficiency_method?: 'user' | 'shipment_weighted'
                           /**
                            * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
                            */
-                          year?: number;
-                          efficiency?: number;
-                      };
+                          year?: number
+                          efficiency?: number
+                      }
                       /**
                        * Inputs about the cooling system
                        */
@@ -2845,18 +2845,18 @@ export interface HEScoreJSONSchema {
                           /**
                            * Cooling equipment type
                            */
-                          type?: 'packaged_dx' | 'split_dx' | 'heat_pump' | 'gchp' | 'dec' | 'mini_split' | 'none';
+                          type?: 'packaged_dx' | 'split_dx' | 'heat_pump' | 'gchp' | 'dec' | 'mini_split' | 'none'
                           /**
                            * Method to determine cooling efficiency
                            */
-                          efficiency_method?: 'user' | 'shipment_weighted';
+                          efficiency_method?: 'user' | 'shipment_weighted'
                           /**
                            * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
                            */
-                          year?: number;
-                          efficiency?: number;
-                      };
-                      hvac_distribution?: DefHvacDistribution;
+                          year?: number
+                          efficiency?: number
+                      }
+                      hvac_distribution?: DefHvacDistribution
                   }
               ]
             | [
@@ -2864,11 +2864,11 @@ export interface HEScoreJSONSchema {
                       /**
                        * Name of this system instance
                        */
-                      hvac_name: 'hvac1' | 'hvac2';
+                      hvac_name: 'hvac1' | 'hvac2'
                       /**
                        * Faction of conditioned floor area served by this system
                        */
-                      hvac_fraction?: number;
+                      hvac_fraction?: number
                       /**
                        * Inputs about the heating system
                        */
@@ -2885,21 +2885,21 @@ export interface HEScoreJSONSchema {
                               | 'gchp'
                               | 'wood_stove'
                               | 'mini_split'
-                              | 'none';
+                              | 'none'
                           /**
                            * Primary heating fuel
                            */
-                          fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil' | 'cord_wood' | 'pellet_wood';
+                          fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil' | 'cord_wood' | 'pellet_wood'
                           /**
                            * Method to determine heating efficiency
                            */
-                          efficiency_method?: 'user' | 'shipment_weighted';
+                          efficiency_method?: 'user' | 'shipment_weighted'
                           /**
                            * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
                            */
-                          year?: number;
-                          efficiency?: number;
-                      };
+                          year?: number
+                          efficiency?: number
+                      }
                       /**
                        * Inputs about the cooling system
                        */
@@ -2907,28 +2907,28 @@ export interface HEScoreJSONSchema {
                           /**
                            * Cooling equipment type
                            */
-                          type?: 'packaged_dx' | 'split_dx' | 'heat_pump' | 'gchp' | 'dec' | 'mini_split' | 'none';
+                          type?: 'packaged_dx' | 'split_dx' | 'heat_pump' | 'gchp' | 'dec' | 'mini_split' | 'none'
                           /**
                            * Method to determine cooling efficiency
                            */
-                          efficiency_method?: 'user' | 'shipment_weighted';
+                          efficiency_method?: 'user' | 'shipment_weighted'
                           /**
                            * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
                            */
-                          year?: number;
-                          efficiency?: number;
-                      };
-                      hvac_distribution?: DefHvacDistribution;
+                          year?: number
+                          efficiency?: number
+                      }
+                      hvac_distribution?: DefHvacDistribution
                   },
                   {
                       /**
                        * Name of this system instance
                        */
-                      hvac_name: 'hvac1' | 'hvac2';
+                      hvac_name: 'hvac1' | 'hvac2'
                       /**
                        * Faction of conditioned floor area served by this system
                        */
-                      hvac_fraction?: number;
+                      hvac_fraction?: number
                       /**
                        * Inputs about the heating system
                        */
@@ -2945,21 +2945,21 @@ export interface HEScoreJSONSchema {
                               | 'gchp'
                               | 'wood_stove'
                               | 'mini_split'
-                              | 'none';
+                              | 'none'
                           /**
                            * Primary heating fuel
                            */
-                          fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil' | 'cord_wood' | 'pellet_wood';
+                          fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil' | 'cord_wood' | 'pellet_wood'
                           /**
                            * Method to determine heating efficiency
                            */
-                          efficiency_method?: 'user' | 'shipment_weighted';
+                          efficiency_method?: 'user' | 'shipment_weighted'
                           /**
                            * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
                            */
-                          year?: number;
-                          efficiency?: number;
-                      };
+                          year?: number
+                          efficiency?: number
+                      }
                       /**
                        * Inputs about the cooling system
                        */
@@ -2967,64 +2967,64 @@ export interface HEScoreJSONSchema {
                           /**
                            * Cooling equipment type
                            */
-                          type?: 'packaged_dx' | 'split_dx' | 'heat_pump' | 'gchp' | 'dec' | 'mini_split' | 'none';
+                          type?: 'packaged_dx' | 'split_dx' | 'heat_pump' | 'gchp' | 'dec' | 'mini_split' | 'none'
                           /**
                            * Method to determine cooling efficiency
                            */
-                          efficiency_method?: 'user' | 'shipment_weighted';
+                          efficiency_method?: 'user' | 'shipment_weighted'
                           /**
                            * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
                            */
-                          year?: number;
-                          efficiency?: number;
-                      };
-                      hvac_distribution?: DefHvacDistribution;
+                          year?: number
+                          efficiency?: number
+                      }
+                      hvac_distribution?: DefHvacDistribution
                   }
-              ];
+              ]
         domestic_hot_water: {
             /**
              * Water heater category
              */
-            category: 'unit' | 'combined';
+            category: 'unit' | 'combined'
             /**
              * Water heater type
              */
-            type: 'storage' | 'indirect' | 'tankless_coil' | 'tankless' | 'heat_pump';
+            type: 'storage' | 'indirect' | 'tankless_coil' | 'tankless' | 'heat_pump'
             /**
              * Primary water heater fuel
              */
-            fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil';
+            fuel_primary?: 'electric' | 'natural_gas' | 'lpg' | 'fuel_oil'
             /**
              * Method to determine water heater efficiency
              */
-            efficiency_method?: 'user' | 'uef' | 'shipment_weighted';
+            efficiency_method?: 'user' | 'uef' | 'shipment_weighted'
             /**
              * Year water heater was manufactured (only used if efficiency_method is shipment_weighted)
              */
-            year?: number;
+            year?: number
             /**
              * Energy factor of water heater (only used if efficiency_method is user or uef)
              */
-            energy_factor?: number;
-        };
+            energy_factor?: number
+        }
         generation?: {
             solar_electric?: {
                 /**
                  * Is the capacity known?
                  */
-                capacity_known?: boolean;
+                capacity_known?: boolean
                 /**
                  * DC capacity of system (kW) (only used if capacity_known is true)
                  */
-                system_capacity?: number;
+                system_capacity?: number
                 /**
                  * Number of panels in the system (only used if capacity_known is false)
                  */
-                num_panels?: number;
+                num_panels?: number
                 /**
                  * Year system was installed
                  */
-                year?: number;
+                year?: number
                 /**
                  * Direction panels face
                  */
@@ -3036,14 +3036,14 @@ export interface HEScoreJSONSchema {
                     | 'south'
                     | 'south_west'
                     | 'west'
-                    | 'north_west';
+                    | 'north_west'
                 /**
                  * Tilt of panels
                  */
-                array_tilt?: 'flat' | 'low_slope' | 'medium_slope' | 'steep_slope';
-            };
-        };
-    };
+                array_tilt?: 'flat' | 'low_slope' | 'medium_slope' | 'steep_slope'
+            }
+        }
+    }
 }
 /**
  * Inputs about the ducts
@@ -3052,15 +3052,15 @@ export interface DefHvacDistribution {
     /**
      * Method for duct leakage inputs
      */
-    leakage_method: 'qualitative' | 'quantitative';
+    leakage_method: 'qualitative' | 'quantitative'
     /**
      * Duct leakage to outside in CFM25 (only used if leakage_method is quantitative)
      */
-    leakage_to_outside?: number;
+    leakage_to_outside?: number
     /**
      * Are the ducts sealed? (only used if leakage_method is qualitative)
      */
-    sealed?: boolean;
+    sealed?: boolean
     /**
      * @minItems 1
      * @maxItems 3
@@ -3071,7 +3071,7 @@ export interface DefHvacDistribution {
                   /**
                    * Name of distribution system
                    */
-                  name?: 'duct1' | 'duct2' | 'duct3';
+                  name?: 'duct1' | 'duct2' | 'duct3'
                   /**
                    * Location of distribution system
                    */
@@ -3083,15 +3083,15 @@ export interface DefHvacDistribution {
                       | 'uncond_attic'
                       | 'under_slab'
                       | 'exterior_wall'
-                      | 'outside';
+                      | 'outside'
                   /**
                    * Fraction of total duct length
                    */
-                  fraction?: number;
+                  fraction?: number
                   /**
                    * Are the ducts insulated?
                    */
-                  insulated?: boolean;
+                  insulated?: boolean
               }
           ]
         | [
@@ -3099,7 +3099,7 @@ export interface DefHvacDistribution {
                   /**
                    * Name of distribution system
                    */
-                  name?: 'duct1' | 'duct2' | 'duct3';
+                  name?: 'duct1' | 'duct2' | 'duct3'
                   /**
                    * Location of distribution system
                    */
@@ -3111,21 +3111,21 @@ export interface DefHvacDistribution {
                       | 'uncond_attic'
                       | 'under_slab'
                       | 'exterior_wall'
-                      | 'outside';
+                      | 'outside'
                   /**
                    * Fraction of total duct length
                    */
-                  fraction?: number;
+                  fraction?: number
                   /**
                    * Are the ducts insulated?
                    */
-                  insulated?: boolean;
+                  insulated?: boolean
               },
               {
                   /**
                    * Name of distribution system
                    */
-                  name?: 'duct1' | 'duct2' | 'duct3';
+                  name?: 'duct1' | 'duct2' | 'duct3'
                   /**
                    * Location of distribution system
                    */
@@ -3137,15 +3137,15 @@ export interface DefHvacDistribution {
                       | 'uncond_attic'
                       | 'under_slab'
                       | 'exterior_wall'
-                      | 'outside';
+                      | 'outside'
                   /**
                    * Fraction of total duct length
                    */
-                  fraction?: number;
+                  fraction?: number
                   /**
                    * Are the ducts insulated?
                    */
-                  insulated?: boolean;
+                  insulated?: boolean
               }
           ]
         | [
@@ -3153,7 +3153,7 @@ export interface DefHvacDistribution {
                   /**
                    * Name of distribution system
                    */
-                  name?: 'duct1' | 'duct2' | 'duct3';
+                  name?: 'duct1' | 'duct2' | 'duct3'
                   /**
                    * Location of distribution system
                    */
@@ -3165,21 +3165,21 @@ export interface DefHvacDistribution {
                       | 'uncond_attic'
                       | 'under_slab'
                       | 'exterior_wall'
-                      | 'outside';
+                      | 'outside'
                   /**
                    * Fraction of total duct length
                    */
-                  fraction?: number;
+                  fraction?: number
                   /**
                    * Are the ducts insulated?
                    */
-                  insulated?: boolean;
+                  insulated?: boolean
               },
               {
                   /**
                    * Name of distribution system
                    */
-                  name?: 'duct1' | 'duct2' | 'duct3';
+                  name?: 'duct1' | 'duct2' | 'duct3'
                   /**
                    * Location of distribution system
                    */
@@ -3191,21 +3191,21 @@ export interface DefHvacDistribution {
                       | 'uncond_attic'
                       | 'under_slab'
                       | 'exterior_wall'
-                      | 'outside';
+                      | 'outside'
                   /**
                    * Fraction of total duct length
                    */
-                  fraction?: number;
+                  fraction?: number
                   /**
                    * Are the ducts insulated?
                    */
-                  insulated?: boolean;
+                  insulated?: boolean
               },
               {
                   /**
                    * Name of distribution system
                    */
-                  name?: 'duct1' | 'duct2' | 'duct3';
+                  name?: 'duct1' | 'duct2' | 'duct3'
                   /**
                    * Location of distribution system
                    */
@@ -3217,24 +3217,24 @@ export interface DefHvacDistribution {
                       | 'uncond_attic'
                       | 'under_slab'
                       | 'exterior_wall'
-                      | 'outside';
+                      | 'outside'
                   /**
                    * Fraction of total duct length
                    */
-                  fraction?: number;
+                  fraction?: number
                   /**
                    * Are the ducts insulated?
                    */
-                  insulated?: boolean;
+                  insulated?: boolean
               }
-          ];
-    [k: string]: unknown;
+          ]
+    [k: string]: unknown
 }
 export interface HEScoreUpgradesSchema {
     /**
      * The version of the upgrade schema. Use semantic versioning.
      */
-    version: '1.0';
+    version: '1.0'
     /**
      * Inputs about the applicable upgrades
      */
@@ -3242,7 +3242,7 @@ export interface HEScoreUpgradesSchema {
         /**
          * ID of the upgrade
          */
-        upgrade_id?: number;
+        upgrade_id?: number
         /**
          * Upgrades that can be applied to the base building
          */
@@ -3270,60 +3270,60 @@ export interface HEScoreUpgradesSchema {
             | 'replace_heating_with_ng'
             | 'wh_efficiency'
             | 'replace_wh_with_heat_pump'
-            | 'replace_wh_fuel_with_ng';
+            | 'replace_wh_fuel_with_ng'
         /**
          * Insulation R value of the upgrade
          */
-        insulation_R_value?: number;
+        insulation_R_value?: number
         /**
          * Solar absorptance of the upgraded roof.
          */
-        solar_absorptance?: number;
+        solar_absorptance?: number
         /**
          * R value of the added insulation
          */
-        added_insulation_R_value?: number;
+        added_insulation_R_value?: number
         /**
          * Construction assembly code for window/skylight upgrades
          */
-        window_code?: string;
+        window_code?: string
         /**
          * Storm type for window/skylight storm upgrades
          */
-        storm_type?: 'low-e' | 'clear';
+        storm_type?: 'low-e' | 'clear'
         /**
          * Fractional reduction of leakage for sealing upgrades
          */
-        leakage_reduction?: number;
+        leakage_reduction?: number
         /**
          * Unit of cooling efficiency for upgraded cooling/heat pump system
          */
-        cooling_efficiency_unit?: 'seer' | 'eer';
+        cooling_efficiency_unit?: 'seer' | 'eer'
         /**
          * Cooling efficiency value for upgraded cooling/heat pump system
          */
-        cooling_efficiency_value?: number;
+        cooling_efficiency_value?: number
         /**
          * Unit of heating efficiency for upgraded heating/heat pump system
          */
-        heating_efficiency_unit?: 'hspf' | 'afue';
+        heating_efficiency_unit?: 'hspf' | 'afue'
         /**
          * Heating efficiency value for upgraded heating/heat pump system
          */
-        heating_efficiency_value?: number;
+        heating_efficiency_value?: number
         /**
          * Unit of efficiency for upgraded domestic hot water systems
          */
-        wh_efficiency_unit?: 'energy_factor' | 'uniform_energy_factor';
+        wh_efficiency_unit?: 'energy_factor' | 'uniform_energy_factor'
         /**
          * Efficiency value for upgraded domestic hot water systems
          */
-        wh_efficiency_value?: number;
+        wh_efficiency_value?: number
         /**
          * Array of instances that upgrade applies to
          *
          * @minItems 1
          */
-        instance_ids?: [unknown, ...unknown[]] | null;
-    }[];
+        instance_ids?: [unknown, ...unknown[]] | null
+    }[]
 }

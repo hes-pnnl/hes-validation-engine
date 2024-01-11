@@ -2,7 +2,7 @@
 // If you need to edit this code, please instead refer to the scripts in types/hes-json/*
 // in the hes-rest project
 export interface LuHvacParams {
-    type: string;
-    fuel_primary: string;
-    heatingOrCooling: string;
+    type: string
+    fuel_primary: string
+    heatingOrCooling: string
 }

@@ -2,20 +2,20 @@
 // If you need to edit this code, please instead refer to the scripts in types/hes-json/*
 // in the hes-rest project
 export type AssessmentInfo = {
-    id: number;
-    parent_id?: number | null;
-    ultimate_ancestor_id?: number | null;
-    external_building_id?: string | null;
-    qualified_assessor_id?: string;
-    create_date: Date;
-    software_provider_name: string;
-    assessment_date?: Date | null;
-    create_label_date?: Date | null;
-    assessment_type: string;
-    address?: string;
-    city?: string;
-    region_code?: string;
-    postal_code?: string;
-    archived: boolean;
-    locked: boolean;
-};
+    id: number
+    parent_id?: number | null
+    ultimate_ancestor_id?: number | null
+    external_building_id?: string | null
+    qualified_assessor_id?: string
+    create_date: Date
+    software_provider_name: string
+    assessment_date?: Date | null
+    create_label_date?: Date | null
+    assessment_type: string
+    address?: string
+    city?: string
+    region_code?: string
+    postal_code?: string
+    archived: boolean
+    locked: boolean
+}
