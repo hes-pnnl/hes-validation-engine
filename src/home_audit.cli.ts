@@ -11,7 +11,7 @@ import { getNestedValidationMessages } from './home_audit'
 
 let input_string: string = process.argv[2]
 if (!input_string?.length) {
-    console.error("You must pass a JSON string as an argument to this script, like `node home_audit.cli.js '{...}'`")
+    console.error("You must pass a JSON string or file name as an argument to this script")
     process.exit()
 }
 
