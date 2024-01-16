@@ -10,6 +10,10 @@ import fs from 'fs'
 import { getNestedValidationMessages } from './home_audit'
 
 let input_string: string = process.argv[2]
+if (!input_string?.length) {
+    console.error("You must pass a JSON string as an argument to this script, like `node home_audit.cli.js '{...}'`")
+    process.exit();
+}
 
 // Check if the input is a file path and read the file
 if(fs.existsSync(input_string)) {
