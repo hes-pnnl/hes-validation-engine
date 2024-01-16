@@ -1886,7 +1886,7 @@ module.exports = {
                     },
                   ],
                   error_msg:
-                    "heating efficiency method shipment weighted require feilds year. Efficiency and efficiency unit are not applicable",
+                    "Heating efficiency method 'shipment weighted' requires field 'year'. 'Efficiency' and 'efficiency unit' are not applicable",
                 },
                 then: {
                   allOf: [
@@ -1975,7 +1975,7 @@ module.exports = {
                     },
                   ],
                   error_msg:
-                    "heating efficiency method user require feilds efficiency and efficiency unit. Year is not applicable",
+                    "Heating efficiency method 'user' requires fields 'efficiency' and 'efficiency unit'. 'Year' is not applicable",
                 },
                 then: {
                   allOf: [
@@ -2086,7 +2086,7 @@ module.exports = {
                     },
                   ],
                   error_msg:
-                    "cooling efficiency method shipment weighted require feilds year. Efficiency and efficiency unit are not applicable",
+                    "Cooling efficiency method 'shipment weighted' requires field 'year'. 'Efficiency' and 'efficiency unit' are not applicable",
                 },
                 then: {
                   allOf: [
@@ -2144,7 +2144,7 @@ module.exports = {
                     },
                   ],
                   error_msg:
-                    "cooling efficiency method user require feilds efficiency and efficiency unit. Year is not applicable",
+                    "Cooling efficiency method 'user' requires fields 'efficiency' and 'efficiency unit'. 'Year' is not applicable",
                 },
                 then: {
                   allOf: [
