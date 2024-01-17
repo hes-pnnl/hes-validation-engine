@@ -68,6 +68,8 @@ export function getNestedValidationMessages(homeValues: Building): ErrorMessages
                 const errorMessage = getMessageFromAjvError(error)
                 if (errorMessage) {
                     addErrorMessage(errorPath, errorMessage)
+                } else {
+                    console.error("Failed to generate an error message from error: " + JSON.stringify(error))
                 }
             })
         }
