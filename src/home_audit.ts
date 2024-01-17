@@ -112,7 +112,7 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
         case 'enum':
             return `${message}: '${error_leaf.join('\', \'')}'`
         case 'additionalProperties':
-            return `Unexpected additional property '${params.additionalProperty}'`
+            return `Unexpected property '${params.additionalProperty}'`
         case 'if':
         case 'not':
             // Some keywords indicate errors that we don't want to include in our output
