@@ -68,8 +68,6 @@ export function getNestedValidationMessages(homeValues: Building): ErrorMessages
                 const errorMessage = getMessageFromAjvError(error)
                 if (errorMessage) {
                     addErrorMessage(errorPath, errorMessage)
-                } else {
-                    console.error("Failed to generate an error message from error: " + JSON.stringify(error))
                 }
             })
         }
@@ -87,7 +85,7 @@ export function getNestedValidationMessages(homeValues: Building): ErrorMessages
  */
 function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
 {
-    const { keyword, message, schemaPath } = errorObj
+    const { keyword, message, schemaPath, params } = errorObj
     const keyArr = schemaPath.split('/')
     keyArr.shift() // remove '#'
 
@@ -113,9 +111,10 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
             return "Missing value for mandatory field"
         case 'enum':
             return `${message}: '${error_leaf.join('\', \'')}'`
+        case 'additionalProperties':
+            return `Unexpected additional property '${params.additionalProperty}'`
         case 'if':
         case 'not':
-        case 'additionalProperties':
             // Some keywords indicate errors that we don't want to include in our output
             return undefined
         default:
