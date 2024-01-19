@@ -675,7 +675,7 @@ const MIN_SYSTEM_YEAR = 1970
 const MAX_SYSTEM_YEAR = (new Date()).getFullYear() // this year
 function checkSystemYear({year}:HeatingSystem|CoolingSystem, name:'heating'|'cooling', index:number): void
 {
-    if(year === undefined || MIN_SYSTEM_YEAR > year || year > MAX_SYSTEM_YEAR) {
+    if(year && (MIN_SYSTEM_YEAR > year || year > MAX_SYSTEM_YEAR)) {
         addErrorMessage(
             `systems/hvac/${index}/${name}/year`,
             `Invalid year, must be between ${MIN_SYSTEM_YEAR} and ${MAX_SYSTEM_YEAR}`
