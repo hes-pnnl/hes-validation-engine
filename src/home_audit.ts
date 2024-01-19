@@ -533,7 +533,6 @@ function getSystemCrossValidation({hvac:hvacs, domestic_hot_water, generation}:S
         checkHotWaterFuelValid(domestic_hot_water)
         checkHotWaterEfficiencyValid(domestic_hot_water)
         checkHotWaterYearValid(domestic_hot_water)
-        checkHotWaterEnergyFactorValid(domestic_hot_water)
     }
     if(generation?.solar_electric) {
         checkSolarElectricYearValid(generation.solar_electric)
@@ -755,28 +754,6 @@ function checkHotWaterYearValid({year}:HotWater): void
 {
     if(year && (1972 > year || (new Date()).getFullYear() < year)) {
         addErrorMessage(`systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
-    }
-}
-
-/**
- * Check that the energy factor is valid for the hot water system
- */
-function checkHotWaterEnergyFactorValid({type, energy_factor}:HotWater): void
-{
-    if(["indirect", "tankless_coil"].includes(type) && isNullOrUndefined(energy_factor)) {
-        addErrorMessage(`systems/domestic_hot_water/energy_factor`, `Energy Factor not valid for selected Hot Water Type`)
-    }
-    let min:number|null = null
-    let max:number|null = null
-    if (type === 'storage') {
-        [min, max] = [0.45, 0.95]
-    } else if (type === 'tankless') {
-        [min, max] = [0.45, 0.99]
-    } else if (type === 'heat_pump') {
-        [min, max] = [1, 4]
-    }
-    if(min !== null && max !== null && energy_factor && (energy_factor < min || energy_factor > max)) {
-        addErrorMessage(`systems/domestic_hot_water/energy_factor`, `${energy_factor} is outside the allowed range (${min} - ${max})`)
     }
 }
 
