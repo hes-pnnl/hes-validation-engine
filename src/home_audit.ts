@@ -387,7 +387,11 @@ function checkFloorArea(floors: Floor[], roofs: Roof[], conditioned_footprint:nu
 function checkFoundationLevel(floors:Floor[]): void
 {
     floors.forEach(({foundation_type, foundation_insulation_level}, index) => {
-        if(foundation_type && isNullOrUndefined(foundation_insulation_level)) {
+        if(
+            foundation_type &&
+            !["above_other_unit", "belly_and_wing"].includes(foundation_type) &&
+            isNullOrUndefined(foundation_insulation_level)
+        ) {
             let valid_insulation_levels:any[]
             let msg:string
             if(foundation_type === 'slab_on_grade') {
