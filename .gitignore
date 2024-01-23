@@ -2,4 +2,7 @@ node_modules
 .idea
 dist/*
 
+# I put regression files provided by Prescott Davis into this directory
+regression_files
+
 !.gitkeep

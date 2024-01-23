@@ -17,7 +17,6 @@ type HeatingType = HeatingSystem["type"]
 type CoolingSystem = Exclude<HVACSystem["cooling"], undefined>
 type CoolingType = CoolingSystem["type"]
 type DistributionSystem = Exclude<HVACSystem["hvac_distribution"], undefined>
-type SolarElectric = Exclude<Exclude<Systems["generation"], undefined>["solar_electric"], undefined>
 
 const ajv:Ajv = new Ajv({ allErrors: true, strictTypes: false, strictSchema: false })
 addFormats(ajv)
@@ -510,7 +509,7 @@ function getBuildingConditionedFootprint(
 /**
  * Get the Cross validation messages for the system of the JSON Schema
  */
-function getSystemCrossValidation({hvac:hvacs, domestic_hot_water, generation}:Systems): void
+function getSystemCrossValidation({hvac:hvacs, domestic_hot_water}:Systems): void
 {
     if(hvacs) {
         checkHvacFraction(hvacs)
@@ -537,9 +536,6 @@ function getSystemCrossValidation({hvac:hvacs, domestic_hot_water, generation}:S
         checkHotWaterFuelValid(domestic_hot_water)
         checkHotWaterEfficiencyValid(domestic_hot_water)
         checkHotWaterYearValid(domestic_hot_water)
-    }
-    if(generation?.solar_electric) {
-        checkSolarElectricYearValid(generation.solar_electric)
     }
 }
 
@@ -758,16 +754,6 @@ function checkHotWaterYearValid({year}:HotWater): void
 {
     if(year && (1972 > year || (new Date()).getFullYear() < year)) {
         addErrorMessage(`systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
-    }
-}
-
-/**
- * Check that the solar electric system is of a valid year
- */
-function checkSolarElectricYearValid({year}:SolarElectric): void
-{
-    if(year && (2000 > year || (new Date()).getFullYear() < year)) {
-        addErrorMessage(`systems/generation/solar_electric/year`, `Invalid year, must be between 2000 and ${(new Date()).getFullYear()}`)
     }
 }
 
