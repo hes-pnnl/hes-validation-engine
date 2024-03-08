@@ -7,7 +7,7 @@
  * > {"solar_electric_capacity_known":"3 is outside the allowed range (0 - 1)"}
  */
 import fs from 'fs'
-import { getNestedValidationMessages } from './home_audit'
+import { validate } from './home_audit'
 
 let input_string: string = process.argv[2]
 if (!input_string?.length) {
@@ -21,6 +21,6 @@ if(fs.existsSync(input_string)) {
 }
 
 let input_obj: any = JSON.parse(input_string.toString())
-const result = getNestedValidationMessages(input_obj.building_unit || input_obj)
+const result = validate(input_obj.building_unit || input_obj)
 
 console.log(JSON.stringify(result, null, 2))

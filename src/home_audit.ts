@@ -48,7 +48,7 @@ interface ErrorMessages {
  */
 let _errorMessages: ErrorMessages = {}
 
-export function getNestedValidationMessages(homeValues: Building): ErrorMessages
+export function validate(homeValues: Building): ErrorMessages
 {
     _errorMessages = {}
 

@@ -2,7 +2,8 @@
     "name": "hes-validation-engine",
     "version": "2.0.0",
     "description": "Validation Engine for HEScore Project",
-    "main": "home_audit.node.js",
+    "main": "dist/src/home_audit.js",
+    "types": "dist/src/home_audit.d.ts",
     "scripts": {
         "build": "tsc -p ./src"
     },
