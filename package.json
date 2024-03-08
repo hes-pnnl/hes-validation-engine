@@ -5,8 +5,9 @@
     "main": "dist/src/home_audit.js",
     "types": "dist/src/home_audit.d.ts",
     "scripts": {
+        "tsc": "./node_modules/typescript/bin/tsc",
         "build": "tsc -p ./src",
-        "postinstall": "tsc -p ./src"
+        "postinstall": "npm run build"
     },
     "repository": {
         "type": "git",
