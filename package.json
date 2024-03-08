@@ -6,7 +6,7 @@
     "types": "dist/src/home_audit.d.ts",
     "scripts": {
         "build": "tsc -p ./src",
-        "postinstall": "npm run build"
+        "postinstall": "tsc -p ./src"
     },
     "repository": {
         "type": "git",
