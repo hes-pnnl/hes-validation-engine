@@ -1,4 +1,4 @@
-import HesJsonSchema from '../schema/hescore_json.schema.js'
+import HesJsonSchema from './schema/hescore_json.schema.js'
 import { Building } from "./types/Building.type"
 import Ajv from 'ajv'
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
