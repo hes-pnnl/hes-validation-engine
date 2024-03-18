@@ -217,12 +217,12 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                     adjacent_to: flat.adjacent_to_front,
                     wall_assembly_code: flat.wall_assembly_code_front,
                     zone_window: {
-                        window_area: parseFloatOrUndefined(flat.front_window_area),
-                        window_method: flat.front_window_method,
-                        window_code: flat.front_window_code,
-                        window_u_value: parseFloatOrUndefined(flat.front_window_u_value),
-                        window_shgc: parseFloatOrUndefined(flat.front_window_shgc),
-                        solar_screen: parseBooleanOrUndefined(flat.front_window_solar_screen),
+                        window_area: parseFloatOrUndefined(flat.window_area_front),
+                        window_method: flat.window_method_front,
+                        window_code: flat.window_code_front,
+                        window_u_value: parseFloatOrUndefined(flat.window_u_value_front),
+                        window_shgc: parseFloatOrUndefined(flat.window_shgc_front),
+                        solar_screen: parseBooleanOrUndefined(flat.window_solar_screen_front),
                     },
                 },
                 {
@@ -230,12 +230,12 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                     adjacent_to: flat.adjacent_to_back,
                     wall_assembly_code: flat.wall_assembly_code_back,
                     zone_window: {
-                        window_area: parseFloatOrUndefined(flat.back_window_area),
-                        window_method: flat.back_window_method,
-                        window_code: flat.back_window_code,
-                        window_u_value: parseFloatOrUndefined(flat.back_window_u_value),
-                        window_shgc: parseFloatOrUndefined(flat.back_window_shgc),
-                        solar_screen: parseBooleanOrUndefined(flat.back_window_solar_screen),
+                        window_area: parseFloatOrUndefined(flat.window_area_back),
+                        window_method: flat.window_method_back,
+                        window_code: flat.window_code_back,
+                        window_u_value: parseFloatOrUndefined(flat.window_u_value_back),
+                        window_shgc: parseFloatOrUndefined(flat.window_shgc_back),
+                        solar_screen: parseBooleanOrUndefined(flat.window_solar_screen_back),
                     },
                 },
                 {
@@ -243,25 +243,25 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                     adjacent_to: flat.adjacent_to_right,
                     wall_assembly_code: flat.wall_assembly_code_right,
                     zone_window: {
-                        window_area: parseFloatOrUndefined(flat.right_window_area),
-                        window_method: flat.right_window_method,
-                        window_code: flat.right_window_code,
-                        window_u_value: parseFloatOrUndefined(flat.right_window_u_value),
-                        window_shgc: parseFloatOrUndefined(flat.right_window_shgc),
-                        solar_screen: parseBooleanOrUndefined(flat.right_window_solar_screen),
+                        window_area: parseFloatOrUndefined(flat.window_area_right),
+                        window_method: flat.window_method_right,
+                        window_code: flat.window_code_right,
+                        window_u_value: parseFloatOrUndefined(flat.window_u_value_right),
+                        window_shgc: parseFloatOrUndefined(flat.window_shgc_right),
+                        solar_screen: parseBooleanOrUndefined(flat.window_solar_screen_right),
                     },
                 },
                 {
                     side: 'left',
                     adjacent_to: flat.adjacent_to_left,
-                    wall_assembly_code: flat.left_wall_assembly_code,
+                    wall_assembly_code: flat.wall_assembly_code_left,
                     zone_window: {
-                        window_area: parseFloatOrUndefined(flat.left_window_area),
-                        window_method: flat.left_window_method,
-                        window_code: flat.left_window_code,
-                        window_u_value: parseFloatOrUndefined(flat.left_window_u_value),
-                        window_shgc: parseFloatOrUndefined(flat.left_window_shgc),
-                        solar_screen: parseBooleanOrUndefined(flat.left_window_solar_screen),
+                        window_area: parseFloatOrUndefined(flat.window_area_left),
+                        window_method: flat.window_method_left,
+                        window_code: flat.window_code_left,
+                        window_u_value: parseFloatOrUndefined(flat.window_u_value_left),
+                        window_shgc: parseFloatOrUndefined(flat.window_shgc_left),
+                        solar_screen: parseBooleanOrUndefined(flat.window_solar_screen_left),
                     },
                 },
             ],
@@ -430,21 +430,20 @@ export const translateErrors = (building:HEScoreJSONSchema, errors: ErrorMessage
         let field = path.split('/').pop();
         let postfix = "";
         if(path.includes("/zone/zone_roof/")) {
-            const i = parseInt(path.split('/zone/zone_wall/').pop()?.split('/').shift() || '0');
-            let prefix = '';
+            const i = parseInt(path.split('/zone/zone_roof/').pop()?.split('/').shift() || '0');
             postfix = `_${i+1}`;
             if(path.includes("zone_skylight")) {
                 prefix = `skylight_`;
             } else if(path.includes("zone_knee_wall")) {
                 prefix = `knee_wall_`;
             }
+        } else if(path.includes("/zone/zone_floor/")) {
+            const i = parseInt(path.split('/zone/zone_floor/').pop()?.split('/').shift() || '0');
+            postfix = `_${i+1}`;
         } else if(path.includes("/zone/zone_wall/")) {
             const i = parseInt(path.split('/zone/zone_wall/').pop()?.split('/').shift() || '0');
             const side = building.zone.zone_wall[i].side;
             postfix = `_${side}`;
-            if(path.includes("window")) {
-                prefix = `window_`;
-            }
         } else if(path.includes("/systems/domestic_hot_water/")) {
             prefix = 'hot_water_';
         } else if(path.includes("/systems/hvac/")) {
