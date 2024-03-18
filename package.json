@@ -2,9 +2,12 @@
     "name": "hes-validation-engine",
     "version": "2.0.0",
     "description": "Validation Engine for HEScore Project",
-    "main": "home_audit.node.js",
+    "main": "dist/home_audit.js",
+    "types": "dist/home_audit.d.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "tsc": "./node_modules/typescript/bin/tsc",
+        "build": "tsc",
+        "postinstall": "yarn build"
     },
     "repository": {
         "type": "git",
@@ -19,6 +22,11 @@
     "dependencies": {
         "ajv": "^8.11.0",
         "ajv-formats": "^2.1.1",
-        "jsonschema": "^1.4.1"
+        "fs": "^0.0.1-security",
+        "jsonschema": "^1.4.1",
+        "typescript": "^5.3.3"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.8"
     }
 }
