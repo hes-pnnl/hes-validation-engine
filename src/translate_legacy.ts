@@ -1,7 +1,7 @@
 import { ErrorMessages, ValidationType } from "./home_audit";
 import { HEScoreJSONSchema } from "./types/HomeEnergyScore.type";
 
-const MANDATORY_MESSAGE = 'Missing value for mandatory field';
+export const MANDATORY_MESSAGE = 'Missing value for mandatory field';
 
 const ALWAYS_MANDATORY_CASCADE = {
     ['/about']: [

@@ -3,8 +3,11 @@ import { Building } from "./types/Building.type"
 import Ajv from 'ajv'
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
 import addFormats from 'ajv-formats'
-import { translateErrors, translateHomeValues } from './translate_legacy'
+import { MANDATORY_MESSAGE, translateErrors, translateHomeValues } from './translate_legacy'
 
+type DeepPartial<T> = T extends object ? {
+    [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
 type Zone = Building["zone"]
 type Floor = Exclude<Zone["zone_floor"], undefined>[number]
 type Wall = Zone['zone_wall'][number]
@@ -54,7 +57,7 @@ export interface ErrorMessages {
  */
 let _errorMessages: ErrorMessages = {}
 
-export function validate(homeValues: Building): ErrorMessages
+export function validate(homeValues: DeepPartial<Building>): ErrorMessages
 {
     _errorMessages = {}
 
@@ -77,7 +80,8 @@ export function validate(homeValues: Building): ErrorMessages
             })
         }
     } else {
-        getCrossValidationMessages(homeValues)
+        // If passes schema validation, run local cross-object checks
+        getCrossValidationMessages(homeValues as Building)
     }
 
     return _errorMessages;
@@ -92,8 +96,40 @@ export function validate(homeValues: Building): ErrorMessages
 export function validate_home_audit(homeValues: any) {
     const building = translateHomeValues(homeValues);
     const errors = validate(building);
-console.log(homeValues, building, errors, translateErrors(building, errors));
     return translateErrors(building, errors);
+}
+
+/**
+ * Legacy validate_home_audit method
+ * @deprecated
+ * @param homeValues 
+ * @returns error messages
+ */
+export function validate_address({ assessment_type, ...address }: any) {
+    const building = { address, about: { assessment_type } }
+    const errors = validate(building)
+    const address_errors: {
+        blocker: Record<string, string|undefined>,
+        error: Record<string, string|undefined>,
+        mandatory: Record<string, string|undefined>
+    } = {
+        blocker: {},
+        error: {},
+        mandatory: {},
+    }
+    Object.keys(errors).forEach(path => {
+        const message = errors[path]?.map(m => m.message).join(' | ');
+        let key;
+        if(path.startsWith('/address') || path.includes('assessment_types')) {
+            key = path.includes('assessment_types') ? 'assessment_type' : path.split('/address/')[1]
+            if(message === MANDATORY_MESSAGE) {
+                address_errors.mandatory[key] = message;
+            } else {
+                address_errors.blocker[key] = message;
+            }
+        }
+    })
+    return address_errors
 }
 
 /**
