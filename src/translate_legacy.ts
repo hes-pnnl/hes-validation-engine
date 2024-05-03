@@ -132,7 +132,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             improvement_installation_completion_date: parseDateToString(
                 flat.improvement_installation_completion_date
             ),
-            contractor_zip_code: parseZipCode(flat.contractor_zip_code),
+            contractor_zip_code: flat.contractor_zip_code && parseZipCode(flat.contractor_zip_code),
             contractor_business_name: flat.contractor_business_name,
             is_income_eligible_program: parseBooleanOrUndefined(flat.is_income_eligible_program),
         },
