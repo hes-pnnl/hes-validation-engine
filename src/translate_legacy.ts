@@ -142,6 +142,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             comments: flat.comments,
             comment_api_only: undefined,
             dwelling_unit_type: flat.dwelling_unit_type,
+            number_units: parseIntOrUndefined(flat.number_units),
             manufactured_home_sections: flat.manufactured_home_sections,
             year_built: parseIntOrUndefined(flat.year_built),
             number_bedrooms: parseIntOrUndefined(flat.number_bedrooms),
