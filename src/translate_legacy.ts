@@ -199,16 +199,14 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                     floor_name: 'floor1',
                     floor_area: parseFloatOrUndefined(flat.floor_area_1),
                     foundation_type: flat.foundation_type_1,
-                    foundation_insulation_level:
-                        parseIntOrUndefined(flat.foundation_insulation_level_1) || (flat.floor_area_1 ? 0 : undefined),
+                    foundation_insulation_level: parseIntOrUndefined(flat.foundation_insulation_level_1),
                     floor_assembly_code: flat.floor_assembly_code_1,
                 },
                 {
                     floor_name: 'floor2',
                     floor_area: parseFloatOrUndefined(flat.floor_area_2),
                     foundation_type: flat.foundation_type_2,
-                    foundation_insulation_level:
-                        parseIntOrUndefined(flat.foundation_insulation_level_2) || (flat.floor_area_2 ? 0 : undefined),
+                    foundation_insulation_level: parseIntOrUndefined(flat.foundation_insulation_level_2),
                     floor_assembly_code: flat.floor_assembly_code_2,
                 },
             ],
