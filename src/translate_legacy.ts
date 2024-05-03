@@ -284,9 +284,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         efficiency: parseFloatOrUndefined(flat.cooling_efficiency_1),
                     },
                     hvac_distribution: {
-                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_1_1) ? flat.leakage_method_1 : undefined,
-                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_1_1) ? parseFloatOrUndefined(flat.leakage_to_outside_1) : undefined,
-                        sealed: parseFloatOrUndefined(flat.duct_fraction_1_1) ? parseBooleanOrUndefined(flat.sealed_1) : undefined,
+                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_1_1) ? flat.hvac_distribution_leakage_method_1 : undefined,
+                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_1_1) ? parseFloatOrUndefined(flat.hvac_distribution_leakage_to_outside_1) : undefined,
+                        sealed: parseFloatOrUndefined(flat.duct_fraction_1_1) ? parseBooleanOrUndefined(flat.hvac_distribution_sealed_1) : undefined,
                         duct: [
                             {
                                 name: 'duct1',
@@ -326,9 +326,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         efficiency: parseFloatOrUndefined(flat.cooling_efficiency_2),
                     },
                     hvac_distribution: {
-                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_2_1) ? flat.leakage_method_2 : undefined,
-                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseFloatOrUndefined(flat.leakage_to_outside_2) : undefined,
-                        sealed: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseBooleanOrUndefined(flat.sealed_2) : undefined,
+                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_2_1) ? flat.hvac_distribution_leakage_method_2 : undefined,
+                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseFloatOrUndefined(flat.hvac_distribution_leakage_to_outside_2) : undefined,
+                        sealed: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseBooleanOrUndefined(flat.hvac_distribution_sealed_2) : undefined,
                         duct: [
                             {
                                 name: 'duct1',
