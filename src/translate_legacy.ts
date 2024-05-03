@@ -355,7 +355,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             domestic_hot_water: {
                 category: flat.hot_water_category,
                 type: flat.hot_water_type,
-                fuel_primary: flat.hot_water_fuel_primary,
+                fuel_primary: flat.hot_water_fuel,
                 efficiency_method: flat.hot_water_efficiency_method,
                 year: parseIntOrUndefined(flat.hot_water_year),
                 efficiency: parseFloatOrUndefined(flat.hot_water_efficiency),
