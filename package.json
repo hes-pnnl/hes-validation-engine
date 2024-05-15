@@ -20,6 +20,7 @@
     },
     "homepage": "https://github.com/hes-pnnl/hes-validation-engine#readme",
     "dependencies": {
+        "@types/jsonpath": "^0.2.4",
         "ajv": "^8.11.0",
         "ajv-formats": "^2.1.1",
         "fs": "^0.0.1-security",
@@ -28,7 +29,6 @@
         "typescript": "^5.3.3"
     },
     "devDependencies": {
-        "@types/jsonpath": "^0.2.4",
         "@types/node": "^20.10.8"
     }
 }
