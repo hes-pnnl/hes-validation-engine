@@ -278,12 +278,14 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         efficiency_method: flat.heating_efficiency_method_1,
                         year: parseIntOrUndefined(flat.heating_year_1),
                         efficiency: parseFloatOrUndefined(flat.heating_efficiency_1),
+                        efficiency_unit: flat.heating_efficiency_unit_1,
                     },
                     cooling: {
                         type: flat.cooling_type_1,
                         efficiency_method: flat.cooling_efficiency_method_1,
                         year: parseIntOrUndefined(flat.cooling_year_1),
                         efficiency: parseFloatOrUndefined(flat.cooling_efficiency_1),
+                        efficiency_unit: flat.cooling_efficiency_unit_1,
                     },
                     hvac_distribution: {
                         leakage_method: parseFloatOrUndefined(flat.duct_fraction_1_1) ? flat.hvac_distribution_leakage_method_1 : undefined,
@@ -320,12 +322,14 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         efficiency_method: flat.heating_efficiency_method_2,
                         year: parseIntOrUndefined(flat.heating_year_2),
                         efficiency: parseFloatOrUndefined(flat.heating_efficiency_2),
+                        efficiency_unit: flat.heating_efficiency_unit_2,
                     },
                     cooling: {
                         type: flat.cooling_type_2,
                         efficiency_method: flat.cooling_efficiency_method_2,
                         year: parseIntOrUndefined(flat.cooling_year_2),
                         efficiency: parseFloatOrUndefined(flat.cooling_efficiency_2),
+                        efficiency_unit: flat.cooling_efficiency_unit_2,
                     },
                     hvac_distribution: {
                         leakage_method: parseFloatOrUndefined(flat.duct_fraction_2_1) ? flat.hvac_distribution_leakage_method_2 : undefined,
