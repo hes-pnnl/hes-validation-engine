@@ -400,7 +400,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                 !keys.some(
                     (key) =>
                         !isEmpty(clearedObj[key]) &&
-                        !['side', 'name', 'hvac_name', 'roof_name', 'floor_name'].includes(key) &&
+                        !['name', 'hvac_name', 'roof_name', 'floor_name'].includes(key) &&
                         !(['hvac_fraction', 'fraction'].includes(key) && clearedObj[key] === 0)
                 )
             ) {
