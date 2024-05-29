@@ -300,15 +300,15 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                             },
                             {
                                 name: 'duct2',
-                                location: flat.duct_location_1_2,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_1_2),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_1_2),
+                                location: flat.duct_location_2_1,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_2_1),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_2_1),
                             },
                             {
                                 name: 'duct3',
-                                location: flat.duct_location_1_3,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_1_3),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_1_3),
+                                location: flat.duct_location_3_1,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_3_1),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_3_1),
                             },
                         ],
                     },
@@ -338,9 +338,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         duct: [
                             {
                                 name: 'duct1',
-                                location: flat.duct_location_2_1,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_2_1),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_2_1),
+                                location: flat.duct_location_1_2,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_1_2),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_1_2),
                             },
                             {
                                 name: 'duct2',
@@ -350,9 +350,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                             },
                             {
                                 name: 'duct3',
-                                location: flat.duct_location_2_3,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_2_3),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_2_3),
+                                location: flat.duct_location_3_2,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_3_2),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_3_2),
                             },
                         ],
                     },
