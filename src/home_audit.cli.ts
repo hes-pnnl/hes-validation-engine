@@ -8,6 +8,7 @@
  */
 import fs from 'fs'
 import { validate } from './home_audit'
+import {translateHomeValues} from "./translate_legacy";
 
 let input_string: string = process.argv[2]
 if (!input_string?.length) {
@@ -21,6 +22,5 @@ if(fs.existsSync(input_string)) {
 }
 
 let input_obj: any = JSON.parse(input_string.toString())
-const result = validate(input_obj.building_unit || input_obj)
-
+const result = (input_obj.building_unit?.about || input_obj.about) ? validate(input_obj.building_unit || input_obj) : validate(translateHomeValues(input_obj))
 console.log(JSON.stringify(result, null, 2))
