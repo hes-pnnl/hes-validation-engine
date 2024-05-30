@@ -300,15 +300,15 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                             },
                             {
                                 name: 'duct2',
-                                location: flat.duct_location_1_2,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_1_2),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_1_2),
+                                location: flat.duct_location_2_1,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_2_1),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_2_1),
                             },
                             {
                                 name: 'duct3',
-                                location: flat.duct_location_1_3,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_1_3),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_1_3),
+                                location: flat.duct_location_3_1,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_3_1),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_3_1),
                             },
                         ],
                     },
@@ -332,15 +332,15 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         efficiency_unit: flat.cooling_efficiency_unit_2,
                     },
                     hvac_distribution: {
-                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_2_1) ? flat.hvac_distribution_leakage_method_2 : undefined,
-                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseFloatOrUndefined(flat.hvac_distribution_leakage_to_outside_2) : undefined,
-                        sealed: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseBooleanOrUndefined(flat.hvac_distribution_sealed_2) : undefined,
+                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_1_2) ? flat.hvac_distribution_leakage_method_2 : undefined,
+                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_1_2) ? parseFloatOrUndefined(flat.hvac_distribution_leakage_to_outside_2) : undefined,
+                        sealed: parseFloatOrUndefined(flat.duct_fraction_1_2) ? parseBooleanOrUndefined(flat.hvac_distribution_sealed_2) : undefined,
                         duct: [
                             {
                                 name: 'duct1',
-                                location: flat.duct_location_2_1,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_2_1),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_2_1),
+                                location: flat.duct_location_1_2,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_1_2),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_1_2),
                             },
                             {
                                 name: 'duct2',
@@ -350,9 +350,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                             },
                             {
                                 name: 'duct3',
-                                location: flat.duct_location_2_3,
-                                fraction: parseFloatOrUndefined(flat.duct_fraction_2_3),
-                                insulated: parseBooleanOrUndefined(flat.duct_insulated_2_3),
+                                location: flat.duct_location_3_2,
+                                fraction: parseFloatOrUndefined(flat.duct_fraction_3_2),
+                                insulated: parseBooleanOrUndefined(flat.duct_insulated_3_2),
                             },
                         ],
                     },
@@ -400,7 +400,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                 !keys.some(
                     (key) =>
                         !isEmpty(clearedObj[key]) &&
-                        !['side', 'name', 'hvac_name', 'roof_name', 'floor_name'].includes(key) &&
+                        !['name', 'hvac_name', 'roof_name', 'floor_name'].includes(key) &&
                         !(['hvac_fraction', 'fraction'].includes(key) && clearedObj[key] === 0)
                 )
             ) {
