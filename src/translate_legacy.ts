@@ -332,9 +332,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         efficiency_unit: flat.cooling_efficiency_unit_2,
                     },
                     hvac_distribution: {
-                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_2_1) ? flat.hvac_distribution_leakage_method_2 : undefined,
-                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseFloatOrUndefined(flat.hvac_distribution_leakage_to_outside_2) : undefined,
-                        sealed: parseFloatOrUndefined(flat.duct_fraction_2_1) ? parseBooleanOrUndefined(flat.hvac_distribution_sealed_2) : undefined,
+                        leakage_method: parseFloatOrUndefined(flat.duct_fraction_1_2) ? flat.hvac_distribution_leakage_method_2 : undefined,
+                        leakage_to_outside: parseFloatOrUndefined(flat.duct_fraction_1_2) ? parseFloatOrUndefined(flat.hvac_distribution_leakage_to_outside_2) : undefined,
+                        sealed: parseFloatOrUndefined(flat.duct_fraction_1_2) ? parseBooleanOrUndefined(flat.hvac_distribution_sealed_2) : undefined,
                         duct: [
                             {
                                 name: 'duct1',
