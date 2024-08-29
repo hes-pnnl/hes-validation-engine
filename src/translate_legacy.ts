@@ -121,7 +121,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
           }
         : T;
     const building: DeepPartial<HEScoreJSONSchema> = {
-        version: '2.0',
+        version: '3.0',
         address: {
             address: flat.address,
             city: flat.city,
