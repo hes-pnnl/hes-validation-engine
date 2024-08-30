@@ -124,6 +124,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
         version: '3.0',
         address: {
             address: flat.address,
+            address2: flat.address2,
             city: flat.city,
             state: flat.state,
             zip_code: parseZipCode(flat.zip_code), // Some zip codes got parsed as ints and need the 0 in front
