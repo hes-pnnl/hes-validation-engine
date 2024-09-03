@@ -423,8 +423,8 @@ const errorPathToTmpKey = (building:HEScoreJSONSchema, path:string) => {
         const i = parseInt(path.split('/zone/zone_roof/').pop()?.split('/').shift() || '0');
         postfix = `_${i+1}`;
         if(path.includes("zone_skylight")) {
-            prefix = `skylight_`;
-        } else if(path.includes("zone_knee_wall")) {
+            postfix = "";
+        } else if(path.includes("knee_wall")) {
             prefix = `knee_wall_`;
         }
     } else if(path.includes("/zone/zone_floor/")) {
