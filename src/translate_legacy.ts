@@ -121,9 +121,10 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
           }
         : T;
     const building: DeepPartial<HEScoreJSONSchema> = {
-        version: '2.0',
+        version: '3.0',
         address: {
             address: flat.address,
+            address2: flat.address2,
             city: flat.city,
             state: flat.state,
             zip_code: parseZipCode(flat.zip_code), // Some zip codes got parsed as ints and need the 0 in front
@@ -422,8 +423,8 @@ const errorPathToTmpKey = (building:HEScoreJSONSchema, path:string) => {
         const i = parseInt(path.split('/zone/zone_roof/').pop()?.split('/').shift() || '0');
         postfix = `_${i+1}`;
         if(path.includes("zone_skylight")) {
-            prefix = `skylight_`;
-        } else if(path.includes("zone_knee_wall")) {
+            postfix = "";
+        } else if(path.includes("knee_wall")) {
             prefix = `knee_wall_`;
         }
     } else if(path.includes("/zone/zone_floor/")) {
