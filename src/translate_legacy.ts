@@ -154,8 +154,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             conditioned_floor_area: parseIntOrUndefined(flat.conditioned_floor_area),
             orientation: flat.orientation,
             blower_door_test: parseBooleanOrUndefined(flat.blower_door_test),
-            air_sealing_present:
-                parseBooleanOrUndefined(flat.blower_door_test) && flat.envelope_leakage ? undefined : parseBooleanOrUndefined(flat.air_sealing_present),
+            air_sealing_present: parseBooleanOrUndefined(flat.air_sealing_present),
             envelope_leakage: parseBooleanOrUndefined(flat.blower_door_test) ? parseFloatOrUndefined(flat.envelope_leakage) : undefined,
         },
         zone: {
