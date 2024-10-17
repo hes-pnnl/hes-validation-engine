@@ -445,7 +445,7 @@ const errorPathToTmpKey = (building:HEScoreJSONSchema, path:string) => {
         } else if(path.includes('/hvac_distribution/')) {
             if(path.includes('duct')) {
                 const j = parseInt(path.split('/duct/').pop()?.split('/').shift() || '0');
-                postfix = `${j+1}_${postfix}`;
+                postfix = `_${j+1}_${postfix}`;
                 prefix = 'duct_';
                 // if(field === 'fraction') {
                 //     field = 'percentage';
