@@ -286,7 +286,7 @@ function checkWindowAreaValid(walls: Wall[], floors: Floor[], about:About): void
         if(zone_window && wall_area) {
             const {window_area} = zone_window
             if(window_area && window_area > wall_area) {
-                addMessage_warning(`zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`)
+                addMessage_warning(`/zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`)
             }
         }
     })
@@ -360,7 +360,7 @@ function checkSkylightArea(roofs: Roof[], conditioned_footprint: number): void
     if(zone_skylight_area > conditioned_footprint) {
         roofs.forEach((roof, index) => {
             if(roof.zone_skylight && roof.zone_skylight.skylight_area) {
-                addMessage_warning(`zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
+                addMessage_warning(`/zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
             }
         })
     }
@@ -382,7 +382,7 @@ function checkKneeWallArea(roofs:Roof[], conditioned_footprint:number): void
     if(combined_knee_wall_area > max_knee_wall_area) {
         roofs.forEach((roof, index) => {
             if(roof.knee_wall && roof.knee_wall.area) {
-                addMessage_warning(`zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`)
+                addMessage_warning(`/zone/zone_roof/${index}/knee_wall/area`, `Total knee wall area exceeds the maximum allowed ${Math.ceil(max_knee_wall_area)} sqft (2/3 the footprint area).`)
             }
         })
     }
@@ -611,7 +611,7 @@ function checkHvacFraction(hvac_systems:HVACSystem[]): void
     if(total_fraction !== 1) {
         hvac_systems.forEach((hvac_system, index) => {
             if (hvac_system.hvac_fraction) {
-                addMessage_warning(`systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`)
+                addMessage_warning(`/systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`)
             }
         })
     }
@@ -653,7 +653,7 @@ function checkHeatingFuelValidForHeatingType({fuel_primary, type}:HeatingSystem,
 
     if(HEATING_FUEL_TO_TYPE[fuel_primary] && !HEATING_FUEL_TO_TYPE[fuel_primary].includes(type)) {
         addMessage_warning(
-            `systems/hvac/${index}/heating/fuel_primary`,
+            `/systems/hvac/${index}/heating/fuel_primary`,
             `${fuel_primary} is not an appropriate fuel for heating type ${type}`
         )
     }
@@ -691,7 +691,7 @@ function checkHeatingCoolingTypeValid(heating_type:HeatingType, cooling_type:Coo
             break
     }
     if(!heat_cool_valid) {
-        addMessage_warning(`systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`)
+        addMessage_warning(`/systems/hvac/${index}/heating/type`, `${heating_type} is not an appropriate heating type with cooling type ${cooling_type}`)
     }
 }
 
@@ -704,14 +704,14 @@ function checkHeatingEfficiencyValid({type, fuel_primary, efficiency_method}:Hea
         ([null, undefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
         (type === 'central_furnace' && fuel_primary === 'electric'))
     ) {
-        addMessage_warning(`systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`)
+        addMessage_warning(`/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`)
     }
     if(efficiency_method === 'shipment_weighted') {
         if(type === 'wall_furnace' && fuel_primary !== 'natural_gas') {
-            addMessage_warning(`systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
+            addMessage_warning(`/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method must be "user" if heating type is "wall_furnace" and fuel is not "natural_gas"`)
         }
         if(type && ['mini_split', 'gchp'].includes(type)) {
-            addMessage_warning(`systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
+            addMessage_warning(`/systems/hvac/${index}/heating/efficiency_method`, `Heating efficiency method must be "user" when heating type is "${type}"`)
         }
     }
 }
@@ -723,10 +723,10 @@ function checkCoolingEfficiencyValid(cooling:CoolingSystem, index:number): void
 {
     const {type, efficiency_method} = cooling
     if(efficiency_method && [null, undefined, 'none', 'dec'].includes(type)) {
-        addMessage_warning(`systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`)
+        addMessage_warning(`/systems/hvac/${index}/cooling/efficiency_method`, `Efficiency method should not be set if cooling type is "none", "direct evaporative cooler", or empty`)
     }
     if(efficiency_method !== 'user' && type && ['mini_split', 'gchp'].includes(type)) {
-        addMessage_warning(`systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`)
+        addMessage_warning(`/systems/hvac/${index}/cooling/efficiency_method`, `Cooling efficiency must be 'user' when type is '${type}'`)
     }
 }
 
@@ -739,7 +739,7 @@ function checkSystemYear({year}:HeatingSystem|CoolingSystem, name:'heating'|'coo
 {
     if(year && (MIN_SYSTEM_YEAR > year || year > MAX_SYSTEM_YEAR)) {
         addMessage_error(
-            `systems/hvac/${index}/${name}/year`,
+            `/systems/hvac/${index}/${name}/year`,
             `Invalid year, must be between ${MIN_SYSTEM_YEAR} and ${MAX_SYSTEM_YEAR}`
         )
     }
@@ -753,17 +753,18 @@ function checkHvacDistribution(hvac_distribution:DistributionSystem, index:numbe
     const {leakage_method, leakage_to_outside, duct:ducts} = hvac_distribution
 
     if(leakage_to_outside && leakage_method === 'qualitative') {
-        addMessage_error(`systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be passed for your system if the method is 'qualitative'")
+        addMessage_error(`/systems/hvac/${index}/hvac_distribution/leakage_to_outside`, "Leakage should not be" +
+            " passed for your system if the method is 'qualitative'")
     }
 
     // If we have ducts, we need to ensure the fraction is 100%
     if(ducts) {
         const total_fraction = getSumOfObjectPropertiesByFieldName(ducts, 'fraction')
         if(total_fraction !== 1) {
-            ducts.forEach((duct, index) => {
+            ducts.forEach((duct, duct_index) => {
                 if(duct.fraction) {
                     addMessage_warning(
-                        `systems/hvac/${index}/hvac_distribution/duct/${index}/fraction`,
+                        `/systems/hvac/${index}/hvac_distribution/duct/${duct_index}/fraction`,
                         `Total Duct Fraction must equal 100%`
                     )
                 }
@@ -784,7 +785,7 @@ function checkHotWaterCategoryValid({category}:HotWater, hvacs:HVACSystem[]): vo
         cooling?.type && hvac_types.push(cooling.type)
     })
     if(!hvac_types.includes('boiler') && category === 'combined') {
-        addMessage_error(`systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category')
+        addMessage_error(`/systems/domestic_hot_water/category`, 'Must have a boiler for combined hot water category')
     }
 }
 
@@ -794,9 +795,10 @@ function checkHotWaterCategoryValid({category}:HotWater, hvacs:HVACSystem[]): vo
 function checkHotWaterFuelValid({type, fuel_primary}:HotWater): void
 {
     if(['tankless_coil', 'indirect'].includes(type) && fuel_primary) {
-        addMessage_error(`systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or heat pump')
+        addMessage_error(`/systems/domestic_hot_water/fuel_primary`, 'Fuel is only used if type is set to storage or' +
+            ' heat pump')
     } else if(type === 'heat_pump' && fuel_primary !== 'electric') {
-        addMessage_error(`systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump')
+        addMessage_error(`/systems/domestic_hot_water/fuel_primary`, 'Fuel must be electric if type is heat pump')
     }
 }
 
@@ -806,7 +808,8 @@ function checkHotWaterFuelValid({type, fuel_primary}:HotWater): void
 function checkHotWaterEfficiencyValid({type, efficiency_method}:HotWater): void
 {
     if(['heat_pump', 'tankless', 'tankless_coil'].includes(type) && efficiency_method === 'shipment_weighted') {
-        addMessage_error(`systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot Water Type')
+        addMessage_error(`/systems/domestic_hot_water/efficiency_method`, 'Invalid Efficiency Method for entered Hot' +
+            ' Water Type')
     }
 }
 
@@ -816,7 +819,7 @@ function checkHotWaterEfficiencyValid({type, efficiency_method}:HotWater): void
 function checkHotWaterYearValid({year}:HotWater): void
 {
     if(year && (1972 > year || (new Date()).getFullYear() < year)) {
-        addMessage_error(`systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
+        addMessage_error(`/systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
     }
 }
 
