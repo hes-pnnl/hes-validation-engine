@@ -46,6 +46,11 @@ export interface ErrorMessages {
     [key: string]: { message:string, type:ValidationType }[]|undefined
 }
 
+type AddressInput = {
+    assessment_type: Building["about"]["assessment_type"];
+    dwelling_unit_type: Building["about"]["dwelling_unit_type"];
+} & Building["address"];
+
 /**
  * Perform the HES validation for the nested JSON format. Uses the JSON Schema for initial required field and field
  * limit validations (e.g. enums, within bounds, etc) and then performs secondary cross validation across the building
@@ -105,8 +110,8 @@ export function validate_home_audit(homeValues: any) {
  * @param homeValues 
  * @returns error messages
  */
-export function validate_address({ assessment_type, ...address }: any) {
-    const building = { address, about: { assessment_type } }
+export function validate_address({ assessment_type, dwelling_unit_type, ...address }: AddressInput) {
+    const building = { address, about: { assessment_type, dwelling_unit_type } }
     const errors = validate(building)
     const address_errors: {
         blocker: Record<string, string|undefined>,
@@ -119,9 +124,11 @@ export function validate_address({ assessment_type, ...address }: any) {
     }
     Object.keys(errors).forEach(path => {
         const message = errors[path]?.map(m => m.message).join(' | ');
-        let key;
+        let key:string
         if(path.startsWith('/address') || path.includes('assessment_types')) {
-            key = path.includes('assessment_types') ? 'assessment_type' : path.split('/address/')[1]
+            key = path.includes('assessment_types') ? 'assessment_type' 
+                : path.includes('dwelling_unit_type') ? 'dwelling_unit_type'
+                : path.split('/address/')[1]
             if(message === MANDATORY_MESSAGE) {
                 address_errors.mandatory[key] = message;
             } else {
