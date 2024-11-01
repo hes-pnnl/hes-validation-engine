@@ -173,12 +173,12 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                         assembly_code: flat.knee_wall_assembly_code_1,
                     },
                     zone_skylight: {
-                        skylight_area: flat.skylight_area == 0 ? undefined : parseFloatOrUndefined(flat.skylight_area),
-                        skylight_method: flat.skylight_method,
-                        skylight_code: flat.skylight_code,
-                        skylight_u_value: parseFloatOrUndefined(flat.skylight_u_value),
-                        skylight_shgc: parseFloatOrUndefined(flat.skylight_shgc),
-                        solar_screen: parseBooleanOrUndefined(flat.skylight_solar_screen),
+                        skylight_area: flat.skylight_area_1 == 0 ? undefined : parseFloatOrUndefined(flat.skylight_area_1),
+                        skylight_method: flat.skylight_method_1,
+                        skylight_code: flat.skylight_code_1,
+                        skylight_u_value: parseFloatOrUndefined(flat.skylight_u_value_1),
+                        skylight_shgc: parseFloatOrUndefined(flat.skylight_shgc_1),
+                        solar_screen: parseBooleanOrUndefined(flat.skylight_solar_screen_1),
                     },
                 },
                 {
@@ -193,7 +193,15 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
                     knee_wall: {
                         area: flat.knee_wall_area_2 == 0 ? undefined : parseFloatOrUndefined(flat.knee_wall_area_2),
                         assembly_code: flat.knee_wall_assembly_code_2,
-                    }
+                    },
+                    zone_skylight: {
+                        skylight_area: flat.skylight_area_2 == 0 ? undefined : parseFloatOrUndefined(flat.skylight_area_2),
+                        skylight_method: flat.skylight_method_2,
+                        skylight_code: flat.skylight_code_2,
+                        skylight_u_value: parseFloatOrUndefined(flat.skylight_u_value_2),
+                        skylight_shgc: parseFloatOrUndefined(flat.skylight_shgc_2),
+                        solar_screen: parseBooleanOrUndefined(flat.skylight_solar_screen_2),
+                    },
                 },
             ],
             zone_floor: [
@@ -422,7 +430,7 @@ const errorPathToTmpKey = (building:HEScoreJSONSchema, path:string) => {
         const i = parseInt(path.split('/zone/zone_roof/').pop()?.split('/').shift() || '0');
         postfix = `_${i+1}`;
         if(path.includes("zone_skylight")) {
-            postfix = "";
+            postfix = `_${i+1}`;
         } else if(path.includes("knee_wall")) {
             prefix = `knee_wall_`;
         }
