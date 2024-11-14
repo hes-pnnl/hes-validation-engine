@@ -123,19 +123,28 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         mandatory: {},
     }
     Object.keys(errors).forEach(path => {
-        const message = errors[path]?.map(m => m.message).join(' | ');
+        let message = errors[path]?.map(m => m.message).join(' | ');
         let key:string
+        // NOTE: Intentionally ignoring dwelling_unit_type at address stage because of cross-validation
         if(path.startsWith('/address') || path.includes('assessment_types')) {
             key = path.includes('assessment_types') ? 'assessment_type' 
-                : path.includes('dwelling_unit_type') ? 'dwelling_unit_type'
                 : path.split('/address/')[1]
             if(message === MANDATORY_MESSAGE) {
-                address_errors.mandatory[key] = message;
+                address_errors.mandatory[key] = message
+            } else if(message?.includes('must match pattern')) {
+                address_errors.error[key] = 'The entered value is invalid'
             } else {
-                address_errors.blocker[key] = message;
+                address_errors.error[key] = message
             }
         }
     })
+    // Append dwelling_unit_type required/enum checks manually
+    const dwelling_unit_type_enum = HesJsonSchema.properties.about.properties.dwelling_unit_type.enum
+    if(!dwelling_unit_type) {
+        address_errors.mandatory['dwelling_unit_type'] = MANDATORY_MESSAGE
+    } else if(!dwelling_unit_type_enum.includes(dwelling_unit_type)) {
+        address_errors.blocker['dwelling_unit_type'] = `Dwelling unit must one of '${dwelling_unit_type_enum.join("', '")}'`
+    }
     return address_errors
 }
 
