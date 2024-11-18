@@ -1579,7 +1579,7 @@ let validationRules = {
         // set, then instead of a BLOCKER based on the API's restrictions, we create an ERROR-level validation requiring
         // the installation not to have happened before the home was built.
         if(value >= minYear && _homeValues.year_built > 0) {
-            minYear = _homeValues.year_built;
+            minYear = _homeValues.year_built - 2; // Add a buffer of 2 years to the year_built for manufacture years
             errorLevel = ERROR;
         }
         return new Validation(TypeRules._int(value, minYear, thisYear), errorLevel);
