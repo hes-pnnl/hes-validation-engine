@@ -200,7 +200,7 @@ function getCrossValidationMessages (homeValues: Building): void
 {
     getAboutObjectCrossValidationMessages(homeValues)
     getZoneCrossValidationMessages(homeValues.zone, homeValues.about)
-    getSystemCrossValidation(homeValues.systems)
+    getSystemCrossValidation(homeValues)
 }
 
 /**
@@ -588,19 +588,21 @@ function getBuildingConditionedFootprint(
 /**
  * Get the Cross validation messages for the system of the JSON Schema
  */
-function getSystemCrossValidation({hvac:hvacs, domestic_hot_water}:Systems): void
+function getSystemCrossValidation(homeValues:Building): void
 {
+    const {systems} = homeValues;
+    const {hvac:hvacs, domestic_hot_water} = systems;
     if(hvacs) {
         checkHvacFraction(hvacs)
         hvacs.forEach(({heating, cooling, hvac_distribution}:HVACSystem, index) => {
             if (heating) {
                 checkHeatingFuelValidForHeatingType(heating, index)
                 checkHeatingEfficiencyValid(heating, index)
-                checkSystemYear(heating, 'heating', index)
+                checkSystemYear(homeValues, 'heating', index)
             }
             if (cooling) {
                 checkCoolingEfficiencyValid(cooling, index)
-                checkSystemYear(cooling, 'cooling', index)
+                checkSystemYear(homeValues, 'cooling', index)
             }
             if (heating && cooling) {
                 checkHeatingCoolingTypeValid(heating.type, cooling.type, index)
@@ -614,7 +616,7 @@ function getSystemCrossValidation({hvac:hvacs, domestic_hot_water}:Systems): voi
         checkHotWaterCategoryValid(domestic_hot_water, hvacs)
         checkHotWaterFuelValid(domestic_hot_water)
         checkHotWaterEfficiencyValid(domestic_hot_water)
-        checkHotWaterYearValid(domestic_hot_water)
+        checkHotWaterYearValid(homeValues)
     }
 }
 
@@ -746,19 +748,33 @@ function checkCoolingEfficiencyValid(cooling:CoolingSystem, index:number): void
     }
 }
 
+const MAX_SYSTEM_YEAR = (new Date()).getFullYear() // this year
+/**
+ * Check that utility year manufactured is valid
+ * @param homeValues Building
+ * @param year year manufactured
+ * @param path The validation jsonpath
+ * @param default_min The default minimum value (should be minimum in JSON Schema)
+ */
+function checkYearManufactured(homeValues:Building, year:number|undefined, path:string, default_min:number) {
+    const year_built = homeValues.about.year_built || Number.NEGATIVE_INFINITY
+    const min = Math.max(default_min, year_built - 2)
+    if(year && (min > year || year > MAX_SYSTEM_YEAR)) {
+        addMessage_error(
+            path,
+            `Invalid year; must be between ${min} and ${MAX_SYSTEM_YEAR}`
+        )
+    }
+}
+
 /**
  * Check that the HVAC system is of a valid year
  */
-const MIN_SYSTEM_YEAR = 1970
-const MAX_SYSTEM_YEAR = (new Date()).getFullYear() // this year
-function checkSystemYear({year}:HeatingSystem|CoolingSystem, name:'heating'|'cooling', index:number): void
+function checkSystemYear(homeValues:Building, name:'heating'|'cooling', index:number): void
 {
-    if(year && (MIN_SYSTEM_YEAR > year || year > MAX_SYSTEM_YEAR)) {
-        addMessage_error(
-            `/systems/hvac/${index}/${name}/year`,
-            `Invalid year, must be between ${MIN_SYSTEM_YEAR} and ${MAX_SYSTEM_YEAR}`
-        )
-    }
+    const year = homeValues.systems.hvac[index][name]?.year
+    const default_min = HesJsonSchema.properties.systems.properties.hvac.items.properties[name].properties.year.minimum
+    checkYearManufactured(homeValues, year, `/systems/hvac/${index}/${name}/year`, default_min)
 }
 
 /**
@@ -832,11 +848,11 @@ function checkHotWaterEfficiencyValid({type, efficiency_method}:HotWater): void
 /**
  * Check that the year is appropriate for the hot water system
  */
-function checkHotWaterYearValid({year}:HotWater): void
+function checkHotWaterYearValid(homeValues:Building): void
 {
-    if(year && (1972 > year || (new Date()).getFullYear() < year)) {
-        addMessage_error(`/systems/domestic_hot_water/year`, `Invalid year, must be between 1972 and ${(new Date()).getFullYear()}`)
-    }
+    const year = homeValues.systems.domestic_hot_water.year
+    const default_min = HesJsonSchema.properties.systems.properties.domestic_hot_water.properties.year.minimum
+    checkYearManufactured(homeValues, year, `/systems/domestic_hot_water/year`, default_min)
 }
 
 /**
