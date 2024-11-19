@@ -71,7 +71,6 @@ export function validate(homeValues: DeepPartial<Building>): ErrorMessages
         // if ajv.validate() returns false, then ajv.errors should always be populated,
         // but TypeScript doesn't like us calling forEach on a value that's not guaranteed
         // to be set
-        console.log('ERRORS', ajv.errors);
         if (ajv.errors) {
             ajv.errors.forEach((error) => {
                 const {
@@ -170,7 +169,6 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
         (acc: any, key: string) => acc[key],
         HesJsonSchema
     )
-    console.log('leaf', error_leaf)
 
     // This property can be set in the schema to override the default error
     // with a rule-specific error message.
