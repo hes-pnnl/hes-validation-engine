@@ -71,6 +71,7 @@ export function validate(homeValues: DeepPartial<Building>): ErrorMessages
         // if ajv.validate() returns false, then ajv.errors should always be populated,
         // but TypeScript doesn't like us calling forEach on a value that's not guaranteed
         // to be set
+        console.log('ERRORS', ajv.errors);
         if (ajv.errors) {
             ajv.errors.forEach((error) => {
                 const {
@@ -161,7 +162,7 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
 
     // If it's a keyword that's too deep we should pop it to get the right
     // level for the error message
-    if(['required', 'const'].includes(keyword)) {
+    if(['required', 'const', 'if', 'not'].includes(keyword)) {
         keyArr.pop()
     }
 
@@ -169,6 +170,7 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
         (acc: any, key: string) => acc[key],
         HesJsonSchema
     )
+    console.log('leaf', error_leaf)
 
     // This property can be set in the schema to override the default error
     // with a rule-specific error message.
@@ -183,13 +185,29 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
             return `${message}: '${error_leaf.join('\', \'')}'`
         case 'additionalProperties':
             return `Unexpected property '${params.additionalProperty}'`
+        case 'pattern':
+            return `The field '${errorObj.instancePath.slice(1)}' is not valid`
         case 'if':
+            return handleIfError(errorObj, error_leaf)
         case 'not':
-            // Some keywords indicate errors that we don't want to include in our output
-            return undefined
+            return handleNotError(errorObj, error_leaf)
         default:
             return message
     }
+}
+
+// Custom handler for 'if' keyword
+function handleIfError(error: AjvErrorObject, cond: any) {
+    const condition = JSON.stringify(cond.if)
+    const thenClause = JSON.stringify(cond.then || {})
+    const elseClause = JSON.stringify(cond.else || {})
+    return `Conditional validation failed: If condition ${condition} is met, then ${thenClause}, else ${elseClause}.`
+}
+
+// Custom handler for 'not' keyword
+function handleNotError(error: AjvErrorObject, cond: any) {
+    const notClause = JSON.stringify(cond)
+    return `The field '${error.instancePath.slice(1)}' should not satisfy the condition ${notClause}.`
 }
 
 /**
