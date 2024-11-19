@@ -1,9 +1,27 @@
 import { ErrorMessages } from "./home_audit";
 import { HEScoreJSONSchema } from "./types/HomeEnergyScore.type";
+import HESJsonSchema from "./schema/hescore_json.schema.json";
 import blockers from "./blockers";
 import jsonpath from 'jsonpath';
 
 export const MANDATORY_MESSAGE = 'Missing value for mandatory field';
+
+// Build list of keys that are not leaves
+// These error messages are more general and should be displayed separately
+const NON_LEAF_KEYS:string[] = ['0', '1'];
+const getNonLeafKeys = (obj:any, key?: string) => {
+    const is_leaf = obj?.type !== "array" && obj?.type !== "object"
+    if(is_leaf) {
+        if(key) {
+            NON_LEAF_KEYS.push(key)
+        }
+    } else if(obj.properties) {
+        Object.keys(obj.properties).forEach((key) => {
+            getNonLeafKeys(obj[key], key)
+        })
+    }
+}
+getNonLeafKeys(HESJsonSchema)
 
 const ALWAYS_MANDATORY_CASCADE = {
     ['/about']: [
@@ -425,6 +443,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
 const errorPathToTmpKey = (building:HEScoreJSONSchema, path:string) => {
     let prefix = "";
     let field = path.split('/').pop();
+    if(NON_LEAF_KEYS.includes(field || '')) {
+        return path;
+    }
     let postfix = "";
     if(path.includes("/zone/zone_roof/")) {
         const i = parseInt(path.split('/zone/zone_roof/').pop()?.split('/').shift() || '0');
