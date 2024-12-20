@@ -8,7 +8,8 @@ const strLengthRequired = (val:string, [min, max]:[number, number]) => val ?
     ? `The text length for this value should be between ${min} and ${max}.  Current length is ${val.length}`
     : undefined) : `Value is required`;
 
-const addressCheck = (input: string): boolean => /\d/.test(input) && /[a-zA-Z]/.test(input);
+const addressCheck = (input: string) => /\d/.test(input) && /[a-zA-Z]/.test(input) ? undefined :
+    "Address is not valid";
 
 export default {
     '$.address.address': (val:string) => strLengthRequired(val, [0, 254]) ?? addressCheck(val),
