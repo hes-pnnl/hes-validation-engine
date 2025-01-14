@@ -1037,7 +1037,7 @@ let validationRules = {
             if(heatingOrCooling === HEATING) {
                 if(!_homeValues['heating_fuel_'+num]) {
                     return new Validation(!value || value === 'none' ? undefined : 'Cannot enter type without fuel', ERROR);
-                } else if (heatingFuelToType[_homeValues['heating_fuel_'+num]].indexOf(_homeValues['heating_type_'+num]) === -1) {
+                } else if (!heatingFuelToType[_homeValues['heating_fuel_'+num]] || heatingFuelToType[_homeValues['heating_fuel_'+num]].indexOf(_homeValues['heating_type_'+num]) === -1) {
                     return new Validation(_homeValues['heating_fuel_'+num]+' is not an appropriate fuel for heating type '+value, ERROR);
                 }
             } else {
