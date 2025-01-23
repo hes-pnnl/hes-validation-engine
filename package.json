@@ -2,9 +2,13 @@
     "name": "hes-validation-engine",
     "version": "2.0.0",
     "description": "Validation Engine for HEScore Project",
-    "main": "home_audit.node.js",
+    "main": "dist/home_audit.js",
+    "types": "dist/home_audit.d.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "tsc": "./node_modules/typescript/bin/tsc",
+        "build": "tsc",
+        "postinstall": "yarn build",
+        "validate_address": "node dist/address_validate.cli.js"
     },
     "repository": {
         "type": "git",
@@ -17,8 +21,16 @@
     },
     "homepage": "https://github.com/hes-pnnl/hes-validation-engine#readme",
     "dependencies": {
+        "@types/jsonpath": "^0.2.4",
         "ajv": "^8.11.0",
         "ajv-formats": "^2.1.1",
-        "jsonschema": "^1.4.1"
-    }
+        "fs": "^0.0.1-security",
+        "jsonpath": "^1.1.1",
+        "jsonschema": "^1.4.1",
+        "typescript": "^5.3.3"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.8"
+    },
+    "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
