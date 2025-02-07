@@ -650,7 +650,7 @@ function getSystemCrossValidation(homeValues:Building): void
 function checkHvacFraction(hvac_systems:HVACSystem[]): void
 {
     const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(hvac_systems, 'hvac_fraction')
-    if(total_fraction !== 1) {
+    if(Math.abs(total_fraction -1) > 0.001) {
         hvac_systems.forEach((hvac_system, index) => {
             if (hvac_system.hvac_fraction) {
                 addMessage_warning(`/systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`)
@@ -816,7 +816,7 @@ function checkHvacDistribution(hvac_distribution:DistributionSystem, index:numbe
     // If we have ducts, we need to ensure the fraction is 100%
     if(ducts) {
         const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(ducts, 'fraction')
-        if(total_fraction !== 1) {
+        if(Math.abs(total_fraction -1) > 0.001) {
             ducts.forEach((duct, duct_index) => {
                 if(duct.fraction) {
                     addMessage_warning(
