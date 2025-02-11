@@ -430,7 +430,7 @@ function checkRoofArea(
     type:'roof_area'|'ceiling_area'
 ): void
 {
-    const roof_type = type === 'roof_area' ? 'cath_ceiling' : 'vented_attic'
+    const roof_types = type === 'roof_area' ? ['cath_ceiling', 'flat_roof'] : ['vented_attic']
     const combined_type = type === 'roof_area' ? 'roof' : 'ceiling'
     const combined_area_invalid = getRoofCoversFloorErrorMessage(floors, roofs)
     if(!combined_area_invalid) {
@@ -438,7 +438,7 @@ function checkRoofArea(
         const conditioned_area_invalid = getConditionedAreaErrorMessage(combined_roof_ceil_area, conditioned_footprint, combined_type)
         if(conditioned_area_invalid) {
             roofs.forEach((roof, index) => {
-                if(roof.roof_type === roof_type) {
+                if(roof_types.includes(roof.roof_type)) {
                     addMessage_warning(`/zone/zone_roof/${index}/${type}`, conditioned_area_invalid)
                 }
             })
@@ -446,7 +446,7 @@ function checkRoofArea(
     }
     else {
         roofs.forEach((roof, index) => {
-            if(roof.roof_type === roof_type) {
+            if(roof_types.includes(roof.roof_type)) {
                 addMessage_warning(`/zone/zone_roof/${index}/${type}`, combined_area_invalid)
             }
         })
