@@ -542,13 +542,21 @@ function getAdditionalFloorZoneValidations(floors: Floor[], roofs: Roof[], about
 /**
  * Iterates over an array of objects, calculating the sum of a given field name from each object
  */
-function getSumOfObjectPropertiesByFieldName(objects:{[key: string]: any}[], field_name:string):number
+function getDecimalSumOfObjectPropertiesByFieldName(objects:{[key: string]: any}[], field_name:string):number
 {
     const combined_area = objects.reduce(
         (val, obj) => val + (assertNumeric(obj[field_name]) || 0),
         0
     )
-    return Math.floor(combined_area)
+    return combined_area
+}
+
+/**
+ * Iterates over an array of objects, calculating the sum of a given field name from each object
+ */
+function getSumOfObjectPropertiesByFieldName(objects:{[key: string]: any}[], field_name:string):number
+{
+    return Math.floor(getDecimalSumOfObjectPropertiesByFieldName(objects, field_name))
 }
 
 function getCombinedArea_floor(floors:Floor[]):number
@@ -641,8 +649,8 @@ function getSystemCrossValidation(homeValues:Building): void
  */
 function checkHvacFraction(hvac_systems:HVACSystem[]): void
 {
-    const total_fraction = getSumOfObjectPropertiesByFieldName(hvac_systems, 'hvac_fraction')
-    if(total_fraction !== 1) {
+    const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(hvac_systems, 'hvac_fraction')
+    if(Math.abs(total_fraction -1) > 0.001) {
         hvac_systems.forEach((hvac_system, index) => {
             if (hvac_system.hvac_fraction) {
                 addMessage_warning(`/systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`)
@@ -807,8 +815,8 @@ function checkHvacDistribution(hvac_distribution:DistributionSystem, index:numbe
 
     // If we have ducts, we need to ensure the fraction is 100%
     if(ducts) {
-        const total_fraction = getSumOfObjectPropertiesByFieldName(ducts, 'fraction')
-        if(total_fraction !== 1) {
+        const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(ducts, 'fraction')
+        if(Math.abs(total_fraction -1) > 0.001) {
             ducts.forEach((duct, duct_index) => {
                 if(duct.fraction) {
                     addMessage_warning(
