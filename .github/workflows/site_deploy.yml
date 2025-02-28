@@ -45,7 +45,7 @@ jobs:
 
       - name: Delete Existing Version (If Exists)
         run: |
-          git fetch origin gh-pages
+          git fetch origin gh-pages || echo "gh-pages branch does not exit"
           cd doc
           python script.py
           mike delete ${{ env.branch_name }} --push || echo "Version does not exist, continuing..."
