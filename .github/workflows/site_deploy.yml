@@ -49,11 +49,15 @@ jobs:
           cd doc
           python script.py
           mike delete ${{ env.branch_name }} --push || echo "Version does not exist, continuing..."
+          cd ..
 
       - name: Deploy Site with Mike
         run: |
+          cd doc
           mike deploy --push --update-aliases ${{ env.branch_name }} latest
+          cd ..
 
       - name: Set Default Version (Optional)
         run: |
+          cd doc
           mike set-default --push latest
