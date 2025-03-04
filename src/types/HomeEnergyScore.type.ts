@@ -66,7 +66,7 @@ export interface HEScoreJSONSchema {
   /**
    * The version of the building unit schema. Use semantic versioning.
    */
-  version: "3.0";
+  version: "4.0";
   address: {
     address: string;
     address2?: string | null;
@@ -181,10 +181,6 @@ export interface HEScoreJSONSchema {
      * Number of bedrooms in house
      */
     number_bedrooms: number;
-    /**
-     * Total number of units in apartment building
-     */
-    number_units?: number;
     /**
      * Number of floors above grade. Assumes 1 when dwelling_unit_type is apartment_unit
      */
@@ -2279,6 +2275,10 @@ export interface HEScoreJSONSchema {
     };
     generation?: {
       solar_electric?: {
+        /**
+         * Total number of units sharing PV
+         */
+        number_units_sharing_system?: number;
         /**
          * Is the capacity known?
          */

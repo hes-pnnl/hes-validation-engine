@@ -139,7 +139,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
           }
         : T;
     const building: DeepPartial<HEScoreJSONSchema> = {
-        version: '3.0',
+        version: '4.0',
         address: {
             address: flat.address,
             address2: flat.address2,
@@ -163,7 +163,6 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             comments: flat.comments,
             comment_api_only: undefined,
             dwelling_unit_type: flat.dwelling_unit_type,
-            number_units: parseIntOrUndefined(flat.number_units),
             manufactured_home_sections: flat.manufactured_home_sections,
             year_built: parseIntOrUndefined(flat.year_built),
             number_bedrooms: parseIntOrUndefined(flat.number_bedrooms),
@@ -395,6 +394,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             },
             generation: {
                 solar_electric: {
+                    number_units_sharing_system: parseIntOrUndefined(flat.solar_electric_number_units_sharing_system),
                     capacity_known: parseBooleanOrUndefined(flat.solar_electric_capacity_known),
                     system_capacity: parseFloatOrUndefined(flat.solar_electric_system_capacity),
                     num_panels: parseIntOrUndefined(flat.solar_electric_num_panels),
