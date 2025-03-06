@@ -2954,7 +2954,8 @@
                                           ]
                                       }
                                   ]
-                              }
+                              },
+                              "error_msg": "Both Heating and Cooling Types Can't be None."
                           },
                           {
                               "if": {
