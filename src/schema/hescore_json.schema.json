@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://github.com/NREL/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json",
   "type": "object",
-  "title": "HEScore JSON Schema",
+  "title": "HEScore JSON",
   "additionalProperties": false,
   "properties": {
       "version": {
@@ -12,6 +12,7 @@
       },
       "address": {
           "type": "object",
+          "title": "Address",
           "additionalProperties": false,
           "properties": {
               "address": {
@@ -97,6 +98,7 @@
       },
       "hpwes": {
           "type": "object",
+          "title": "Home Performance with Energy Star",
           "additionalProperties": false,
           "properties": {
               "improvement_installation_start_date": {
@@ -126,6 +128,7 @@
       },
       "about": {
           "type": "object",
+          "title": "About",
           "required": [
               "assessment_type",
               "assessment_date",
@@ -348,6 +351,7 @@
       },
       "zone": {
           "type": "object",
+          "title": "Zone",
           "required": [
               "zone_roof",
               "zone_floor",
@@ -357,12 +361,14 @@
           "properties": {
               "zone_roof": {
                   "type": "array",
+                  "title": "Zone Roof",
                   "description": "Inputs about the construction of the roof(s)",
                   "additionalItems": false,
                   "minItems": 0,
                   "maxItems": 2,
                   "items": {
                       "type": "object",
+                      "title": "Zone Roof Item",
                       "additionalProperties": false,
                       "properties": {
                           "roof_name": {
@@ -560,6 +566,7 @@
                           },
                           "knee_wall": {
                               "type": "object",
+                              "title": "Knee Wall",
                               "description": "Knee wall inputs",
                               "additionalProperties": false,
                               "required": [
@@ -591,6 +598,7 @@
                           },
                           "zone_skylight": {
                               "type": "object",
+                              "title": "Zone Skylight",
                               "description": "Inputs about the skylights on this roof",
                               "additionalProperties": false,
                               "properties": {
@@ -1023,12 +1031,14 @@
               },
               "zone_floor": {
                   "type": "array",
+                  "title": "Zone Floor",
                   "description": "Inputs about the construction of the floor(s)",
                   "additionalItems": false,
                   "minItems": 0,
                   "maxItems": 2,
                   "items": {
                       "type": "object",
+                      "title": "Zone Floor Item",
                       "required": [
                           "floor_name"
                       ],
@@ -1255,6 +1265,7 @@
               },
               "zone_wall": {
                   "type": "array",
+                  "title": "Zone Wall",
                   "description": "Inputs about the construction of the walls",
                   "additionalItems": false,
                   "minItems": 4,
@@ -1262,6 +1273,7 @@
                   "uniqueItems": true,
                   "items": {
                       "type": "object",
+                      "title": "Zone Wall Item",
                       "additionalProperties": false,
                       "required": [
                           "side",
@@ -1473,6 +1485,7 @@
                           },
                           "zone_window": {
                               "type": "object",
+                              "title": "Zone Window",
                               "description": "Inputs about the windows on this wall",
                               "additionalProperties": false,
                               "required": [
@@ -1769,15 +1782,18 @@
       },
       "systems": {
           "type": "object",
+          "title": "System",
           "additionalProperties": false,
           "properties": {
               "hvac": {
                   "type": "array",
+                  "title": "HVAC",
                   "additionalItems": false,
                   "minItems": 0,
                   "maxItems": 2,
                   "items": {
                       "type": "object",
+                      "title": "HVAC Item",
                       "required": [
                           "hvac_name",
                           "hvac_fraction"
@@ -1800,6 +1816,7 @@
                           },
                           "heating": {
                               "type": "object",
+                              "title": "Heating",
                               "description": "Inputs about the heating system",
                               "additionalProperties": false,
                               "required": [
@@ -2281,6 +2298,7 @@
                           },
                           "cooling": {
                               "type": "object",
+                              "title": "Cooling",
                               "description": "Inputs about the cooling system",
                               "additionalProperties": false,
                               "required": [
@@ -3080,6 +3098,7 @@
               },
               "domestic_hot_water": {
                   "type": "object",
+                  "title": "Domestic Hot Water",
                   "required": [
                       "category",
                       "type"
@@ -3477,10 +3496,12 @@
               },
               "generation": {
                   "type": "object",
+                  "title": "Generation",
                   "additionalProperties": false,
                   "properties": {
                       "solar_electric": {
                           "type": "object",
+                          "title": "Solar Electric",
                           "additionalProperties": false,
                           "properties": {
                               "capacity_known": {
@@ -3777,6 +3798,7 @@
                           "zone_roof": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Roof Type Validation 1",
                                       "properties": {
                                           "roof_type": {
                                               "enum": [
@@ -3801,6 +3823,7 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Validation 1",
                                   "properties": {
                                       "hvac_distribution": {
                                           "properties": {
@@ -3999,6 +4022,7 @@
                       "properties": {
                           "zone_roof": {
                               "contains": {
+                                  "title": "Zone Roof Type Validation 2",
                                   "properties": {
                                       "roof_type": {
                                           "const": "bowstring_roof"
@@ -4098,6 +4122,7 @@
                       "properties": {
                           "zone_floor": {
                               "contains": {
+                                  "title": "Zone Floor Foundation Type Validation 1",
                                   "properties": {
                                       "foundation_type": {
                                           "const": "slab_on_grade"
@@ -4138,6 +4163,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 2",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "vented_crawl"
@@ -4195,6 +4221,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 3",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "unvented_crawl"
@@ -4252,6 +4279,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 4",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "uncond_basement"
@@ -4309,6 +4337,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 5",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "belly_and_wing"
@@ -4379,6 +4408,7 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Validation 1",
                                   "properties": {
                                       "hvac_distribution": {
                                           "properties": {
