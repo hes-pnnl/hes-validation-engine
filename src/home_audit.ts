@@ -100,9 +100,7 @@ export function validate(homeValues: DeepPartial<Building>): ErrorMessages
  */
 export function validate_home_audit(homeValues: any) {
     const building = translateHomeValues(homeValues);
-    console.dir(building, { depth: null });
     const errors = validate(building);
-    console.log(errors)
     return translateErrors(building, errors);
 }
 
