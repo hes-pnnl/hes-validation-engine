@@ -126,8 +126,8 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         let message = errors[path]?.map(m => m.message).join(' | ');
         let key:string
         // NOTE: Intentionally ignoring dwelling_unit_type at address stage because of cross-validation
-        if(path.startsWith('/address') || path.includes('assessment_types')) {
-            key = path.includes('assessment_types') ? 'assessment_type' 
+        if(path.startsWith('/address') || path.includes('assessment_type')) {
+            key = path.includes('assessment_type') ? 'assessment_type' 
                 : path.split('/address/')[1]
             if(message === MANDATORY_MESSAGE) {
                 address_errors.mandatory[key] = message
@@ -144,6 +144,11 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         address_errors.mandatory['dwelling_unit_type'] = MANDATORY_MESSAGE
     } else if(!dwelling_unit_type_enum.includes(dwelling_unit_type)) {
         address_errors.blocker['dwelling_unit_type'] = `Dwelling unit must one of '${dwelling_unit_type_enum.join("', '")}'`
+    }
+
+    // Check if address 2 is required
+    if (dwelling_unit_type && dwelling_unit_type=='apartment_unit' && !address['address2']) {
+        address_errors.mandatory['address2'] = MANDATORY_MESSAGE
     }
     return address_errors
 }
@@ -430,7 +435,7 @@ function checkRoofArea(
     type:'roof_area'|'ceiling_area'
 ): void
 {
-    const roof_type = type === 'roof_area' ? 'cath_ceiling' : 'vented_attic'
+    const roof_types = type === 'roof_area' ? ['cath_ceiling', 'flat_roof'] : ['vented_attic']
     const combined_type = type === 'roof_area' ? 'roof' : 'ceiling'
     const combined_area_invalid = getRoofCoversFloorErrorMessage(floors, roofs)
     if(!combined_area_invalid) {
@@ -438,7 +443,7 @@ function checkRoofArea(
         const conditioned_area_invalid = getConditionedAreaErrorMessage(combined_roof_ceil_area, conditioned_footprint, combined_type)
         if(conditioned_area_invalid) {
             roofs.forEach((roof, index) => {
-                if(roof.roof_type === roof_type) {
+                if(roof_types.includes(roof.roof_type)) {
                     addMessage_warning(`/zone/zone_roof/${index}/${type}`, conditioned_area_invalid)
                 }
             })
@@ -446,7 +451,7 @@ function checkRoofArea(
     }
     else {
         roofs.forEach((roof, index) => {
-            if(roof.roof_type === roof_type) {
+            if(roof_types.includes(roof.roof_type)) {
                 addMessage_warning(`/zone/zone_roof/${index}/${type}`, combined_area_invalid)
             }
         })
@@ -542,13 +547,21 @@ function getAdditionalFloorZoneValidations(floors: Floor[], roofs: Roof[], about
 /**
  * Iterates over an array of objects, calculating the sum of a given field name from each object
  */
-function getSumOfObjectPropertiesByFieldName(objects:{[key: string]: any}[], field_name:string):number
+function getDecimalSumOfObjectPropertiesByFieldName(objects:{[key: string]: any}[], field_name:string):number
 {
     const combined_area = objects.reduce(
         (val, obj) => val + (assertNumeric(obj[field_name]) || 0),
         0
     )
-    return Math.floor(combined_area)
+    return combined_area
+}
+
+/**
+ * Iterates over an array of objects, calculating the sum of a given field name from each object
+ */
+function getSumOfObjectPropertiesByFieldName(objects:{[key: string]: any}[], field_name:string):number
+{
+    return Math.floor(getDecimalSumOfObjectPropertiesByFieldName(objects, field_name))
 }
 
 function getCombinedArea_floor(floors:Floor[]):number
@@ -641,8 +654,8 @@ function getSystemCrossValidation(homeValues:Building): void
  */
 function checkHvacFraction(hvac_systems:HVACSystem[]): void
 {
-    const total_fraction = getSumOfObjectPropertiesByFieldName(hvac_systems, 'hvac_fraction')
-    if(total_fraction !== 1) {
+    const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(hvac_systems, 'hvac_fraction')
+    if(Math.abs(total_fraction -1) > 0.001) {
         hvac_systems.forEach((hvac_system, index) => {
             if (hvac_system.hvac_fraction) {
                 addMessage_warning(`/systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`)
@@ -807,8 +820,8 @@ function checkHvacDistribution(hvac_distribution:DistributionSystem, index:numbe
 
     // If we have ducts, we need to ensure the fraction is 100%
     if(ducts) {
-        const total_fraction = getSumOfObjectPropertiesByFieldName(ducts, 'fraction')
-        if(total_fraction !== 1) {
+        const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(ducts, 'fraction')
+        if(Math.abs(total_fraction -1) > 0.001) {
             ducts.forEach((duct, duct_index) => {
                 if(duct.fraction) {
                     addMessage_warning(
