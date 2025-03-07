@@ -3583,8 +3583,7 @@
                                   "category": {
                                       "const": "combined"
                                   }
-                              },
-                              "required": ["category"]
+                              }
                           }
                       }
                   },
