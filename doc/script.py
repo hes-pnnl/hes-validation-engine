@@ -33,6 +33,11 @@ def get_hyperlinked_object_text(title: str, md_file: MdUtils):
     item_type = replace_and_lowercase(title)
     return md_file.new_inline_link(link=f"{item_type}.md", text=item_type)
 
+def get_cross_file_ppty_link(parent: str, child: str, md_file: MdUtils):
+    parent = replace_and_lowercase(parent)
+    child = replace_and_lowercase(child)
+    return md_file.new_inline_link(link=f"{parent}.md/#{child}", text=child)
+
 
 def get_type_for_property(ppty_content: dict) -> str:
     if "enum" in ppty_content:
@@ -45,6 +50,8 @@ def get_type_for_property(ppty_content: dict) -> str:
         return " | ".join(
             [get_type_for_property(oneof) for oneof in ppty_content.get("oneOf")]
         )
+    if "properties" in ppty_content:
+        return "object"
     return "unknown"
 
 
@@ -235,94 +242,123 @@ def handle_anyofs(
 
 
 def check_if_conditional_validation(content: dict) -> bool:
-    return {"if", "then"}.issubset(content)
+    return {"if", "then"}.issubset(content) or {"not"}.issubset(content)
 
 
 def get_if_property_text(
-    key: str, value: dict, md_file: MdUtils, export_folder: Path, not_: bool = False
+    key: str, value: dict, md_file: MdUtils, export_folder: Path, not_: bool = False, parent: str = '', breadcrums: list = []
 ) -> str:
-    # if len(value) != 1:
-    #     raise Exception(f"Unsupported {key=}, {value=}")
+    inline_link = get_hyperlinked_object_text(key, md_file) if not parent else get_cross_file_ppty_link(parent, key, md_file)
     if "const" in value:
         middle_text = "is not" if not_ else "is"
-        return f"{get_inline_link(key, md_file)} {middle_text} `{value['const']}`"
+        return f"{inline_link} {middle_text} `{value['const']}`"
     elif "enum" in value:
         middle_text = "is not" if not_ else "is"
         enum_text = ", ".join([f"`{el}`" for el in value["enum"]])
-        return f"{get_inline_link(key, md_file)} {middle_text} one of [{enum_text}]"
+        return f"{inline_link} {middle_text} one of [{enum_text}]"
     elif "contains" in value:
         middle_text = "does not" if not_ else ""
-        generate_markdown_for_object(value.get("contains"), export_folder)
+        generate_markdown_for_object(value.get("contains"), export_folder, copy.deepcopy(breadcrums))
         return (
-            f"{get_inline_link(key, md_file)} {middle_text} contains "
+            f"{inline_link} {middle_text} contain "
             + get_hyperlinked_object_text(value["contains"].get("title"), md_file)
         )
     elif "exclusiveMinimum" in value:
         middle_text = "has not" if not_ else "has"
-        return f"{get_inline_link(key, md_file)} {middle_text} exclusive minimum value of `{value['exclusiveMinimum']}`"
+        return f"{inline_link} {middle_text} exclusive minimum value of `{value['exclusiveMinimum']}`"
     elif "not" in value:
-        return get_if_property_text(key, value['not'], md_file, export_folder, not not_)
+        return get_if_property_text(key, value['not'], md_file, export_folder, not not_, breadcrums=copy.deepcopy(breadcrums))
+    elif ("minimum" in value) or ("maximum" in value):
+        middle_text = "is not" if not_ else "is"
+        min_text = f"minimum value of `{value['minimum']}`" if "minimum" in value else ""
+        max_text = f"maximum value of `{value['maximum']}`" if "maximum" in value else ""
+        return f"{inline_link} {middle_text} {min_text}, {max_text}"
+    elif "required" in value:
+        verb = "are" if len(value['required']) > 1 else "is"
+        middle_text = "not present" if not_ else "present"
+        return f"{', '.join([get_cross_file_ppty_link(key, el, md_file) for el in value['required']])} {verb} {middle_text} in {inline_link}"
+    elif "properties" in value:
+        middle_text = "has no key/s" if not_ else "has key/s "
+        generate_markdown_for_object(value, export_folder, copy.deepcopy(breadcrums))
+        return (
+            f"{inline_link} {middle_text}"
+            + get_hyperlinked_object_text(value.get("title"), md_file)
+        )
     else:
         raise Exception(f"{key=}, {value=}")
 
 
 def get_if_properties_text(
-    if_content: dict, md_file: MdUtils, export_folder: Path, not_: bool = False
+    if_content: dict, md_file: MdUtils, export_folder: Path, not_: bool = False, parent='', breadcrums: list = []
 ):
     if_present_texts = []
     for key, value in if_content["properties"].items():
         if "properties" in value:
-            key_text = get_inline_link(key, md_file)
-            ppty_text = get_if_condition_text(value, md_file, export_folder, not_)
+            key_text = get_hyperlinked_object_text(key, md_file)
+            ppty_text = get_if_condition_text(value, md_file, export_folder, not_, key, breadcrums=copy.deepcopy(breadcrums))
             if_present_texts.append(f"{key_text}.{ppty_text}")
         else:
             if_present_texts.append(
-                get_if_property_text(key, value, md_file, export_folder, not_)
+                get_if_property_text(key, value, md_file, export_folder, not_, parent, breadcrums=copy.deepcopy(breadcrums))
             )
-    if "required" in if_content:
-        ppties_reqs = []
-        for item in if_content['required']:
-            ppties_reqs.append(get_inline_link(item, md_file))
-        if_present_texts.append('if fields ' + ','.join(ppties_reqs) + ' exists')
     return " AND ".join(if_present_texts)
 
 
 def get_if_condition_text(
-    if_content: dict, md_file: MdUtils, export_folder: Path, not_: bool = False
+    if_content: dict, md_file: MdUtils, export_folder: Path, not_: bool = False, parent: str = '', breadcrums: list = []
 ) -> str:
     if_present_text = ""
     if "not" in if_content:
         if_present_text += get_if_condition_text(
-            if_content["not"], md_file, export_folder, not_=True
+            if_content["not"], md_file, export_folder, not_=True, breadcrums=copy.deepcopy(breadcrums)
         )
     if "properties" in if_content:
         if_present_text += get_if_properties_text(
-            if_content, md_file, export_folder, not_=not_
+            if_content, md_file, export_folder, not_=not_, parent=parent, breadcrums=copy.deepcopy(breadcrums)
         )
 
     if "oneOf" in if_content:
         oneof_texts = []
         for oneof in if_content["oneOf"]:
-            oneof_texts.append(get_if_condition_text(oneof, md_file, export_folder))
-        if_present_text += "<br><br> OR <br><br>".join(oneof_texts)
+            oneof_texts.append(get_if_condition_text(oneof, md_file, export_folder, breadcrums=copy.deepcopy(breadcrums)))
+        if_present_text += "<br><br> XOR <br><br>".join(oneof_texts)
+
+    if "anyOf" in if_content:
+        anyof_texts = []
+        for anyof in if_content["anyOf"]:
+            anyof_texts.append(get_if_condition_text(anyof, md_file, export_folder, breadcrums=copy.deepcopy(breadcrums)))
+        if_present_text += "<br><br> OR <br><br>".join(anyof_texts)
+
+    if "allOf" in if_content:
+        allof_texts = []
+        for allof in if_content["allOf"]:
+            allof_texts.append(get_if_condition_text(allof, md_file, export_folder, breadcrums=copy.deepcopy(breadcrums)))
+        if_present_text += "<br><br> AND <br><br>".join(allof_texts)
+
+    if 'required' in if_content and not if_present_text:
+        reqs = [get_inline_link(el, md_file) for el in if_content['required']]
+        if_present_text = ','.join(reqs) + (' exists' if len(reqs)==1 else ' exist')
     return if_present_text
 
 
 def get_then_not_text(then_not_content: list[dict], md_file: MdUtils) -> str:
     then_not_text = ""
     if "required" in then_not_content:
-        then_not_text += "<br>".join(
+        then_not_text += ", ".join(
             [f"{get_inline_link(el, md_file)}" for el in then_not_content["required"]]
         )
+        plural = len(then_not_content["required"]) > 1
+
 
     if "anyOf" in then_not_content:
         all_req_items = [
             ppt for subitem in then_not_content["anyOf"] for ppt in subitem["required"]
         ]
-        then_not_text += "<br>".join(
+        then_not_text += ", ".join(
             [f"{get_inline_link(el, md_file)}" for el in all_req_items]
         )
-    return then_not_text
+        plural = len(all_req_items) > 1
+    return then_not_text + (" are not present" if plural else " is not present")
 
 
 def get_conditional_table_record(
@@ -330,9 +366,15 @@ def get_conditional_table_record(
     md_file: MdUtils,
     export_folder: Path,
     prev_if_text: str = "",
+    breadcrums: list = []
 ):
     conditional_records = []
-    if_text = get_if_condition_text(conditional_content["if"], md_file, export_folder)
+    if_text = get_if_condition_text(
+        conditional_content["if"], 
+        md_file, 
+        export_folder, 
+        breadcrums=copy.deepcopy(breadcrums)
+    ) if 'if' in conditional_content else ""
     if prev_if_text:
         if_text = f"{prev_if_text} AND {if_text}"
     if "then" in conditional_content and "if" in conditional_content["then"]:
@@ -342,42 +384,72 @@ def get_conditional_table_record(
                 md_file,
                 export_folder,
                 prev_if_text=if_text,
+                breadcrums=copy.deepcopy(breadcrums)
             )
         )
     if "then" in conditional_content and "allOf" in conditional_content["then"]:
         then_not_text, then_text = "", []
         for all_of_item in conditional_content["then"]["allOf"]:
-            then_text.extend([
-                f"{get_inline_link(el, md_file)}"
-                for el in all_of_item.get("required", [])
-            ])
-            then_not_text += get_then_not_text(all_of_item["not"], md_file) + '<br>' if "not" in all_of_item else ""
-        then_text = "<br>".join(then_text)
-    else:
+            if "if" in all_of_item:
+                conditional_records.extend(
+                    get_conditional_table_record(
+                        all_of_item,
+                        md_file,
+                        export_folder,
+                        prev_if_text=if_text,
+                        breadcrums=copy.deepcopy(breadcrums)
+                    )
+                )
+            else:
+                then_text.extend([
+                    f"{get_inline_link(el, md_file)}"
+                    for el in all_of_item.get("required", [])
+                ])
+                then_not_text += get_then_not_text(all_of_item["not"], md_file) \
+                    + '<br>' if "not" in all_of_item else ""
+        then_text = ", ".join(then_text) + (' are present' if len(then_text) > 1 else ' is present') if then_text else ""
+
+    elif "then" in conditional_content and "properties" in conditional_content["then"]:
+        then_not_text = ""
+        then_text = get_if_condition_text(
+            conditional_content["then"], 
+            md_file, 
+            export_folder, 
+            breadcrums=copy.deepcopy(breadcrums)
+        )
+    elif 'then' in conditional_content:
         then_not_text = (
             get_then_not_text(conditional_content["then"]["not"], md_file)
             if "not" in conditional_content["then"]
             else ""
         )
-        then_text = "<br>".join(
+        reqs = conditional_content["then"].get("required", [])
+        then_text = ", ".join(
             [
                 f"{get_inline_link(el, md_file)}"
-                for el in conditional_content["then"].get("required", [])
-            ]
-        )
+                for el in reqs
+            ] 
+        ) + (' is present' if len(reqs) ==1 else ' are present') if reqs else ""
 
-    if then_not_text or then_text:
+    if "then" in conditional_content:
+        if then_not_text or then_text:
+            conditional_records.append(
+                [
+                    if_text,
+                    "<br> AND <br>".join(filter(bool, [then_text, then_not_text]))
+                ]
+            )
+    if "else" in conditional_content and "properties" in conditional_content["else"]:
+        elseif_text = get_if_condition_text(conditional_content["if"], md_file, export_folder, not_=True, breadcrums=copy.deepcopy(breadcrums))
+        else_text = get_if_condition_text(conditional_content["else"], md_file, export_folder, breadcrums=copy.deepcopy(breadcrums))
+        if prev_if_text:
+            elseif_text = f"{prev_if_text} AND {elseif_text}"
         conditional_records.append(
-            [
-                if_text,
-                then_text,
-                then_not_text,
-                conditional_content.get("$comment") or "",
-            ]
+            [elseif_text, else_text]
         )
-    if "else" in conditional_content:
+    elif "else" in conditional_content:
         elseif_text = get_if_condition_text(
-            conditional_content["if"], md_file, export_folder, not_=True
+            conditional_content["if"], md_file, export_folder, not_=True, breadcrums=copy.deepcopy(breadcrums)
         )
         if prev_if_text:
             elseif_text = f"{prev_if_text} AND {elseif_text}"
@@ -388,6 +460,7 @@ def get_conditional_table_record(
                     md_file,
                     export_folder,
                     prev_if_text=elseif_text,
+                    breadcrums=copy.deepcopy(breadcrums)
                 )
             )
         should_not_text = ""
@@ -397,58 +470,72 @@ def get_conditional_table_record(
                 if "not" in conditional_content["else"]
                 else ""
             )
-        should_text = "<br>".join(
+        reqs = conditional_content.get("else", {}).get("required", [])
+        should_text = ", ".join(
             [
                 f"{get_inline_link(el, md_file)}"
-                for el in conditional_content.get("else", {}).get("required", [])
+                for el in reqs
             ]
-        )
+        ) + (' are present' if len(reqs) >1 else ' is present') if reqs else ''
         if should_not_text or should_text:
             conditional_records.append(
                 [
                     elseif_text,
-                    should_text,
-                    should_not_text,
-                    conditional_content.get("$comment") or "",
+                    "<br> AND <br>".join(filter(bool, [should_text, should_not_text]))
                 ]
             )
+    if "not" in conditional_content:
+        if "allOf" in conditional_content["not"]:
+            allof_with_props = [item for item in conditional_content["not"]["allOf"]]
+            all_of_texts = []
+            for all_of in allof_with_props:
+                all_of_texts.append(get_if_condition_text(
+                    all_of, 
+                    md_file, 
+                    export_folder, 
+                    breadcrums=copy.deepcopy(breadcrums)
+                ))
+            if all_of_texts:
+                conditional_records.append(
+                    [if_text,
+                    ' AND '.join(all_of_texts) + ' <br> IS NOT TRUE.']
+                )
+                
     return conditional_records
 
 
 def handle_conditional_allofs(
-    allof_contents: list[dict], md_file: MdUtils, export_folder: Path
-):
+    allof_contents: list[dict], md_file: MdUtils, export_folder: Path, breadcrums: list = []
+):  
     md_file.new_line()
     md_file.new_header(
         level=3, title="Conditional Validation", add_table_of_contents="n"
     )
     list_of_strings = [
-        "`if`",
-        "`then` should be present",
-        "should `not` be present",
-        "comment",
+        "`if true`",
+        "`validate`",
     ]
     num_rows = 1
     for item in allof_contents:
-        records = get_conditional_table_record(item, md_file, export_folder)
+        records = get_conditional_table_record(item, md_file, export_folder, breadcrums=copy.deepcopy(breadcrums))
         for record in records:
             list_of_strings.extend(record)
             num_rows += 1
 
     md_file.new_line()
     md_file.new_table(
-        columns=4, rows=num_rows, text=list_of_strings, text_align="center"
+        columns=2, rows=num_rows, text=list_of_strings, text_align="center"
     )
 
 
-def handle_allofs(allofs: list[dict], md_file: MdUtils, export_folder: Path):
+def handle_allofs(allofs: list[dict], md_file: MdUtils, export_folder: Path, breadcrums: list = []):
     md_file.new_line()
     md_file.new_header(level=2, title="allOf Requirement", add_table_of_contents="n")
     conditional_allofs = [
         allof for allof in allofs if check_if_conditional_validation(allof)
     ]
     if conditional_allofs:
-        handle_conditional_allofs(conditional_allofs, md_file, export_folder)
+        handle_conditional_allofs(conditional_allofs, md_file, export_folder, breadcrums=copy.deepcopy(breadcrums))
 
 
 def generate_markdown_for_object(
@@ -499,7 +586,7 @@ def generate_markdown_for_object(
         if "properties" in contents:
             add_table_of_properties(contents, md_file)
             for _, ppty_dict in contents["properties"].items():
-                if ppty_dict.get("type") in ["object", "array"]:
+                if ppty_dict.get("type") in ["object", "array"] or "properties" in ppty_dict:
                     generate_markdown_for_object(
                         ppty_dict, export_folder, copy.deepcopy(breadcrums)
                     )
@@ -510,10 +597,10 @@ def generate_markdown_for_object(
             )
 
         if "allOf" in contents:
-            handle_allofs(contents.get("allOf"), md_file, export_folder)
+            handle_allofs(contents.get("allOf"), md_file, export_folder, breadcrums=copy.deepcopy(breadcrums))
 
         if "if" in contents:
-            handle_allofs([contents], md_file, export_folder)
+            handle_allofs([contents], md_file, export_folder, copy.deepcopy(breadcrums))
 
         if "anyOf" in contents:
             handle_anyofs(
@@ -527,12 +614,31 @@ def generate_markdown_for_object(
     else:
         raise Exception(f"Unknown type: {contents}")
 
+def resolve_refs(schema, defs=None):
+    """Recursively resolve $ref in a JSON Schema without using RefResolver."""
+    if defs is None:
+        defs = schema.get("$defs", {})  # Extract definitions from the root schema
+
+    if isinstance(schema, dict):
+        if "$ref" in schema:
+            ref_key = schema["$ref"].split("/")[-1]  # Extract ref key from "#/$defs/mydef"
+            if ref_key in defs:
+                return resolve_refs(defs[ref_key], defs)  # Recursively resolve ref
+            else:
+                raise ValueError(f"Reference '{ref_key}' not found in $defs")
+        return {k: resolve_refs(v, defs) for k, v in schema.items()}
+
+    elif isinstance(schema, list):
+        return [resolve_refs(item, defs) for item in schema]
+
+    return schema
 
 def generate_markdown_files(json_schema_file: Path, export_folder: Path):
     """Function for generating markdown files associated with json schema file."""
 
     contents = read_json_file(json_schema_file)
-    generate_markdown_for_object(contents, export_folder, copy.deepcopy([]))
+    resolved_contents = resolve_refs(contents)
+    generate_markdown_for_object(resolved_contents, export_folder, copy.deepcopy([]))
 
 def get_folder_name_from_file_path(file_path: Path) -> str:
     return re.sub(r"(?<!^)(?=[A-Z])", "_", get_file_name_from_file_path(file_path)).lower()
@@ -702,7 +808,7 @@ def create_mkdocs_config_file(root_dir: Path,
 
 if __name__ == "__main__":
 
-    root_path = Path("../src/schema")
+    root_path = Path("../hes_latest/hes-validation-engine/src/schema")
     export_path = Path("docs")
     export_path.mkdir(exist_ok=True)
 

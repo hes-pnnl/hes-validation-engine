@@ -316,7 +316,7 @@
                               "num_floor_above_grade"
                           ]
                       }
-                  },
+                  },  
                   "else": {
                       "required": [
                           "num_floor_above_grade"
@@ -1782,7 +1782,7 @@
       },
       "systems": {
           "type": "object",
-          "title": "System",
+          "title": "Systems",
           "additionalProperties": false,
           "properties": {
               "hvac": {
@@ -3611,8 +3611,10 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Boiler Type Nested Object",
                                   "properties": {
                                       "heating": {
+                                          "title": "Heating Boiler Type Object",
                                           "properties": {
                                               "type": {
                                                   "const": "boiler"
@@ -3687,6 +3689,7 @@
                           "zone_roof": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Bowstring Roof Nested Object",
                                       "properties": {
                                           "roof_type": {
                                               "const": "bowstring_roof"
@@ -3725,6 +3728,7 @@
                           "zone_wall": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Wall Assembly Code Nested Object",
                                       "properties": {
                                           "wall_assembly_code": {
                                               "enum": [
@@ -3826,10 +3830,12 @@
                                   "title": "HVAC Distribution Validation 1",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Duct Subset Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "Unconditioned Attic Duct Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "uncond_attic"
@@ -3877,6 +3883,7 @@
                           "zone_wall": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Wall Assembly Code Adjacent To Nested Object",
                                       "properties": {
                                           "adjacent_to": {
                                               "enum": [
@@ -4061,6 +4068,7 @@
                               "properties": {
                                   "zone_roof": {
                                       "contains": {
+                                          "title": "Below Other Unit Roof Type Object",
                                           "properties": {
                                               "roof_type": {
                                                   "const": "below_other_unit"
@@ -4081,6 +4089,7 @@
                               "properties": {
                                   "zone_floor": {
                                       "contains": {
+                                          "title": "Above Other Unit Roof Type Object",
                                           "properties": {
                                               "foundation_type": {
                                                   "const": "above_other_unit"
@@ -4141,6 +4150,7 @@
               "properties": {
                   "about": {
                       "not": {
+                          "title": "Manufactured Home Dwelling Type Object",
                           "properties": {
                               "dwelling_unit_type": {
                                   "const": "manufactured_home"
@@ -4185,12 +4195,15 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 1 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "HVAC Distribution Vented Crawl Nested Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "vented_crawl"
@@ -4243,12 +4256,15 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object 5",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 2 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "HVAC Distribution Unvented Crawl Nested Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "unvented_crawl"
@@ -4301,8 +4317,10 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object 12",
                                   "properties": {
                                       "hvac_distribution": {
+                                         "title": "HVAC Distribution Nest 3 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
@@ -4359,12 +4377,15 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object 2",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 4 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "HVAC Distribution Belly and Wing Nested Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "manufactured_home_belly"
@@ -4408,9 +4429,10 @@
                       "properties": {
                           "hvac": {
                               "contains": {
-                                  "title": "HVAC Distribution Validation 1",
+                                  "title": "HVAC Distribution Validation 11",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 5 Object",
                                           "properties": {
                                               "duct": {
                                                   "contains": {
@@ -4452,6 +4474,7 @@
   "$defs": {
       "hvac_distribution": {
           "type": "object",
+          "title": "HVAC Distribution",
           "description": "Inputs about the ducts",
           "required": [
               "leakage_method",
@@ -4479,11 +4502,13 @@
               },
               "duct": {
                   "type": "array",
+                  "title": "HVAC Distribution Duct",
                   "additionalItems": false,
                   "minItems": 1,
                   "maxItems": 3,
                   "items": {
                       "type": "object",
+                      "title": "Duct Item",
                       "additionalProperties": false,
                       "properties": {
                           "name": {
