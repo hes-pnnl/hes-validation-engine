@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://github.com/NREL/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json",
   "type": "object",
-  "title": "HEScore JSON Schema",
+  "title": "HEScore JSON",
   "additionalProperties": false,
   "properties": {
       "version": {
@@ -12,6 +12,7 @@
       },
       "address": {
           "type": "object",
+          "title": "Address",
           "additionalProperties": false,
           "properties": {
               "address": {
@@ -97,6 +98,7 @@
       },
       "hpwes": {
           "type": "object",
+          "title": "Home Performance with Energy Star",
           "additionalProperties": false,
           "properties": {
               "improvement_installation_start_date": {
@@ -126,6 +128,7 @@
       },
       "about": {
           "type": "object",
+          "title": "About",
           "required": [
               "assessment_type",
               "assessment_date",
@@ -313,7 +316,7 @@
                               "num_floor_above_grade"
                           ]
                       }
-                  },
+                  },  
                   "else": {
                       "required": [
                           "num_floor_above_grade"
@@ -348,6 +351,7 @@
       },
       "zone": {
           "type": "object",
+          "title": "Zone",
           "required": [
               "zone_roof",
               "zone_floor",
@@ -357,12 +361,14 @@
           "properties": {
               "zone_roof": {
                   "type": "array",
+                  "title": "Zone Roof",
                   "description": "Inputs about the construction of the roof(s)",
                   "additionalItems": false,
                   "minItems": 0,
                   "maxItems": 2,
                   "items": {
                       "type": "object",
+                      "title": "Zone Roof Item",
                       "additionalProperties": false,
                       "properties": {
                           "roof_name": {
@@ -560,6 +566,7 @@
                           },
                           "knee_wall": {
                               "type": "object",
+                              "title": "Knee Wall",
                               "description": "Knee wall inputs",
                               "additionalProperties": false,
                               "required": [
@@ -591,6 +598,7 @@
                           },
                           "zone_skylight": {
                               "type": "object",
+                              "title": "Zone Skylight",
                               "description": "Inputs about the skylights on this roof",
                               "additionalProperties": false,
                               "properties": {
@@ -1023,12 +1031,14 @@
               },
               "zone_floor": {
                   "type": "array",
+                  "title": "Zone Floor",
                   "description": "Inputs about the construction of the floor(s)",
                   "additionalItems": false,
                   "minItems": 0,
                   "maxItems": 2,
                   "items": {
                       "type": "object",
+                      "title": "Zone Floor Item",
                       "required": [
                           "floor_name"
                       ],
@@ -1255,6 +1265,7 @@
               },
               "zone_wall": {
                   "type": "array",
+                  "title": "Zone Wall",
                   "description": "Inputs about the construction of the walls",
                   "additionalItems": false,
                   "minItems": 4,
@@ -1262,6 +1273,7 @@
                   "uniqueItems": true,
                   "items": {
                       "type": "object",
+                      "title": "Zone Wall Item",
                       "additionalProperties": false,
                       "required": [
                           "side",
@@ -1473,6 +1485,7 @@
                           },
                           "zone_window": {
                               "type": "object",
+                              "title": "Zone Window",
                               "description": "Inputs about the windows on this wall",
                               "additionalProperties": false,
                               "required": [
@@ -1769,15 +1782,18 @@
       },
       "systems": {
           "type": "object",
+          "title": "Systems",
           "additionalProperties": false,
           "properties": {
               "hvac": {
                   "type": "array",
+                  "title": "HVAC",
                   "additionalItems": false,
                   "minItems": 0,
                   "maxItems": 2,
                   "items": {
                       "type": "object",
+                      "title": "HVAC Item",
                       "required": [
                           "hvac_name",
                           "hvac_fraction"
@@ -1800,6 +1816,7 @@
                           },
                           "heating": {
                               "type": "object",
+                              "title": "Heating",
                               "description": "Inputs about the heating system",
                               "additionalProperties": false,
                               "required": [
@@ -2281,6 +2298,7 @@
                           },
                           "cooling": {
                               "type": "object",
+                              "title": "Cooling",
                               "description": "Inputs about the cooling system",
                               "additionalProperties": false,
                               "required": [
@@ -3080,6 +3098,7 @@
               },
               "domestic_hot_water": {
                   "type": "object",
+                  "title": "Domestic Hot Water",
                   "required": [
                       "category",
                       "type"
@@ -3477,10 +3496,12 @@
               },
               "generation": {
                   "type": "object",
+                  "title": "Generation",
                   "additionalProperties": false,
                   "properties": {
                       "solar_electric": {
                           "type": "object",
+                          "title": "Solar Electric",
                           "additionalProperties": false,
                           "properties": {
                               "capacity_known": {
@@ -3590,8 +3611,10 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Boiler Type Nested Object",
                                   "properties": {
                                       "heating": {
+                                          "title": "Heating Boiler Type Object",
                                           "properties": {
                                               "type": {
                                                   "const": "boiler"
@@ -3666,6 +3689,7 @@
                           "zone_roof": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Bowstring Roof Nested Object",
                                       "properties": {
                                           "roof_type": {
                                               "const": "bowstring_roof"
@@ -3704,6 +3728,7 @@
                           "zone_wall": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Wall Assembly Code Nested Object",
                                       "properties": {
                                           "wall_assembly_code": {
                                               "enum": [
@@ -3777,6 +3802,7 @@
                           "zone_roof": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Roof Type Validation 1",
                                       "properties": {
                                           "roof_type": {
                                               "enum": [
@@ -3801,12 +3827,15 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Validation 1",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Duct Subset Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "Unconditioned Attic Duct Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "uncond_attic"
@@ -3854,6 +3883,7 @@
                           "zone_wall": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Wall Assembly Code Adjacent To Nested Object",
                                       "properties": {
                                           "adjacent_to": {
                                               "enum": [
@@ -3999,6 +4029,7 @@
                       "properties": {
                           "zone_roof": {
                               "contains": {
+                                  "title": "Zone Roof Type Validation 2",
                                   "properties": {
                                       "roof_type": {
                                           "const": "bowstring_roof"
@@ -4037,6 +4068,7 @@
                               "properties": {
                                   "zone_roof": {
                                       "contains": {
+                                          "title": "Below Other Unit Roof Type Object",
                                           "properties": {
                                               "roof_type": {
                                                   "const": "below_other_unit"
@@ -4057,6 +4089,7 @@
                               "properties": {
                                   "zone_floor": {
                                       "contains": {
+                                          "title": "Above Other Unit Roof Type Object",
                                           "properties": {
                                               "foundation_type": {
                                                   "const": "above_other_unit"
@@ -4098,6 +4131,7 @@
                       "properties": {
                           "zone_floor": {
                               "contains": {
+                                  "title": "Zone Floor Foundation Type Validation 1",
                                   "properties": {
                                       "foundation_type": {
                                           "const": "slab_on_grade"
@@ -4116,6 +4150,7 @@
               "properties": {
                   "about": {
                       "not": {
+                          "title": "Manufactured Home Dwelling Type Object",
                           "properties": {
                               "dwelling_unit_type": {
                                   "const": "manufactured_home"
@@ -4138,6 +4173,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 2",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "vented_crawl"
@@ -4159,12 +4195,15 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 1 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "HVAC Distribution Vented Crawl Nested Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "vented_crawl"
@@ -4195,6 +4234,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 3",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "unvented_crawl"
@@ -4216,12 +4256,15 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object 5",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 2 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "HVAC Distribution Unvented Crawl Nested Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "unvented_crawl"
@@ -4252,6 +4295,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 4",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "uncond_basement"
@@ -4273,8 +4317,10 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object 12",
                                   "properties": {
                                       "hvac_distribution": {
+                                         "title": "HVAC Distribution Nest 3 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
@@ -4309,6 +4355,7 @@
                           "zone_floor": {
                               "not": {
                                   "contains": {
+                                      "title": "Zone Floor Foundation Type Validation 5",
                                       "properties": {
                                           "foundation_type": {
                                               "const": "belly_and_wing"
@@ -4330,12 +4377,15 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Nested Object 2",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 4 Object",
                                           "properties": {
                                               "duct": {
                                                   "not": {
                                                       "contains": {
+                                                          "title": "HVAC Distribution Belly and Wing Nested Object",
                                                           "properties": {
                                                               "location": {
                                                                   "const": "manufactured_home_belly"
@@ -4379,8 +4429,10 @@
                       "properties": {
                           "hvac": {
                               "contains": {
+                                  "title": "HVAC Distribution Validation 11",
                                   "properties": {
                                       "hvac_distribution": {
+                                          "title": "HVAC Distribution Nest 5 Object",
                                           "properties": {
                                               "duct": {
                                                   "contains": {
@@ -4422,6 +4474,7 @@
   "$defs": {
       "hvac_distribution": {
           "type": "object",
+          "title": "HVAC Distribution",
           "description": "Inputs about the ducts",
           "required": [
               "leakage_method",
@@ -4449,11 +4502,13 @@
               },
               "duct": {
                   "type": "array",
+                  "title": "HVAC Distribution Duct",
                   "additionalItems": false,
                   "minItems": 1,
                   "maxItems": 3,
                   "items": {
                       "type": "object",
+                      "title": "Duct Item",
                       "additionalProperties": false,
                       "properties": {
                           "name": {
