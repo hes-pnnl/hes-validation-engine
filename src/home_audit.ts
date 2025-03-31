@@ -126,8 +126,8 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         let message = errors[path]?.map(m => m.message).join(' | ');
         let key:string
         // NOTE: Intentionally ignoring dwelling_unit_type at address stage because of cross-validation
-        if(path.startsWith('/address') || path.includes('assessment_types')) {
-            key = path.includes('assessment_types') ? 'assessment_type' 
+        if(path.startsWith('/address') || path.includes('assessment_type')) {
+            key = path.includes('assessment_type') ? 'assessment_type' 
                 : path.split('/address/')[1]
             if(message === MANDATORY_MESSAGE) {
                 address_errors.mandatory[key] = message
@@ -144,6 +144,11 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         address_errors.mandatory['dwelling_unit_type'] = MANDATORY_MESSAGE
     } else if(!dwelling_unit_type_enum.includes(dwelling_unit_type)) {
         address_errors.blocker['dwelling_unit_type'] = `Dwelling unit must one of '${dwelling_unit_type_enum.join("', '")}'`
+    }
+
+    // Check if address 2 is required
+    if (dwelling_unit_type && dwelling_unit_type=='apartment_unit' && !address['address2']) {
+        address_errors.mandatory['address2'] = MANDATORY_MESSAGE
     }
     return address_errors
 }
