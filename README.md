@@ -9,7 +9,7 @@ To build this application, first install dependencies with `npm install`,
 then run `npm run build`.
 
 # Execution instructions
-To run this application from the command line, build the application and then call `node dist/src/home_audit.cli.js`.
+To run this application from the command line, build the application and then call `node dist/home_audit.cli.js`.
 
 To use this application as a Javascript/Typescript dependency, build it (for Javascript) and then import 
 getNestedValidationMessages() from home_audit.js. That method can be called with an HES home object as 
