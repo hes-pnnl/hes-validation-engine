@@ -167,7 +167,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             year_built: parseIntOrUndefined(flat.year_built),
             number_bedrooms: parseIntOrUndefined(flat.number_bedrooms),
             num_floor_above_grade: parseIntOrUndefined(flat.num_floor_above_grade),
-            floor_to_ceiling_height: parseIntOrUndefined(flat.floor_to_ceiling_height),
+            floor_to_ceiling_height: parseFloatOrUndefined(flat.floor_to_ceiling_height),
             conditioned_floor_area: parseIntOrUndefined(flat.conditioned_floor_area),
             orientation: flat.orientation,
             blower_door_test: parseBooleanOrUndefined(flat.blower_door_test),
