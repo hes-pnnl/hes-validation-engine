@@ -17,5 +17,5 @@ export default {
     '$.address.city': (val:string) => strLengthRequired(val, [0, 40]),
     '$.address.state': (val:string) => strLengthRequired(val, [0, 3]),
     '$.address.external_building_id': (val:string) => strLengthOptional(val, [0, 254]),
-    '$.about.comments': (val:string) => strLengthOptional(val, [0, 254])
+    '$.about.comments': (val:string) => strLengthOptional(val, [0, 512])
 } as Record<string, (val:any) => string | undefined>;
