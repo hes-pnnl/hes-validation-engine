@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
     "$id": "https://github.com/NREL/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json",
     "type": "object",
     "title": "HEScore JSON Schema",
@@ -138,7 +138,8 @@
                 "floor_to_ceiling_height",
                 "conditioned_floor_area",
                 "orientation",
-                "blower_door_test"
+                "blower_door_test",
+                "air_sealing_present"
             ],
             "additionalProperties": false,
             "properties": {
@@ -209,8 +210,27 @@
                 },
                 "floor_to_ceiling_height": {
                     "type": "number",
-                    "minimum": 6,
-                    "maximum": 15,
+                    "enum": [
+                        6.0,
+                        6.5,
+                        7.0,
+                        7.5,
+                        8.0,
+                        8.5,
+                        9.0,
+                        9.5,
+                        10.0,
+                        10.5,
+                        11.0,
+                        11.5,
+                        12.0,
+                        12.5,
+                        13.0,
+                        13.5,
+                        14.0,
+                        14.5,
+                        15.0
+                    ],
                     "description": "Floor to ceiling height (feet)"
                 },
                 "conditioned_floor_area": {
@@ -417,6 +437,26 @@
                                     "rfwf30rc",
                                     "rfwf30lc",
                                     "rfwf30tg",
+                                    "rfwf35co",
+                                    "rfwf35wo",
+                                    "rfwf35rc",
+                                    "rfwf35lc",
+                                    "rfwf35tg",
+                                    "rfwf38co",
+                                    "rfwf38wo",
+                                    "rfwf38rc",
+                                    "rfwf38lc",
+                                    "rfwf38tg",
+                                    "rfwf44co",
+                                    "rfwf44wo",
+                                    "rfwf44rc",
+                                    "rfwf44lc",
+                                    "rfwf44tg",
+                                    "rfwf49co",
+                                    "rfwf49wo",
+                                    "rfwf49rc",
+                                    "rfwf49lc",
+                                    "rfwf49tg",
                                     "rfrb00co",
                                     "rfrb00wo",
                                     "rfrb00rc",
@@ -461,7 +501,17 @@
                                     "rfps21wo",
                                     "rfps21rc",
                                     "rfps21lc",
-                                    "rfps21tg"
+                                    "rfps21tg",
+                                    "rfps25co",
+                                    "rfps25wo",
+                                    "rfps25rc",
+                                    "rfps25lc",
+                                    "rfps25tg",
+                                    "rfps30co",
+                                    "rfps30wo",
+                                    "rfps30rc",
+                                    "rfps30lc",
+                                    "rfps30tg"
                                 ],
                                 "description": "Roof construction assembly code"
                             },
@@ -570,7 +620,7 @@
                                 "properties": {
                                     "skylight_area": {
                                         "type": "number",
-                                        "minimum": 0,
+                                        "exclusiveMinimum": 0,
                                         "maximum": 300,
                                         "description": "Area of skylights (square feet)"
                                     },
@@ -623,36 +673,19 @@
                                         "description": "Does this skylight have a solar screen?"
                                     }
                                 },
+                                "required": [
+                                    "skylight_area",
+                                    "skylight_method"
+                                ],
                                 "allOf": [
                                     {
                                         "if": {
                                             "properties": {
-                                                "skylight_area": {
-                                                    "exclusiveMinimum": 0
-                                                }
-                                            },
-                                            "required": [
-                                                "skylight_area"
-                                            ]
-                                        },
-                                        "then": {
-                                            "required": [
-                                                "skylight_method"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        "if": {
-                                            "properties": {
-                                                "skylight_area": {
-                                                    "exclusiveMinimum": 0
-                                                },
                                                 "skylight_method": {
                                                     "const": "code"
                                                 }
                                             },
                                             "required": [
-                                                "skylight_area",
                                                 "skylight_method"
                                             ]
                                         },
@@ -683,15 +716,11 @@
                                     {
                                         "if": {
                                             "properties": {
-                                                "skylight_area": {
-                                                    "exclusiveMinimum": 0
-                                                },
                                                 "skylight_method": {
                                                     "const": "custom"
                                                 }
                                             },
                                             "required": [
-                                                "skylight_area",
                                                 "skylight_method"
                                             ]
                                         },
@@ -1751,6 +1780,24 @@
                                     "side"
                                 ]
                             }
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "zone_wall": {
+                            "contains": {
+                                "properties": {
+                                    "adjacent_to": {
+                                        "const": "outside"
+                                    }
+                                },
+                                "required": [
+                                    "adjacent_to"
+                                ]
+                            },
+                            "minContains": 1,
+                            "error_msg": "all dwelling units require at least 1 wall adjacent to \"outside\""
                         }
                     }
                 }
@@ -3881,6 +3928,77 @@
                                     }
                                 },
                                 "error_msg": "single family detached and manufactured homes only allow adjacent_to \"outside\""
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "about": {
+                        "properties": {
+                            "dwelling_unit_type": {
+                                "const": "single_family_attached"
+                            }
+                        },
+                        "required": [
+                            "dwelling_unit_type"
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "zone": {
+                        "properties": {
+                            "zone_wall": {
+                                "contains": {
+                                    "properties": {
+                                        "adjacent_to": {
+                                            "const": "outside"
+                                        }
+                                    },
+                                    "required": [
+                                        "adjacent_to"
+                                    ]
+                                },
+                                "minContains": 1,
+                                "maxContains": 3,
+                                "error_msg": "single family attached requires at least 1 and at most 3 walls adjacent to \"outside\""
+                            },
+                            "zone_floor": {
+                                "contains": {
+                                    "properties": {
+                                        "foundation_type": {
+                                            "not": {
+                                                "const": "above_other_unit"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "foundation_type"
+                                    ]
+                                },
+                                "minContains": 1,
+                                "error_msg": "single family attached requires at least 1 floor not adjacent to \"other_unit\""
+                            },
+                            "zone_roof": {
+                                "contains": {
+                                    "properties": {
+                                        "roof_type": {
+                                            "not": {
+                                                "const": "below_other_unit"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "roof_type"
+                                    ]
+                                },
+                                "minContains": 1,
+                                "error_msg": "single family attached requires at least 1 roof not adjacent to \"other_unit\""
                             }
                         }
                     }
