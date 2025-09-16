@@ -122,6 +122,20 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
     };
 
     /**
+     * Ensure zip code is valid (append 0s to front, since lost on some ints)
+     * @param z incoming zipcode
+     * @returns the new zip
+     */
+    const parseFloorToCeilingHeight = (z?: string) => {
+        const height = parseFloatOrUndefined(z);
+        if(!height) return undefined;
+        if(height && (height > 15 || height < 6)){
+            return undefined;
+        }
+        return Math.trunc(height * 2) / 2 as HEScoreJSONSchema['about']['floor_to_ceiling_height'];
+    };
+
+    /**
      * Convert Date to date string for JSON
      * @param d incoming date
      * @returns the new date string
@@ -167,7 +181,7 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
             year_built: parseIntOrUndefined(flat.year_built),
             number_bedrooms: parseIntOrUndefined(flat.number_bedrooms),
             num_floor_above_grade: parseIntOrUndefined(flat.num_floor_above_grade),
-            floor_to_ceiling_height: parseFloatOrUndefined(flat.floor_to_ceiling_height),
+            floor_to_ceiling_height: parseFloorToCeilingHeight(flat.floor_to_ceiling_height),
             conditioned_floor_area: parseIntOrUndefined(flat.conditioned_floor_area),
             orientation: flat.orientation,
             blower_door_test: parseBooleanOrUndefined(flat.blower_door_test),
