@@ -122,9 +122,9 @@ export function translateHomeValues(flat:any): HEScoreJSONSchema {
     };
 
     /**
-     * Ensure zip code is valid (append 0s to front, since lost on some ints)
-     * @param z incoming zipcode
-     * @returns the new zip
+     * Cast ceiling height from number to enum
+     * @param z
+     * @returns the new number in enum
      */
     const parseFloorToCeilingHeight = (z?: string) => {
         const height = parseFloatOrUndefined(z);

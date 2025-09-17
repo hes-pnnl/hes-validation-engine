@@ -1,6 +1,6 @@
 import HesJsonSchema from './schema/hescore_json.schema.json'
 import { Building } from "./types/Building.type"
-import Ajv from 'ajv'
+import Ajv2019 from "ajv/dist/2019"
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
 import addFormats from 'ajv-formats'
 import { MANDATORY_MESSAGE, translateErrors, translateHomeValues } from './translate_legacy'
@@ -22,7 +22,7 @@ type CoolingSystem = Exclude<HVACSystem["cooling"], undefined>
 type CoolingType = CoolingSystem["type"]
 type DistributionSystem = Exclude<HVACSystem["hvac_distribution"], undefined>
 
-const ajv:Ajv = new Ajv({ allErrors: true, strictTypes: false, strictSchema: false })
+const ajv:Ajv2019 = new Ajv2019({ allErrors: true, strictTypes: false, strictSchema: false })
 addFormats(ajv)
 
 // Add the schema to the validator
