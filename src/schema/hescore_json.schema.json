@@ -1816,7 +1816,9 @@
                         "type": "object",
                         "required": [
                             "hvac_name",
-                            "hvac_fraction"
+                            "hvac_fraction",
+                            "heating",
+                            "cooling"
                         ],
                         "additionalProperties": false,
                         "properties": {
