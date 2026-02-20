@@ -22,7 +22,7 @@
     "homepage": "https://github.com/hes-pnnl/hes-validation-engine#readme",
     "dependencies": {
         "@types/jsonpath": "^0.2.4",
-        "ajv": "^8.11.0",
+        "ajv": "^8.18.0",
         "ajv-formats": "^2.1.1",
         "fs": "^0.0.1-security",
         "jsonpath": "^1.1.1",
