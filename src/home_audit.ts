@@ -3,7 +3,7 @@ import { Building } from "./types/Building.type"
 import Ajv2019 from "ajv/dist/2019"
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
 import addFormats from 'ajv-formats'
-import { MANDATORY_MESSAGE, translateErrors, translateHomeValues } from './translate_legacy'
+import { MANDATORY_MESSAGE } from './translate_legacy'
 
 type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
@@ -90,18 +90,6 @@ export function validate(homeValues: DeepPartial<Building>): ErrorMessages
     }
 
     return _errorMessages;
-}
-
-/**
- * Legacy validate_home_audit method
- * @deprecated
- * @param homeValues 
- * @returns error messages
- */
-export function validate_home_audit(homeValues: any) {
-    const building = translateHomeValues(homeValues);
-    const errors = validate(building);
-    return translateErrors(building, errors);
 }
 
 /**
