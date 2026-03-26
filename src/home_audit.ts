@@ -3,7 +3,7 @@ import { Building } from "./types/Building.type"
 import Ajv2019 from "ajv/dist/2019"
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
 import { MANDATORY_MESSAGE, translateErrors, translateHomeValues } from './translate_legacy'
-import addErrors from "ajv-errors";
+import addFormats from 'ajv-formats'
 
 type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
@@ -23,7 +23,7 @@ type CoolingType = CoolingSystem["type"]
 type DistributionSystem = Exclude<HVACSystem["hvac_distribution"], undefined>
 
 const ajv:Ajv2019 = new Ajv2019({ allErrors: true, strictTypes: false, strictSchema: false })
-addErrors(ajv)
+addFormats(ajv)
 
 // Add the schema to the validator
 ajv.addSchema(HesJsonSchema)
