@@ -23,57 +23,6 @@ const getNonLeafKeys = (obj:any, key?: string) => {
 }
 getNonLeafKeys(HESJsonSchema)
 
-const ALWAYS_MANDATORY_CASCADE = {
-    ['/about']: [
-        'assessment_date',
-        'blower_door_test',
-        'conditioned_floor_area',
-        'floor_to_ceiling_height',
-        'num_floor_above_grade',
-        'number_bedrooms',
-        'orientation',
-        'shape',
-        'year_built',
-    ],
-    ['/systems/domestic_hot_water']: [
-        'hot_water_type',
-    ],
-    ['/systems']: [
-        'hvac_fraction_1',
-        'heating_type_1',
-        'heating_fuel_1',
-        'cooling_type_1'
-    ],
-    ['/zone']: [
-        'roof_type_1',
-        'floor_area_1',
-        'adjacent_to_back',
-        'adjacent_to_front',
-        'adjacent_to_right',
-        'adjacent_to_left',
-        'wall_assembly_code_back',
-        'wall_assembly_code_front',
-        'wall_assembly_code_right',
-        'wall_assembly_code_left',
-    ],
-    ['/zone/zone_roof']: [
-        'roof_type_1',
-    ],
-    ['/zone/zone_floor']: [
-        'floor_area_1',
-    ],
-    ['/zone/zone_wall']: [
-        'adjacent_to_back',
-        'adjacent_to_front',
-        'adjacent_to_right',
-        'adjacent_to_left',
-        'wall_assembly_code_back',
-        'wall_assembly_code_front',
-        'wall_assembly_code_right',
-        'wall_assembly_code_left',
-    ]
-}
-
 /**
  * @param obj
  * @returns TRUE if obj is NULL, undefined, '', or NaN
@@ -523,13 +472,6 @@ export const translateErrors = (building:HEScoreJSONSchema, errors: ErrorMessage
         mandatory: {},
     };
     Object.keys(errors).forEach((path) => {
-        if(Object.keys(ALWAYS_MANDATORY_CASCADE).includes(path)) {
-            const required_keys = ALWAYS_MANDATORY_CASCADE[path as keyof typeof ALWAYS_MANDATORY_CASCADE];
-            required_keys.forEach(key => {
-                messages.mandatory[key] = MANDATORY_MESSAGE;
-            });
-            return;
-        }
         const key = errorPathToTmpKey(building, path);
         const message = errors[path]?.map(m => m.message).join(' | ');
         if(message === MANDATORY_MESSAGE) {
