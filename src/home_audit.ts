@@ -2,8 +2,8 @@ import HesJsonSchema from './schema/hescore_json.schema.json'
 import { Building } from "./types/Building.type"
 import Ajv2019 from "ajv/dist/2019"
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
-import addFormats from 'ajv-formats'
 import { MANDATORY_MESSAGE, translateErrors, translateHomeValues } from './translate_legacy'
+import addErrors from "ajv-errors";
 
 type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
@@ -23,7 +23,7 @@ type CoolingType = CoolingSystem["type"]
 type DistributionSystem = Exclude<HVACSystem["hvac_distribution"], undefined>
 
 const ajv:Ajv2019 = new Ajv2019({ allErrors: true, strictTypes: false, strictSchema: false })
-addFormats(ajv)
+addErrors(ajv)
 
 // Add the schema to the validator
 ajv.addSchema(HesJsonSchema)
@@ -153,6 +153,52 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
     return address_errors
 }
 
+// Helper function in findErrorMsg
+function getByJsonPointer(root: any, pointer: string): any {
+    // pointer like "#/allOf/5/then/properties/zone/..."
+    const path = pointer.replace(/^#\//, "").split("/").map(s =>
+        s.replace(/~1/g, "/").replace(/~0/g, "~")
+    );
+
+    let cur = root;
+    for (const key of path) {
+        if (cur == null) return undefined;
+        cur = cur[key];
+    }
+    return cur;
+}
+
+/**
+ * Given an AJV validation error, tries to find a human-friendly message stored in the schema
+ * under `error_msg` at (or above) the failing `schemaPath`.
+ *
+ * How it works:
+ * - AJV errors include `schemaPath` (a JSON Pointer like "#/allOf/5/then/.../contains").
+ * - We first resolve that pointer into the root schema object and check for `error_msg`.
+ * - If not found, we walk up the pointer (parent nodes) because some AJV keywords
+ *   (e.g., "required") report errors at a child keyword path, while the schema author
+ *   may have placed `error_msg` on the parent object.
+ *
+ * Returns:
+ * - the custom `error_msg` string if found
+ * - otherwise `undefined` (caller can keep AJV's default `error.message`)
+ */
+function findErrorMsg( err: AjvErrorObject): string | undefined {
+    // Try exact schemaPath first
+    let node = getByJsonPointer(HesJsonSchema, err.schemaPath);
+    if (node?.error_msg) return node.error_msg;
+
+    // Some keywords (e.g., "required") hang the message on the parent object.
+    // Walk up until we find error_msg.
+    let p = err.schemaPath;
+    while (p.includes("/")) {
+        p = p.replace(/\/[^/]+$/, "");
+        node = getByJsonPointer(HesJsonSchema, p);
+        if (node?.error_msg) return node.error_msg;
+    }
+    return undefined;
+}
+
 /**
  * Convert the AJV error into an intelligible error message that the HES system knows how to display
  * @param {AjvErrorObject} errorObj
@@ -193,9 +239,9 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
         case 'if':
             return handleIfError(errorObj, error_leaf)
         case 'not':
-            return handleNotError(errorObj, error_leaf)
+            return findErrorMsg(errorObj) ?? handleNotError(errorObj, error_leaf)
         default:
-            return message
+            return findErrorMsg(errorObj) ?? message
     }
 }
 

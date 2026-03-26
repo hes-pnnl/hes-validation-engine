@@ -23,6 +23,7 @@
     "dependencies": {
         "@types/jsonpath": "^0.2.4",
         "ajv": "^8.11.0",
+        "ajv-errors": "^3.0.0",
         "ajv-formats": "^2.1.1",
         "fs": "^0.0.1-security",
         "jsonpath": "^1.2.1",
