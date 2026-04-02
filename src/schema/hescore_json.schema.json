@@ -18,10 +18,8 @@
                     "type": "string"
                 },
                 "address2": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string",
+                    "pattern": ".*[a-zA-Z0-9].*"
                 },
                 "city": {
                     "type": "string"
