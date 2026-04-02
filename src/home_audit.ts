@@ -134,8 +134,9 @@ function removeEmptyOrWhitespaceStrings(input: any): any {
  * @param homeValues 
  * @returns error messages
  */
-export function validate_address({ assessment_type, dwelling_unit_type, ...address }: AddressInput) {
-    const building = removeEmptyOrWhitespaceStrings({ address, about: { assessment_type, dwelling_unit_type } })
+export function validate_address(input: AddressInput) {
+    const { assessment_type, dwelling_unit_type, ...address  } = removeEmptyOrWhitespaceStrings(input)
+    const building = { address, about: { assessment_type, dwelling_unit_type } }
     const errors = validate(building)
     const address_errors: {
         blocker: Record<string, string|undefined>,
@@ -146,6 +147,7 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         error: {},
         mandatory: {},
     }
+
     Object.keys(errors).forEach(path => {
         let message = errors[path]?.map(m => m.message).join(' | ');
         let key:string
@@ -170,10 +172,6 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         address_errors.blocker['dwelling_unit_type'] = `Dwelling unit must one of '${dwelling_unit_type_enum.join("', '")}'`
     }
 
-    // Check if address 2 is required
-    if (dwelling_unit_type && dwelling_unit_type=='apartment_unit' && !address['address2']) {
-        address_errors.mandatory['address2'] = MANDATORY_MESSAGE
-    }
     return address_errors
 }
 
