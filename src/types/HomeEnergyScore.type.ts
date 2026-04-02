@@ -69,7 +69,7 @@ export interface HEScoreJSONSchema {
   version: '4.0';
   address: {
     address: string;
-    address2?: string | null;
+    address2?: string;
     city: string;
     state:
         | 'AL'
@@ -2177,7 +2177,7 @@ export interface HEScoreJSONSchema {
         /**
          * Inputs about the heating system
          */
-        heating?: {
+        heating: {
           /**
            * Heating equipment type
            */
@@ -2211,7 +2211,7 @@ export interface HEScoreJSONSchema {
         /**
          * Inputs about the cooling system
          */
-        cooling?: {
+        cooling: {
           /**
            * Cooling equipment type
            */
@@ -2252,7 +2252,7 @@ export interface HEScoreJSONSchema {
         /**
          * Inputs about the heating system
          */
-        heating?: {
+        heating: {
           /**
            * Heating equipment type
            */
@@ -2286,7 +2286,7 @@ export interface HEScoreJSONSchema {
         /**
          * Inputs about the cooling system
          */
-        cooling?: {
+        cooling: {
           /**
            * Cooling equipment type
            */
@@ -2325,7 +2325,7 @@ export interface HEScoreJSONSchema {
         /**
          * Inputs about the heating system
          */
-        heating?: {
+        heating: {
           /**
            * Heating equipment type
            */
@@ -2359,7 +2359,7 @@ export interface HEScoreJSONSchema {
         /**
          * Inputs about the cooling system
          */
-        cooling?: {
+        cooling: {
           /**
            * Cooling equipment type
            */

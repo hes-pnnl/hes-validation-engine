@@ -105,13 +105,37 @@ export function validate_home_audit(homeValues: any) {
 }
 
 /**
+ * remove strings that are only whitespace or empty
+ * @param flatObj
+ * @returns {{}}
+ */
+// Input can be any. If it's not a plain object, it returns it unchanged.
+// If it is an object, it removes keys whose values are "" or whitespace-only strings.
+function removeEmptyOrWhitespaceStrings(input: any): any {
+    if (input === null || typeof input !== "object" || Array.isArray(input)) {
+        return input;
+    }
+
+    const out: any = {};
+
+    Object.keys(input).forEach((k) => {
+        const v = input[k];
+        if (!(typeof v === "string" && v.trim() === "")) {
+            out[k] = v;
+        }
+    });
+
+    return out;
+}
+
+/**
  * Legacy validate_home_audit method
  * @deprecated
  * @param homeValues 
  * @returns error messages
  */
 export function validate_address({ assessment_type, dwelling_unit_type, ...address }: AddressInput) {
-    const building = { address, about: { assessment_type, dwelling_unit_type } }
+    const building = removeEmptyOrWhitespaceStrings({ address, about: { assessment_type, dwelling_unit_type } })
     const errors = validate(building)
     const address_errors: {
         blocker: Record<string, string|undefined>,
