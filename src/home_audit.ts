@@ -105,12 +105,37 @@ export function validate_home_audit(homeValues: any) {
 }
 
 /**
+ * remove strings that are only whitespace or empty
+ * @param flatObj
+ * @returns {{}}
+ */
+// Input can be any. If it's not a plain object, it returns it unchanged.
+// If it is an object, it removes keys whose values are "" or whitespace-only strings.
+function removeEmptyOrWhitespaceStrings(input: any): any {
+    if (input === null || typeof input !== "object" || Array.isArray(input)) {
+        return input;
+    }
+
+    const out: any = {};
+
+    Object.keys(input).forEach((k) => {
+        const v = input[k];
+        if (!(typeof v === "string" && v.trim() === "")) {
+            out[k] = v;
+        }
+    });
+
+    return out;
+}
+
+/**
  * Legacy validate_home_audit method
  * @deprecated
  * @param homeValues 
  * @returns error messages
  */
-export function validate_address({ assessment_type, dwelling_unit_type, ...address }: AddressInput) {
+export function validate_address(input: AddressInput) {
+    const { assessment_type, dwelling_unit_type, ...address  } = removeEmptyOrWhitespaceStrings(input)
     const building = { address, about: { assessment_type, dwelling_unit_type } }
     const errors = validate(building)
     const address_errors: {
@@ -122,6 +147,7 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         error: {},
         mandatory: {},
     }
+
     Object.keys(errors).forEach(path => {
         let message = errors[path]?.map(m => m.message).join(' | ');
         let key:string
@@ -146,10 +172,6 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         address_errors.blocker['dwelling_unit_type'] = `Dwelling unit must one of '${dwelling_unit_type_enum.join("', '")}'`
     }
 
-    // Check if address 2 is required
-    if (dwelling_unit_type && dwelling_unit_type=='apartment_unit' && !address['address2']) {
-        address_errors.mandatory['address2'] = MANDATORY_MESSAGE
-    }
     return address_errors
 }
 
