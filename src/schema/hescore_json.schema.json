@@ -7,7 +7,7 @@
     "properties": {
         "version": {
             "type": "string",
-            "const": "4.0",
+            "const": "5.0",
             "description": "The version of the building unit schema. Use semantic versioning."
         },
         "address": {
@@ -369,13 +369,13 @@
                                 "type": "number",
                                 "minimum": 1,
                                 "maximum": 25000,
-                                "description": "Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit"
+                                "description": "Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit, bowstring_roof"
                             },
                             "roof_area": {
                                 "type": "number",
                                 "minimum": 1,
                                 "maximum": 25000,
-                                "description": "Area of the roof, used if roof_type = cath_ceiling, flat_roof, bowstring_roof"
+                                "description": "Area of the roof, used if roof_type = cath_ceiling, flat_roof"
                             },
                             "roof_assembly_code": {
                                 "type": "string",
@@ -460,6 +460,76 @@
                                     "rfrb00rc",
                                     "rfrb00lc",
                                     "rfrb00tg",
+                                    "rfrb03co",
+                                    "rfrb03wo",
+                                    "rfrb03rc",
+                                    "rfrb03lc",
+                                    "rfrb03tg",
+                                    "rfrb07co",
+                                    "rfrb07wo",
+                                    "rfrb07rc",
+                                    "rfrb07lc",
+                                    "rfrb07tg",
+                                    "rfrb11co",
+                                    "rfrb11wo",
+                                    "rfrb11rc",
+                                    "rfrb11lc",
+                                    "rfrb11tg",
+                                    "rfrb13co",
+                                    "rfrb13wo",
+                                    "rfrb13rc",
+                                    "rfrb13lc",
+                                    "rfrb13tg",
+                                    "rfrb15co",
+                                    "rfrb15wo",
+                                    "rfrb15rc",
+                                    "rfrb15lc",
+                                    "rfrb15tg",
+                                    "rfrb19co",
+                                    "rfrb19wo",
+                                    "rfrb19rc",
+                                    "rfrb19lc",
+                                    "rfrb19tg",
+                                    "rfrb21co",
+                                    "rfrb21wo",
+                                    "rfrb21rc",
+                                    "rfrb21lc",
+                                    "rfrb21tg",
+                                    "rfrb25co",
+                                    "rfrb25wo",
+                                    "rfrb25rc",
+                                    "rfrb25lc",
+                                    "rfrb25tg",
+                                    "rfrb27co",
+                                    "rfrb27wo",
+                                    "rfrb27rc",
+                                    "rfrb27lc",
+                                    "rfrb27tg",
+                                    "rfrb30co",
+                                    "rfrb30wo",
+                                    "rfrb30rc",
+                                    "rfrb30lc",
+                                    "rfrb30tg",
+                                    "rfrb35co",
+                                    "rfrb35wo",
+                                    "rfrb35rc",
+                                    "rfrb35lc",
+                                    "rfrb35tg",
+                                    "rfrb38co",
+                                    "rfrb38wo",
+                                    "rfrb38rc",
+                                    "rfrb38lc",
+                                    "rfrb38tg",
+                                    "rfrb44co",
+                                    "rfrb44wo",
+                                    "rfrb44rc",
+                                    "rfrb44lc",
+                                    "rfrb44tg",
+                                    "rfrb49co",
+                                    "rfrb49wo",
+                                    "rfrb49rc",
+                                    "rfrb49lc",
+                                    "rfrb49tg",
                                     "rfps00co",
                                     "rfps00wo",
                                     "rfps00rc",
@@ -511,7 +581,7 @@
                                     "rfps30lc",
                                     "rfps30tg"
                                 ],
-                                "description": "Roof construction assembly code"
+                                "description": "Roof construction assembly code (required unless roof_type is bowstring_roof or below_other_unit)"
                             },
                             "roof_color": {
                                 "type": "string",
@@ -576,9 +646,20 @@
                                     "ecwf44",
                                     "ecwf49",
                                     "ecwf55",
-                                    "ecwf60"
+                                    "ecwf60",
+                                    "bcwf00",
+                                    "bcwf03",
+                                    "bcwf06",
+                                    "bcwf09",
+                                    "bcwf11",
+                                    "bcwf13",
+                                    "bcwf15",
+                                    "bcwf19",
+                                    "bcwf21",
+                                    "bcwf25",
+                                    "bcwf30"
                                 ],
-                                "description": "Ceiling construction assembly code (required unless roof_type is cath_ceiling)"
+                                "description": "Ceiling construction assembly code (required unless roof_type is cath_ceiling, flat_roof or below_other_unit)"
                             },
                             "knee_wall": {
                                 "type": "object",
@@ -755,8 +836,7 @@
                                             "enum": [
                                                 "vented_attic",
                                                 "cath_ceiling",
-                                                "flat_roof",
-                                                "bowstring_roof"
+                                                "flat_roof"
                                             ]
                                         }
                                     },
@@ -790,74 +870,76 @@
                                     ]
                                 },
                                 "then": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "ceiling_assembly_code": {
+                                                    "enum": [
+                                                        "bcwf00",
+                                                        "bcwf03",
+                                                        "bcwf06",
+                                                        "bcwf09",
+                                                        "bcwf11",
+                                                        "bcwf13",
+                                                        "bcwf15",
+                                                        "bcwf19",
+                                                        "bcwf21",
+                                                        "bcwf25",
+                                                        "bcwf30"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "ceiling_assembly_code"
+                                            ]
+                                        },
+                                        {
+                                            "not":{
+                                                "required":[
+                                                    "roof_assembly_code"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "if": {
                                     "properties": {
-                                        "roof_assembly_code": {
+                                        "roof_type": {
+                                            "const": "vented_attic"
+                                        }
+                                    },
+                                    "required": [
+                                        "roof_type"
+                                    ]
+                                },
+                                "then": {
+                                    "properties": {
+                                        "ceiling_assembly_code": {
                                             "enum": [
-                                                "rfwf00co",
-                                                "rfwf00wo",
-                                                "rfwf00rc",
-                                                "rfwf00lc",
-                                                "rfwf00tg",
-                                                "rfwf03co",
-                                                "rfwf03wo",
-                                                "rfwf03rc",
-                                                "rfwf03lc",
-                                                "rfwf03tg",
-                                                "rfwf07co",
-                                                "rfwf07wo",
-                                                "rfwf07rc",
-                                                "rfwf07lc",
-                                                "rfwf07tg",
-                                                "rfwf11co",
-                                                "rfwf11wo",
-                                                "rfwf11rc",
-                                                "rfwf11lc",
-                                                "rfwf11tg",
-                                                "rfwf13co",
-                                                "rfwf13wo",
-                                                "rfwf13rc",
-                                                "rfwf13lc",
-                                                "rfwf13tg",
-                                                "rfwf15co",
-                                                "rfwf15wo",
-                                                "rfwf15rc",
-                                                "rfwf15lc",
-                                                "rfwf15tg",
-                                                "rfwf19co",
-                                                "rfwf19wo",
-                                                "rfwf19rc",
-                                                "rfwf19lc",
-                                                "rfwf19tg",
-                                                "rfwf21co",
-                                                "rfwf21wo",
-                                                "rfwf21rc",
-                                                "rfwf21lc",
-                                                "rfwf21tg",
-                                                "rfwf25co",
-                                                "rfwf25wo",
-                                                "rfwf25rc",
-                                                "rfwf25lc",
-                                                "rfwf25tg",
-                                                "rfwf27co",
-                                                "rfwf27wo",
-                                                "rfwf27rc",
-                                                "rfwf27lc",
-                                                "rfwf27tg",
-                                                "rfwf30co",
-                                                "rfwf30wo",
-                                                "rfwf30rc",
-                                                "rfwf30lc",
-                                                "rfwf30tg",
-                                                "rfrb00co",
-                                                "rfrb00wo",
-                                                "rfrb00rc",
-                                                "rfrb00lc",
-                                                "rfrb00tg"
+                                                "ecwf00",
+                                                "ecwf03",
+                                                "ecwf06",
+                                                "ecwf09",
+                                                "ecwf11",
+                                                "ecwf13",
+                                                "ecwf15",
+                                                "ecwf19",
+                                                "ecwf21",
+                                                "ecwf25",
+                                                "ecwf30",
+                                                "ecwf35",
+                                                "ecwf38",
+                                                "ecwf44",
+                                                "ecwf49",
+                                                "ecwf55",
+                                                "ecwf60"
                                             ]
                                         }
                                     },
                                     "required": [
-                                        "roof_assembly_code"
+                                        "ceiling_assembly_code"
                                     ]
                                 }
                             },
@@ -867,8 +949,7 @@
                                         "roof_type": {
                                             "enum": [
                                                 "cath_ceiling",
-                                                "flat_roof",
-                                                "bowstring_roof"
+                                                "flat_roof"
                                             ]
                                         }
                                     },
@@ -953,7 +1034,10 @@
                                 "if": {
                                     "properties": {
                                         "roof_type": {
-                                            "const": "vented_attic"
+                                            "enum": [
+                                                "vented_attic",
+                                                "bowstring_roof"
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -961,9 +1045,20 @@
                                     ]
                                 },
                                 "then": {
-                                    "required": [
-                                        "ceiling_area",
-                                        "ceiling_assembly_code"
+                                    "allOf": [
+                                        {
+                                            "not": {
+                                                "required": [
+                                                    "roof_area"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "required": [
+                                                "ceiling_area",
+                                                "ceiling_assembly_code"
+                                            ]
+                                        }
                                     ]
                                 }
                             },
@@ -1014,7 +1109,10 @@
                                 "then": {
                                     "properties": {
                                         "roof_type": {
-                                            "const": "vented_attic"
+                                            "enum": [
+                                                "vented_attic",
+                                                "bowstring_roof"
+                                            ]
                                         }
                                     }
                                 }
@@ -3614,6 +3712,57 @@
                         "properties": {
                             "hvac": {
                                 "contains": {
+                                    "properties": {
+                                        "heating": {
+                                            "properties": {
+                                                "type": {
+                                                    "const": "none"
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "heating"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "hvac": {
+                                "contains": {
+                                    "properties": {
+                                        "heating": {
+                                            "properties": {
+                                                "type": {
+                                                    "not": {
+                                                        "const": "none"
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "heating"
+                                    ]
+                                },
+                                "error_msg": "There must be at least one heating system."
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "hvac": {
+                                "contains": {
                                     "allOf": [
                                         {
                                             "properties": {
@@ -3695,47 +3844,6 @@
                         "required": [
                             "address2"
                         ]
-                    }
-                }
-            }
-        },
-        {
-            "if": {
-                "properties": {
-                    "about": {
-                        "properties": {
-                            "manufactured_home_sections": {
-                                "enum": [
-                                    "double-wide",
-                                    "triple-wide"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "manufactured_home_sections"
-                        ]
-                    }
-                }
-            },
-            "then": {
-                "properties": {
-                    "zone": {
-                        "properties": {
-                            "zone_roof": {
-                                "not": {
-                                    "contains": {
-                                        "properties": {
-                                            "roof_type": {
-                                                "const": "bowstring_roof"
-                                            }
-                                        },
-                                        "required": [
-                                            "roof_type"
-                                        ]
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -3838,8 +3946,7 @@
                                         "properties": {
                                             "roof_type": {
                                                 "enum": [
-                                                    "vented_attic",
-                                                    "cond_attic"
+                                                    "vented_attic"
                                                 ]
                                             }
                                         },
@@ -4250,12 +4357,12 @@
                     "systems": {
                         "properties": {
                             "hvac": {
-                                "contains": {
-                                    "properties": {
-                                        "hvac_distribution": {
-                                            "properties": {
-                                                "duct": {
-                                                    "not": {
+                                "not": {
+                                    "contains": {
+                                        "properties": {
+                                            "hvac_distribution": {
+                                                "properties": {
+                                                    "duct": {
                                                         "contains": {
                                                             "properties": {
                                                                 "location": {
@@ -4269,7 +4376,10 @@
                                                     }
                                                 }
                                             }
-                                        }
+                                        },
+                                        "required":[
+                                            "hvac_distribution"
+                                        ]
                                     }
                                 },
                                 "error_msg": "duct/location[\"vented_crawl\"] is not allowed as there is no vented crawlspace."
@@ -4307,12 +4417,12 @@
                     "systems": {
                         "properties": {
                             "hvac": {
-                                "contains": {
-                                    "properties": {
-                                        "hvac_distribution": {
-                                            "properties": {
-                                                "duct": {
-                                                    "not": {
+                                "not": {
+                                    "contains": {
+                                        "properties": {
+                                            "hvac_distribution": {
+                                                "properties": {
+                                                    "duct": {
                                                         "contains": {
                                                             "properties": {
                                                                 "location": {
@@ -4326,7 +4436,10 @@
                                                     }
                                                 }
                                             }
-                                        }
+                                        },
+                                        "required":[
+                                            "hvac_distribution"
+                                        ]
                                     }
                                 },
                                 "error_msg": "duct/location[\"unvented_crawl\"] is not allowed as there is no unvented crawlspace."
@@ -4364,12 +4477,12 @@
                     "systems": {
                         "properties": {
                             "hvac": {
-                                "contains": {
-                                    "properties": {
-                                        "hvac_distribution": {
-                                            "properties": {
-                                                "duct": {
-                                                    "not": {
+                                "not": {
+                                    "contains": {
+                                        "properties": {
+                                            "hvac_distribution": {
+                                                "properties": {
+                                                    "duct": {
                                                         "contains": {
                                                             "properties": {
                                                                 "location": {
@@ -4383,7 +4496,10 @@
                                                     }
                                                 }
                                             }
-                                        }
+                                        },
+                                        "required":[
+                                            "hvac_distribution"
+                                        ]
                                     }
                                 },
                                 "error_msg": "duct/location[\"uncond_basement\"] is not allowed as there is no unconditioned basement."
@@ -4421,12 +4537,12 @@
                     "systems": {
                         "properties": {
                             "hvac": {
-                                "contains": {
-                                    "properties": {
-                                        "hvac_distribution": {
-                                            "properties": {
-                                                "duct": {
-                                                    "not": {
+                                "not": {
+                                    "contains": {
+                                        "properties": {
+                                            "hvac_distribution": {
+                                                "properties": {
+                                                    "duct": {
                                                         "contains": {
                                                             "properties": {
                                                                 "location": {
@@ -4440,7 +4556,10 @@
                                                     }
                                                 }
                                             }
-                                        }
+                                        },
+                                        "required":[
+                                            "hvac_distribution"
+                                        ]
                                     }
                                 },
                                 "error_msg": "duct/location[\"manufactured_home_belly\"] is not allowed as there is no belly_and_wing foundation type."
@@ -4612,7 +4731,7 @@
                                     },
                                     {
                                         "const": "manufactured_home_belly",
-                                        "title": "Manufacturd Home Belly"
+                                        "title": "Manufactured Home Belly"
                                     },
                                     {
                                         "const": "outside",
