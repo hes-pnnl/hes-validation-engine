@@ -46,7 +46,7 @@ export type UnventedCrawlspaceUnconditionedGarage = 'unvented_crawl';
 export type UnconditionedAttic1 = 'uncond_attic';
 export type UnderSlab = 'under_slab';
 export type InExteriorWall = 'exterior_wall';
-export type ManufacturdHomeBelly = 'manufactured_home_belly';
+export type ManufacturedHomeBelly = 'manufactured_home_belly';
 export type Outside = 'outside';
 export type Storage = 'storage';
 export type HeatPump1 = 'heat_pump';
@@ -66,7 +66,7 @@ export interface HEScoreJSONSchema {
   /**
    * The version of the building unit schema. Use semantic versioning.
    */
-  version: '4.0';
+  version: '5.0';
   address: {
     address: string;
     address2?: string;
@@ -257,15 +257,15 @@ export interface HEScoreJSONSchema {
          */
         roof_name: 'roof1' | 'roof2';
         /**
-         * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit
+         * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit, bowstring_roof
          */
         ceiling_area?: number;
         /**
-         * Area of the roof, used if roof_type = cath_ceiling, flat_roof, bowstring_roof
+         * Area of the roof, used if roof_type = cath_ceiling, flat_roof
          */
         roof_area?: number;
         /**
-         * Roof construction assembly code
+         * Roof construction assembly code (required unless roof_type is bowstring_roof or below_other_unit)
          */
         roof_assembly_code?:
             | 'rfwf00co'
@@ -348,6 +348,76 @@ export interface HEScoreJSONSchema {
             | 'rfrb00rc'
             | 'rfrb00lc'
             | 'rfrb00tg'
+            | 'rfrb03co'
+            | 'rfrb03wo'
+            | 'rfrb03rc'
+            | 'rfrb03lc'
+            | 'rfrb03tg'
+            | 'rfrb07co'
+            | 'rfrb07wo'
+            | 'rfrb07rc'
+            | 'rfrb07lc'
+            | 'rfrb07tg'
+            | 'rfrb11co'
+            | 'rfrb11wo'
+            | 'rfrb11rc'
+            | 'rfrb11lc'
+            | 'rfrb11tg'
+            | 'rfrb13co'
+            | 'rfrb13wo'
+            | 'rfrb13rc'
+            | 'rfrb13lc'
+            | 'rfrb13tg'
+            | 'rfrb15co'
+            | 'rfrb15wo'
+            | 'rfrb15rc'
+            | 'rfrb15lc'
+            | 'rfrb15tg'
+            | 'rfrb19co'
+            | 'rfrb19wo'
+            | 'rfrb19rc'
+            | 'rfrb19lc'
+            | 'rfrb19tg'
+            | 'rfrb21co'
+            | 'rfrb21wo'
+            | 'rfrb21rc'
+            | 'rfrb21lc'
+            | 'rfrb21tg'
+            | 'rfrb25co'
+            | 'rfrb25wo'
+            | 'rfrb25rc'
+            | 'rfrb25lc'
+            | 'rfrb25tg'
+            | 'rfrb27co'
+            | 'rfrb27wo'
+            | 'rfrb27rc'
+            | 'rfrb27lc'
+            | 'rfrb27tg'
+            | 'rfrb30co'
+            | 'rfrb30wo'
+            | 'rfrb30rc'
+            | 'rfrb30lc'
+            | 'rfrb30tg'
+            | 'rfrb35co'
+            | 'rfrb35wo'
+            | 'rfrb35rc'
+            | 'rfrb35lc'
+            | 'rfrb35tg'
+            | 'rfrb38co'
+            | 'rfrb38wo'
+            | 'rfrb38rc'
+            | 'rfrb38lc'
+            | 'rfrb38tg'
+            | 'rfrb44co'
+            | 'rfrb44wo'
+            | 'rfrb44rc'
+            | 'rfrb44lc'
+            | 'rfrb44tg'
+            | 'rfrb49co'
+            | 'rfrb49wo'
+            | 'rfrb49rc'
+            | 'rfrb49lc'
+            | 'rfrb49tg'
             | 'rfps00co'
             | 'rfps00wo'
             | 'rfps00rc'
@@ -418,7 +488,7 @@ export interface HEScoreJSONSchema {
             ) &
             string;
         /**
-         * Ceiling construction assembly code (required unless roof_type is cath_ceiling)
+         * Ceiling construction assembly code (required unless roof_type is cath_ceiling, flat_roof or below_other_unit)
          */
         ceiling_assembly_code?:
             | 'ecwf00'
@@ -437,7 +507,18 @@ export interface HEScoreJSONSchema {
             | 'ecwf44'
             | 'ecwf49'
             | 'ecwf55'
-            | 'ecwf60';
+            | 'ecwf60'
+            | 'bcwf00'
+            | 'bcwf03'
+            | 'bcwf06'
+            | 'bcwf09'
+            | 'bcwf11'
+            | 'bcwf13'
+            | 'bcwf15'
+            | 'bcwf19'
+            | 'bcwf21'
+            | 'bcwf25'
+            | 'bcwf30';
         /**
          * Knee wall inputs
          */
@@ -515,15 +596,15 @@ export interface HEScoreJSONSchema {
          */
         roof_name: 'roof1' | 'roof2';
         /**
-         * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit
+         * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit, bowstring_roof
          */
         ceiling_area?: number;
         /**
-         * Area of the roof, used if roof_type = cath_ceiling, flat_roof, bowstring_roof
+         * Area of the roof, used if roof_type = cath_ceiling, flat_roof
          */
         roof_area?: number;
         /**
-         * Roof construction assembly code
+         * Roof construction assembly code (required unless roof_type is bowstring_roof or below_other_unit)
          */
         roof_assembly_code?:
             | 'rfwf00co'
@@ -606,6 +687,76 @@ export interface HEScoreJSONSchema {
             | 'rfrb00rc'
             | 'rfrb00lc'
             | 'rfrb00tg'
+            | 'rfrb03co'
+            | 'rfrb03wo'
+            | 'rfrb03rc'
+            | 'rfrb03lc'
+            | 'rfrb03tg'
+            | 'rfrb07co'
+            | 'rfrb07wo'
+            | 'rfrb07rc'
+            | 'rfrb07lc'
+            | 'rfrb07tg'
+            | 'rfrb11co'
+            | 'rfrb11wo'
+            | 'rfrb11rc'
+            | 'rfrb11lc'
+            | 'rfrb11tg'
+            | 'rfrb13co'
+            | 'rfrb13wo'
+            | 'rfrb13rc'
+            | 'rfrb13lc'
+            | 'rfrb13tg'
+            | 'rfrb15co'
+            | 'rfrb15wo'
+            | 'rfrb15rc'
+            | 'rfrb15lc'
+            | 'rfrb15tg'
+            | 'rfrb19co'
+            | 'rfrb19wo'
+            | 'rfrb19rc'
+            | 'rfrb19lc'
+            | 'rfrb19tg'
+            | 'rfrb21co'
+            | 'rfrb21wo'
+            | 'rfrb21rc'
+            | 'rfrb21lc'
+            | 'rfrb21tg'
+            | 'rfrb25co'
+            | 'rfrb25wo'
+            | 'rfrb25rc'
+            | 'rfrb25lc'
+            | 'rfrb25tg'
+            | 'rfrb27co'
+            | 'rfrb27wo'
+            | 'rfrb27rc'
+            | 'rfrb27lc'
+            | 'rfrb27tg'
+            | 'rfrb30co'
+            | 'rfrb30wo'
+            | 'rfrb30rc'
+            | 'rfrb30lc'
+            | 'rfrb30tg'
+            | 'rfrb35co'
+            | 'rfrb35wo'
+            | 'rfrb35rc'
+            | 'rfrb35lc'
+            | 'rfrb35tg'
+            | 'rfrb38co'
+            | 'rfrb38wo'
+            | 'rfrb38rc'
+            | 'rfrb38lc'
+            | 'rfrb38tg'
+            | 'rfrb44co'
+            | 'rfrb44wo'
+            | 'rfrb44rc'
+            | 'rfrb44lc'
+            | 'rfrb44tg'
+            | 'rfrb49co'
+            | 'rfrb49wo'
+            | 'rfrb49rc'
+            | 'rfrb49lc'
+            | 'rfrb49tg'
             | 'rfps00co'
             | 'rfps00wo'
             | 'rfps00rc'
@@ -676,7 +827,7 @@ export interface HEScoreJSONSchema {
             ) &
             string;
         /**
-         * Ceiling construction assembly code (required unless roof_type is cath_ceiling)
+         * Ceiling construction assembly code (required unless roof_type is cath_ceiling, flat_roof or below_other_unit)
          */
         ceiling_assembly_code?:
             | 'ecwf00'
@@ -695,7 +846,18 @@ export interface HEScoreJSONSchema {
             | 'ecwf44'
             | 'ecwf49'
             | 'ecwf55'
-            | 'ecwf60';
+            | 'ecwf60'
+            | 'bcwf00'
+            | 'bcwf03'
+            | 'bcwf06'
+            | 'bcwf09'
+            | 'bcwf11'
+            | 'bcwf13'
+            | 'bcwf15'
+            | 'bcwf19'
+            | 'bcwf21'
+            | 'bcwf25'
+            | 'bcwf30';
         /**
          * Knee wall inputs
          */
@@ -771,15 +933,15 @@ export interface HEScoreJSONSchema {
          */
         roof_name: 'roof1' | 'roof2';
         /**
-         * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit
+         * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit, bowstring_roof
          */
         ceiling_area?: number;
         /**
-         * Area of the roof, used if roof_type = cath_ceiling, flat_roof, bowstring_roof
+         * Area of the roof, used if roof_type = cath_ceiling, flat_roof
          */
         roof_area?: number;
         /**
-         * Roof construction assembly code
+         * Roof construction assembly code (required unless roof_type is bowstring_roof or below_other_unit)
          */
         roof_assembly_code?:
             | 'rfwf00co'
@@ -862,6 +1024,76 @@ export interface HEScoreJSONSchema {
             | 'rfrb00rc'
             | 'rfrb00lc'
             | 'rfrb00tg'
+            | 'rfrb03co'
+            | 'rfrb03wo'
+            | 'rfrb03rc'
+            | 'rfrb03lc'
+            | 'rfrb03tg'
+            | 'rfrb07co'
+            | 'rfrb07wo'
+            | 'rfrb07rc'
+            | 'rfrb07lc'
+            | 'rfrb07tg'
+            | 'rfrb11co'
+            | 'rfrb11wo'
+            | 'rfrb11rc'
+            | 'rfrb11lc'
+            | 'rfrb11tg'
+            | 'rfrb13co'
+            | 'rfrb13wo'
+            | 'rfrb13rc'
+            | 'rfrb13lc'
+            | 'rfrb13tg'
+            | 'rfrb15co'
+            | 'rfrb15wo'
+            | 'rfrb15rc'
+            | 'rfrb15lc'
+            | 'rfrb15tg'
+            | 'rfrb19co'
+            | 'rfrb19wo'
+            | 'rfrb19rc'
+            | 'rfrb19lc'
+            | 'rfrb19tg'
+            | 'rfrb21co'
+            | 'rfrb21wo'
+            | 'rfrb21rc'
+            | 'rfrb21lc'
+            | 'rfrb21tg'
+            | 'rfrb25co'
+            | 'rfrb25wo'
+            | 'rfrb25rc'
+            | 'rfrb25lc'
+            | 'rfrb25tg'
+            | 'rfrb27co'
+            | 'rfrb27wo'
+            | 'rfrb27rc'
+            | 'rfrb27lc'
+            | 'rfrb27tg'
+            | 'rfrb30co'
+            | 'rfrb30wo'
+            | 'rfrb30rc'
+            | 'rfrb30lc'
+            | 'rfrb30tg'
+            | 'rfrb35co'
+            | 'rfrb35wo'
+            | 'rfrb35rc'
+            | 'rfrb35lc'
+            | 'rfrb35tg'
+            | 'rfrb38co'
+            | 'rfrb38wo'
+            | 'rfrb38rc'
+            | 'rfrb38lc'
+            | 'rfrb38tg'
+            | 'rfrb44co'
+            | 'rfrb44wo'
+            | 'rfrb44rc'
+            | 'rfrb44lc'
+            | 'rfrb44tg'
+            | 'rfrb49co'
+            | 'rfrb49wo'
+            | 'rfrb49rc'
+            | 'rfrb49lc'
+            | 'rfrb49tg'
             | 'rfps00co'
             | 'rfps00wo'
             | 'rfps00rc'
@@ -932,7 +1164,7 @@ export interface HEScoreJSONSchema {
             ) &
             string;
         /**
-         * Ceiling construction assembly code (required unless roof_type is cath_ceiling)
+         * Ceiling construction assembly code (required unless roof_type is cath_ceiling, flat_roof or below_other_unit)
          */
         ceiling_assembly_code?:
             | 'ecwf00'
@@ -951,7 +1183,18 @@ export interface HEScoreJSONSchema {
             | 'ecwf44'
             | 'ecwf49'
             | 'ecwf55'
-            | 'ecwf60';
+            | 'ecwf60'
+            | 'bcwf00'
+            | 'bcwf03'
+            | 'bcwf06'
+            | 'bcwf09'
+            | 'bcwf11'
+            | 'bcwf13'
+            | 'bcwf15'
+            | 'bcwf19'
+            | 'bcwf21'
+            | 'bcwf25'
+            | 'bcwf30';
         /**
          * Knee wall inputs
          */
@@ -2497,7 +2740,7 @@ export interface HvacDistribution {
           | UnconditionedAttic1
           | UnderSlab
           | InExteriorWall
-          | ManufacturdHomeBelly
+          | ManufacturedHomeBelly
           | Outside
           ) &
           string;
@@ -2528,7 +2771,7 @@ export interface HvacDistribution {
           | UnconditionedAttic1
           | UnderSlab
           | InExteriorWall
-          | ManufacturdHomeBelly
+          | ManufacturedHomeBelly
           | Outside
           ) &
           string;
@@ -2557,7 +2800,7 @@ export interface HvacDistribution {
           | UnconditionedAttic1
           | UnderSlab
           | InExteriorWall
-          | ManufacturdHomeBelly
+          | ManufacturedHomeBelly
           | Outside
           ) &
           string;
@@ -2588,7 +2831,7 @@ export interface HvacDistribution {
           | UnconditionedAttic1
           | UnderSlab
           | InExteriorWall
-          | ManufacturdHomeBelly
+          | ManufacturedHomeBelly
           | Outside
           ) &
           string;
@@ -2617,7 +2860,7 @@ export interface HvacDistribution {
           | UnconditionedAttic1
           | UnderSlab
           | InExteriorWall
-          | ManufacturdHomeBelly
+          | ManufacturedHomeBelly
           | Outside
           ) &
           string;
@@ -2646,7 +2889,7 @@ export interface HvacDistribution {
           | UnconditionedAttic1
           | UnderSlab
           | InExteriorWall
-          | ManufacturdHomeBelly
+          | ManufacturedHomeBelly
           | Outside
           ) &
           string;
