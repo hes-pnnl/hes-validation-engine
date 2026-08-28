@@ -382,19 +382,24 @@ function checkWindowSidesValid(walls: Wall[]): void {
 }
 
 /**
- * Zone window must be smaller than the wall area
+ * Total zone window area must be smaller than the total wall area
  */
 function checkWindowAreaValid(walls: Wall[], floors: Floor[], about:About): void
 {
-    walls.forEach(({side, zone_window}, index) => {
-        const wall_area = getWallArea(floors, about, ['front', 'back'].includes(side || ''))
-        if(zone_window && wall_area) {
-            const {window_area} = zone_window
-            if(window_area && window_area > wall_area) {
-                addMessage_warning(`/zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`)
+    const wall_area = 2 * ((getWallArea(floors, about, true) || 0) + (getWallArea(floors, about, false) || 0))
+    if(!wall_area) {
+        return
+    }
+
+    const total_window_area = getSumOfObjectPropertiesByFieldName(walls.map(({zone_window}) => zone_window || {}), 'window_area')
+
+    if(total_window_area > wall_area) {
+        walls.forEach(({zone_window}, index) => {
+            if(zone_window && zone_window.window_area) {
+                addMessage_warning(`/zone/zone_wall/${index}/zone_window/window_area`, `Total window area exceeds the total wall area of ${Math.ceil(wall_area)} sqft.`)
             }
-        }
-    })
+        })
+    }
 }
 
 /**
