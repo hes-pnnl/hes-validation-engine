@@ -386,7 +386,7 @@ function checkWindowSidesValid(walls: Wall[]): void {
  */
 function checkWindowAreaValid(walls: Wall[], floors: Floor[], about:About): void
 {
-    const wall_area = 2 * ((getWallArea(floors, about, true) || 0) + (getWallArea(floors, about, false) || 0))
+    const wall_area = getTotalWallArea(floors, about)
     if(!wall_area) {
         return
     }
@@ -403,36 +403,65 @@ function checkWindowAreaValid(walls: Wall[], floors: Floor[], about:About): void
 }
 
 /**
- * Wall must be appropriate length for the conditioned footprint of the building
+ * Gets the building's front and side wall lengths from the conditioned footprint,
+ * based on the shape assumptions per dwelling unit type in the HEScore ruleset's
+ * HESruleset.rb `set_defaults`
  */
-function getWallLength(floors:Floor[], about:About, is_front_back:boolean):number|false
+function getBuildingWallLengths(floors:Floor[], about:About): {front:number, side:number} | false
 {
     const conditioned_footprint:number = getBuildingConditionedFootprint(about, floors)
-    if(conditioned_footprint) {
-        return Math.floor(
-            (is_front_back
-                ? Math.sqrt((5 * conditioned_footprint) / 3)
-                : Math.sqrt((3 * conditioned_footprint) / 5)
-            )
-        )
+    if(!conditioned_footprint) {
+        return false
     }
-    return false
+
+    switch(about?.dwelling_unit_type) {
+        case 'single_family_attached': {
+            // 5:3 ratio, short side on front
+            const side = Math.sqrt((5 * conditioned_footprint) / 3)
+            return { front: (3 / 5) * side, side }
+        }
+        case 'apartment_unit': {
+            // Square
+            const length = Math.sqrt(conditioned_footprint)
+            return { front: length, side: length }
+        }
+        case 'manufactured_home': {
+            const section_widths: {[key:string]: number} = {
+                'single-wide': 14,
+                'double-wide': 28,
+                'triple-wide': 40,
+            }
+            const side = section_widths[about?.manufactured_home_sections || '']
+            if(!side) {
+                return false
+            }
+            const front = conditioned_footprint / side
+            if(front > 80) {
+                return { front: 80, side: conditioned_footprint / 80 }
+            }
+            return { front, side }
+        }
+        case 'single_family_detached':
+        default: {
+            // 5:3 ratio, long side on front
+            const side = Math.sqrt((3 * conditioned_footprint) / 5)
+            return { front: (5 / 3) * side, side }
+        }
+    }
 }
 
 /**
- * Gets the total wall area of the home
+ * Gets the total gross wall area of the home (all four sides), matching the
+ * `total_wall_area` calculation in the HEScore ruleset's HESruleset.rb:
+ * 2 * (front_length + side_length) * ceiling_height * stories_above_grade
  */
-function getWallArea(floor:Floor[], about:About, is_front_back:boolean): number|false
+function getTotalWallArea(floors:Floor[], about:About): number|false
 {
-    const length = getWallLength(floor, about, is_front_back)
+    const lengths = getBuildingWallLengths(floors, about)
     const height = about?.floor_to_ceiling_height
     const stories = about?.num_floor_above_grade
-    if(length && height && stories) {
-        let one_story_area = length * height
-        if(is_front_back) {
-            one_story_area -= 20
-        }
-        return Math.floor(one_story_area * stories)
+    if(lengths && height && stories) {
+        return Math.floor(2 * (lengths.front + lengths.side) * height * stories)
     }
     return false
 }
