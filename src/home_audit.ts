@@ -3,7 +3,7 @@ import { Building } from "./types/Building.type"
 import Ajv2019 from "ajv/dist/2019"
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
 import addFormats from 'ajv-formats'
-import { MANDATORY_MESSAGE } from './translate_legacy'
+import { MANDATORY_MESSAGE, translateErrors, translateHomeValues } from './translate_legacy'
 
 type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
@@ -95,9 +95,39 @@ export function validate(homeValues: DeepPartial<Building>): ErrorMessages
 /**
  * Legacy validate_home_audit method
  * @deprecated
- * @param homeValues 
+ * @param homeValues
  * @returns error messages
  */
+export function validate_home_audit(homeValues: any) {
+    const building = translateHomeValues(homeValues);
+    const errors = validate(building);
+    return translateErrors(building, errors);
+}
+
+/**
+ * remove strings that are only whitespace or empty
+ * @param flatObj
+ * @returns {{}}
+ */
+// Input can be any. If it's not a plain object, it returns it unchanged.
+// If it is an object, it removes keys whose values are "" or whitespace-only strings.
+function removeEmptyOrWhitespaceStrings(input: any): any {
+    if (input === null || typeof input !== "object" || Array.isArray(input)) {
+        return input;
+    }
+
+    const out: any = {};
+
+    Object.keys(input).forEach((k) => {
+        const v = input[k];
+        if (!(typeof v === "string" && v.trim() === "")) {
+            out[k] = v;
+        }
+    });
+
+    return out;
+}
+
 export function validate_address({ assessment_type, dwelling_unit_type, ...address }: AddressInput) {
     const building = { address, about: { assessment_type, dwelling_unit_type } }
     const errors = validate(building)
@@ -110,6 +140,7 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         error: {},
         mandatory: {},
     }
+
     Object.keys(errors).forEach(path => {
         let message = errors[path]?.map(m => m.message).join(' | ');
         let key:string
@@ -134,11 +165,53 @@ export function validate_address({ assessment_type, dwelling_unit_type, ...addre
         address_errors.blocker['dwelling_unit_type'] = `Dwelling unit must one of '${dwelling_unit_type_enum.join("', '")}'`
     }
 
-    // Check if address 2 is required
-    if (dwelling_unit_type && dwelling_unit_type=='apartment_unit' && !address['address2']) {
-        address_errors.mandatory['address2'] = MANDATORY_MESSAGE
-    }
     return address_errors
+}
+
+// Helper function in findErrorMsg
+function getByJsonPointer(root: any, pointer: string): any {
+    // pointer like "#/allOf/5/then/properties/zone/..."
+    const path = pointer.replace(/^#\//, "").split("/").map(s =>
+        s.replace(/~1/g, "/").replace(/~0/g, "~")
+    );
+
+    let cur = root;
+    for (const key of path) {
+        if (cur == null) return undefined;
+        cur = cur[key];
+    }
+    return cur;
+}
+
+/**
+ * Given an AJV validation error, tries to find a human-friendly message stored in the schema
+ * under `error_msg` at (or above) the failing `schemaPath`.
+ *
+ * How it works:
+ * - AJV errors include `schemaPath` (a JSON Pointer like "#/allOf/5/then/.../contains").
+ * - We first resolve that pointer into the root schema object and check for `error_msg`.
+ * - If not found, we walk up the pointer (parent nodes) because some AJV keywords
+ *   (e.g., "required") report errors at a child keyword path, while the schema author
+ *   may have placed `error_msg` on the parent object.
+ *
+ * Returns:
+ * - the custom `error_msg` string if found
+ * - otherwise `undefined` (caller can keep AJV's default `error.message`)
+ */
+function findErrorMsg( err: AjvErrorObject): string | undefined {
+    // Try exact schemaPath first
+    let node = getByJsonPointer(HesJsonSchema, err.schemaPath);
+    if (node?.error_msg) return node.error_msg;
+
+    // Some keywords (e.g., "required") hang the message on the parent object.
+    // Walk up until we find error_msg.
+    let p = err.schemaPath;
+    while (p.includes("/")) {
+        p = p.replace(/\/[^/]+$/, "");
+        node = getByJsonPointer(HesJsonSchema, p);
+        if (node?.error_msg) return node.error_msg;
+    }
+    return undefined;
 }
 
 /**
@@ -181,9 +254,9 @@ function getMessageFromAjvError(errorObj: AjvErrorObject): string | undefined
         case 'if':
             return handleIfError(errorObj, error_leaf)
         case 'not':
-            return handleNotError(errorObj, error_leaf)
+            return findErrorMsg(errorObj) ?? handleNotError(errorObj, error_leaf)
         default:
-            return message
+            return findErrorMsg(errorObj) ?? message
     }
 }
 
@@ -302,52 +375,86 @@ function checkWindowSidesValid(walls: Wall[]): void {
 }
 
 /**
- * Zone window must be smaller than the wall area
+ * Total zone window area must be smaller than the total wall area
  */
 function checkWindowAreaValid(walls: Wall[], floors: Floor[], about:About): void
 {
-    walls.forEach(({side, zone_window}, index) => {
-        const wall_area = getWallArea(floors, about, ['front', 'back'].includes(side || ''))
-        if(zone_window && wall_area) {
-            const {window_area} = zone_window
-            if(window_area && window_area > wall_area) {
-                addMessage_warning(`/zone/zone_wall/${index}/zone_window/window_area`, `Window area too large for wall.`)
+    const wall_area = getTotalWallArea(floors, about)
+    if(!wall_area) {
+        return
+    }
+
+    const total_window_area = getSumOfObjectPropertiesByFieldName(walls.map(({zone_window}) => zone_window || {}), 'window_area')
+
+    if(total_window_area > wall_area) {
+        walls.forEach(({zone_window}, index) => {
+            if(zone_window && zone_window.window_area) {
+                addMessage_warning(`/zone/zone_wall/${index}/zone_window/window_area`, `Total window area exceeds the total wall area of ${Math.ceil(wall_area)} sqft.`)
             }
-        }
-    })
+        })
+    }
 }
 
 /**
- * Wall must be appropriate length for the conditioned footprint of the building
+ * Gets the building's front and side wall lengths from the conditioned footprint,
+ * based on the shape assumptions per dwelling unit type in the HEScore ruleset's
+ * HESruleset.rb `set_defaults`
  */
-function getWallLength(floors:Floor[], about:About, is_front_back:boolean):number|false
+function getBuildingWallLengths(floors:Floor[], about:About): {front:number, side:number} | false
 {
     const conditioned_footprint:number = getBuildingConditionedFootprint(about, floors)
-    if(conditioned_footprint) {
-        return Math.floor(
-            (is_front_back
-                ? Math.sqrt((5 * conditioned_footprint) / 3)
-                : Math.sqrt((3 * conditioned_footprint) / 5)
-            )
-        )
+    if(!conditioned_footprint) {
+        return false
     }
-    return false
+
+    switch(about?.dwelling_unit_type) {
+        case 'single_family_attached': {
+            // 5:3 ratio, short side on front
+            const side = Math.sqrt((5 * conditioned_footprint) / 3)
+            return { front: (3 / 5) * side, side }
+        }
+        case 'apartment_unit': {
+            // Square
+            const length = Math.sqrt(conditioned_footprint)
+            return { front: length, side: length }
+        }
+        case 'manufactured_home': {
+            const section_widths: {[key:string]: number} = {
+                'single-wide': 14,
+                'double-wide': 28,
+                'triple-wide': 40,
+            }
+            const side = section_widths[about?.manufactured_home_sections || '']
+            if(!side) {
+                return false
+            }
+            const front = conditioned_footprint / side
+            if(front > 80) {
+                return { front: 80, side: conditioned_footprint / 80 }
+            }
+            return { front, side }
+        }
+        case 'single_family_detached':
+        default: {
+            // 5:3 ratio, long side on front
+            const side = Math.sqrt((3 * conditioned_footprint) / 5)
+            return { front: (5 / 3) * side, side }
+        }
+    }
 }
 
 /**
- * Gets the total wall area of the home
+ * Gets the total gross wall area of the home (all four sides), matching the
+ * `total_wall_area` calculation in the HEScore ruleset's HESruleset.rb:
+ * 2 * (front_length + side_length) * ceiling_height * stories_above_grade
  */
-function getWallArea(floor:Floor[], about:About, is_front_back:boolean): number|false
+function getTotalWallArea(floors:Floor[], about:About): number|false
 {
-    const length = getWallLength(floor, about, is_front_back)
+    const lengths = getBuildingWallLengths(floors, about)
     const height = about?.floor_to_ceiling_height
     const stories = about?.num_floor_above_grade
-    if(length && height && stories) {
-        let one_story_area = length * height
-        if(is_front_back) {
-            one_story_area -= 20
-        }
-        return Math.floor(one_story_area * stories)
+    if(lengths && height && stories) {
+        return Math.floor(2 * (lengths.front + lengths.side) * height * stories)
     }
     return false
 }
