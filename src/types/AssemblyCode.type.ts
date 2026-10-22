@@ -16,7 +16,7 @@ export type FloorConstructionType = 'wf'
 export type FloorExteriorFinish = 'ca'
 
 //two step is needed here.
-type Window = Exclude<Building['zone']['zone_wall'][number]['zone_window'], undefined>
+type Window = Exclude<Building['zone']['zone_wall'][number]['zone_window'], undefined>[number]
 export type WindowAndSkylightCode = Window['window_code']
 
 export type RoofAssemblyCode = Building['zone']['zone_roof'][number]['roof_assembly_code']

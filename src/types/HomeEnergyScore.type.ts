@@ -66,63 +66,63 @@ export interface HEScoreJSONSchema {
   /**
    * The version of the building unit schema. Use semantic versioning.
    */
-  version: '5.0';
+  version: '6.0';
   address: {
     address: string;
     address2?: string;
     city: string;
     state:
-        | 'AL'
-        | 'AK'
-        | 'AZ'
-        | 'AR'
-        | 'CA'
-        | 'CO'
-        | 'CT'
-        | 'DE'
-        | 'FL'
-        | 'GA'
-        | 'HI'
-        | 'ID'
-        | 'IL'
-        | 'IN'
-        | 'IA'
-        | 'KS'
-        | 'KY'
-        | 'LA'
-        | 'ME'
-        | 'MD'
-        | 'MA'
-        | 'MI'
-        | 'MN'
-        | 'MS'
-        | 'MO'
-        | 'MT'
-        | 'NE'
-        | 'NV'
-        | 'NH'
-        | 'NJ'
-        | 'NM'
-        | 'NY'
-        | 'NC'
-        | 'ND'
-        | 'OH'
-        | 'OK'
-        | 'OR'
-        | 'PA'
-        | 'RI'
-        | 'SC'
-        | 'SD'
-        | 'TN'
-        | 'TX'
-        | 'UT'
-        | 'VT'
-        | 'VA'
-        | 'WA'
-        | 'WV'
-        | 'WI'
-        | 'WY'
-        | 'DC';
+      | 'AL'
+      | 'AK'
+      | 'AZ'
+      | 'AR'
+      | 'CA'
+      | 'CO'
+      | 'CT'
+      | 'DE'
+      | 'FL'
+      | 'GA'
+      | 'HI'
+      | 'ID'
+      | 'IL'
+      | 'IN'
+      | 'IA'
+      | 'KS'
+      | 'KY'
+      | 'LA'
+      | 'ME'
+      | 'MD'
+      | 'MA'
+      | 'MI'
+      | 'MN'
+      | 'MS'
+      | 'MO'
+      | 'MT'
+      | 'NE'
+      | 'NV'
+      | 'NH'
+      | 'NJ'
+      | 'NM'
+      | 'NY'
+      | 'NC'
+      | 'ND'
+      | 'OH'
+      | 'OK'
+      | 'OR'
+      | 'PA'
+      | 'RI'
+      | 'SC'
+      | 'SD'
+      | 'TN'
+      | 'TX'
+      | 'UT'
+      | 'VT'
+      | 'VA'
+      | 'WA'
+      | 'WV'
+      | 'WI'
+      | 'WY'
+      | 'DC';
     zip_code: string;
     /**
      *  Allows an organization to assign an ID to the building for that organization's internal use. This field has no impact within the HES system, except that it can be filtered on in some of the retrieve_* methods.
@@ -152,15 +152,7 @@ export interface HEScoreJSONSchema {
     is_income_eligible_program?: boolean;
   };
   about: {
-    assessment_type:
-        | 'initial'
-        | 'final'
-        | 'qa'
-        | 'alternative'
-        | 'test'
-        | 'corrected'
-        | 'mentor'
-        | 'preconstruction';
+    assessment_type: 'initial' | 'final' | 'qa' | 'alternative' | 'test' | 'corrected' | 'mentor' | 'preconstruction';
     /**
      * Date the assessment was performed
      */
@@ -176,11 +168,7 @@ export interface HEScoreJSONSchema {
     /**
      * The type of dwelling unit
      */
-    dwelling_unit_type:
-        | 'single_family_detached'
-        | 'single_family_attached'
-        | 'apartment_unit'
-        | 'manufactured_home';
+    dwelling_unit_type: 'single_family_detached' | 'single_family_attached' | 'apartment_unit' | 'manufactured_home';
     /**
      * The sections of a manufactured home
      */
@@ -201,25 +189,7 @@ export interface HEScoreJSONSchema {
      * Floor to ceiling height (feet)
      */
     floor_to_ceiling_height:
-        | 6
-        | 6.5
-        | 7
-        | 7.5
-        | 8
-        | 8.5
-        | 9
-        | 9.5
-        | 10
-        | 10.5
-        | 11
-        | 11.5
-        | 12
-        | 12.5
-        | 13
-        | 13.5
-        | 14
-        | 14.5
-        | 15;
+      6 | 6.5 | 7 | 7.5 | 8 | 8.5 | 9 | 9.5 | 10 | 10.5 | 11 | 11.5 | 12 | 12.5 | 13 | 13.5 | 14 | 14.5 | 15;
     /**
      * Total conditioned floor area (square feet)
      */
@@ -240,22 +210,19 @@ export interface HEScoreJSONSchema {
      * Building air leakage measured with a blower door (CFM50) (only used if blower_door_test is true)
      */
     envelope_leakage?: number;
+    /**
+     * Size of the electric panel (amps)
+     */
+    electric_panel_size?: number;
   };
   zone: {
     /**
      * Inputs about the construction of the roof(s)
      *
-     * @minItems 0
-     * @maxItems 2
+     * @minItems 1
      */
-    zone_roof:
-        | []
-        | [
+    zone_roof: [
       {
-        /**
-         * Name of this roof instance
-         */
-        roof_name: 'roof1' | 'roof2';
         /**
          * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit, bowstring_roof
          */
@@ -268,257 +235,255 @@ export interface HEScoreJSONSchema {
          * Roof construction assembly code (required unless roof_type is bowstring_roof or below_other_unit)
          */
         roof_assembly_code?:
-            | 'rfwf00co'
-            | 'rfwf00wo'
-            | 'rfwf00rc'
-            | 'rfwf00lc'
-            | 'rfwf00tg'
-            | 'rfwf03co'
-            | 'rfwf03wo'
-            | 'rfwf03rc'
-            | 'rfwf03lc'
-            | 'rfwf03tg'
-            | 'rfwf07co'
-            | 'rfwf07wo'
-            | 'rfwf07rc'
-            | 'rfwf07lc'
-            | 'rfwf07tg'
-            | 'rfwf11co'
-            | 'rfwf11wo'
-            | 'rfwf11rc'
-            | 'rfwf11lc'
-            | 'rfwf11tg'
-            | 'rfwf13co'
-            | 'rfwf13wo'
-            | 'rfwf13rc'
-            | 'rfwf13lc'
-            | 'rfwf13tg'
-            | 'rfwf15co'
-            | 'rfwf15wo'
-            | 'rfwf15rc'
-            | 'rfwf15lc'
-            | 'rfwf15tg'
-            | 'rfwf19co'
-            | 'rfwf19wo'
-            | 'rfwf19rc'
-            | 'rfwf19lc'
-            | 'rfwf19tg'
-            | 'rfwf21co'
-            | 'rfwf21wo'
-            | 'rfwf21rc'
-            | 'rfwf21lc'
-            | 'rfwf21tg'
-            | 'rfwf25co'
-            | 'rfwf25wo'
-            | 'rfwf25rc'
-            | 'rfwf25lc'
-            | 'rfwf25tg'
-            | 'rfwf27co'
-            | 'rfwf27wo'
-            | 'rfwf27rc'
-            | 'rfwf27lc'
-            | 'rfwf27tg'
-            | 'rfwf30co'
-            | 'rfwf30wo'
-            | 'rfwf30rc'
-            | 'rfwf30lc'
-            | 'rfwf30tg'
-            | 'rfwf35co'
-            | 'rfwf35wo'
-            | 'rfwf35rc'
-            | 'rfwf35lc'
-            | 'rfwf35tg'
-            | 'rfwf38co'
-            | 'rfwf38wo'
-            | 'rfwf38rc'
-            | 'rfwf38lc'
-            | 'rfwf38tg'
-            | 'rfwf44co'
-            | 'rfwf44wo'
-            | 'rfwf44rc'
-            | 'rfwf44lc'
-            | 'rfwf44tg'
-            | 'rfwf49co'
-            | 'rfwf49wo'
-            | 'rfwf49rc'
-            | 'rfwf49lc'
-            | 'rfwf49tg'
-            | 'rfrb00co'
-            | 'rfrb00wo'
-            | 'rfrb00rc'
-            | 'rfrb00lc'
-            | 'rfrb00tg'
-            | 'rfrb03co'
-            | 'rfrb03wo'
-            | 'rfrb03rc'
-            | 'rfrb03lc'
-            | 'rfrb03tg'
-            | 'rfrb07co'
-            | 'rfrb07wo'
-            | 'rfrb07rc'
-            | 'rfrb07lc'
-            | 'rfrb07tg'
-            | 'rfrb11co'
-            | 'rfrb11wo'
-            | 'rfrb11rc'
-            | 'rfrb11lc'
-            | 'rfrb11tg'
-            | 'rfrb13co'
-            | 'rfrb13wo'
-            | 'rfrb13rc'
-            | 'rfrb13lc'
-            | 'rfrb13tg'
-            | 'rfrb15co'
-            | 'rfrb15wo'
-            | 'rfrb15rc'
-            | 'rfrb15lc'
-            | 'rfrb15tg'
-            | 'rfrb19co'
-            | 'rfrb19wo'
-            | 'rfrb19rc'
-            | 'rfrb19lc'
-            | 'rfrb19tg'
-            | 'rfrb21co'
-            | 'rfrb21wo'
-            | 'rfrb21rc'
-            | 'rfrb21lc'
-            | 'rfrb21tg'
-            | 'rfrb25co'
-            | 'rfrb25wo'
-            | 'rfrb25rc'
-            | 'rfrb25lc'
-            | 'rfrb25tg'
-            | 'rfrb27co'
-            | 'rfrb27wo'
-            | 'rfrb27rc'
-            | 'rfrb27lc'
-            | 'rfrb27tg'
-            | 'rfrb30co'
-            | 'rfrb30wo'
-            | 'rfrb30rc'
-            | 'rfrb30lc'
-            | 'rfrb30tg'
-            | 'rfrb35co'
-            | 'rfrb35wo'
-            | 'rfrb35rc'
-            | 'rfrb35lc'
-            | 'rfrb35tg'
-            | 'rfrb38co'
-            | 'rfrb38wo'
-            | 'rfrb38rc'
-            | 'rfrb38lc'
-            | 'rfrb38tg'
-            | 'rfrb44co'
-            | 'rfrb44wo'
-            | 'rfrb44rc'
-            | 'rfrb44lc'
-            | 'rfrb44tg'
-            | 'rfrb49co'
-            | 'rfrb49wo'
-            | 'rfrb49rc'
-            | 'rfrb49lc'
-            | 'rfrb49tg'
-            | 'rfps00co'
-            | 'rfps00wo'
-            | 'rfps00rc'
-            | 'rfps00lc'
-            | 'rfps00tg'
-            | 'rfps03co'
-            | 'rfps03wo'
-            | 'rfps03rc'
-            | 'rfps03lc'
-            | 'rfps03tg'
-            | 'rfps07co'
-            | 'rfps07wo'
-            | 'rfps07rc'
-            | 'rfps07lc'
-            | 'rfps07tg'
-            | 'rfps11co'
-            | 'rfps11wo'
-            | 'rfps11rc'
-            | 'rfps11lc'
-            | 'rfps11tg'
-            | 'rfps13co'
-            | 'rfps13wo'
-            | 'rfps13rc'
-            | 'rfps13lc'
-            | 'rfps13tg'
-            | 'rfps15co'
-            | 'rfps15wo'
-            | 'rfps15rc'
-            | 'rfps15lc'
-            | 'rfps15tg'
-            | 'rfps19co'
-            | 'rfps19wo'
-            | 'rfps19rc'
-            | 'rfps19lc'
-            | 'rfps19tg'
-            | 'rfps21co'
-            | 'rfps21wo'
-            | 'rfps21rc'
-            | 'rfps21lc'
-            | 'rfps21tg'
-            | 'rfps25co'
-            | 'rfps25wo'
-            | 'rfps25rc'
-            | 'rfps25lc'
-            | 'rfps25tg'
-            | 'rfps30co'
-            | 'rfps30wo'
-            | 'rfps30rc'
-            | 'rfps30lc'
-            | 'rfps30tg';
+          | 'rfwf00co'
+          | 'rfwf00wo'
+          | 'rfwf00rc'
+          | 'rfwf00lc'
+          | 'rfwf00tg'
+          | 'rfwf03co'
+          | 'rfwf03wo'
+          | 'rfwf03rc'
+          | 'rfwf03lc'
+          | 'rfwf03tg'
+          | 'rfwf07co'
+          | 'rfwf07wo'
+          | 'rfwf07rc'
+          | 'rfwf07lc'
+          | 'rfwf07tg'
+          | 'rfwf11co'
+          | 'rfwf11wo'
+          | 'rfwf11rc'
+          | 'rfwf11lc'
+          | 'rfwf11tg'
+          | 'rfwf13co'
+          | 'rfwf13wo'
+          | 'rfwf13rc'
+          | 'rfwf13lc'
+          | 'rfwf13tg'
+          | 'rfwf15co'
+          | 'rfwf15wo'
+          | 'rfwf15rc'
+          | 'rfwf15lc'
+          | 'rfwf15tg'
+          | 'rfwf19co'
+          | 'rfwf19wo'
+          | 'rfwf19rc'
+          | 'rfwf19lc'
+          | 'rfwf19tg'
+          | 'rfwf21co'
+          | 'rfwf21wo'
+          | 'rfwf21rc'
+          | 'rfwf21lc'
+          | 'rfwf21tg'
+          | 'rfwf25co'
+          | 'rfwf25wo'
+          | 'rfwf25rc'
+          | 'rfwf25lc'
+          | 'rfwf25tg'
+          | 'rfwf27co'
+          | 'rfwf27wo'
+          | 'rfwf27rc'
+          | 'rfwf27lc'
+          | 'rfwf27tg'
+          | 'rfwf30co'
+          | 'rfwf30wo'
+          | 'rfwf30rc'
+          | 'rfwf30lc'
+          | 'rfwf30tg'
+          | 'rfwf35co'
+          | 'rfwf35wo'
+          | 'rfwf35rc'
+          | 'rfwf35lc'
+          | 'rfwf35tg'
+          | 'rfwf38co'
+          | 'rfwf38wo'
+          | 'rfwf38rc'
+          | 'rfwf38lc'
+          | 'rfwf38tg'
+          | 'rfwf44co'
+          | 'rfwf44wo'
+          | 'rfwf44rc'
+          | 'rfwf44lc'
+          | 'rfwf44tg'
+          | 'rfwf49co'
+          | 'rfwf49wo'
+          | 'rfwf49rc'
+          | 'rfwf49lc'
+          | 'rfwf49tg'
+          | 'rfrb00co'
+          | 'rfrb00wo'
+          | 'rfrb00rc'
+          | 'rfrb00lc'
+          | 'rfrb00tg'
+          | 'rfrb03co'
+          | 'rfrb03wo'
+          | 'rfrb03rc'
+          | 'rfrb03lc'
+          | 'rfrb03tg'
+          | 'rfrb07co'
+          | 'rfrb07wo'
+          | 'rfrb07rc'
+          | 'rfrb07lc'
+          | 'rfrb07tg'
+          | 'rfrb11co'
+          | 'rfrb11wo'
+          | 'rfrb11rc'
+          | 'rfrb11lc'
+          | 'rfrb11tg'
+          | 'rfrb13co'
+          | 'rfrb13wo'
+          | 'rfrb13rc'
+          | 'rfrb13lc'
+          | 'rfrb13tg'
+          | 'rfrb15co'
+          | 'rfrb15wo'
+          | 'rfrb15rc'
+          | 'rfrb15lc'
+          | 'rfrb15tg'
+          | 'rfrb19co'
+          | 'rfrb19wo'
+          | 'rfrb19rc'
+          | 'rfrb19lc'
+          | 'rfrb19tg'
+          | 'rfrb21co'
+          | 'rfrb21wo'
+          | 'rfrb21rc'
+          | 'rfrb21lc'
+          | 'rfrb21tg'
+          | 'rfrb25co'
+          | 'rfrb25wo'
+          | 'rfrb25rc'
+          | 'rfrb25lc'
+          | 'rfrb25tg'
+          | 'rfrb27co'
+          | 'rfrb27wo'
+          | 'rfrb27rc'
+          | 'rfrb27lc'
+          | 'rfrb27tg'
+          | 'rfrb30co'
+          | 'rfrb30wo'
+          | 'rfrb30rc'
+          | 'rfrb30lc'
+          | 'rfrb30tg'
+          | 'rfrb35co'
+          | 'rfrb35wo'
+          | 'rfrb35rc'
+          | 'rfrb35lc'
+          | 'rfrb35tg'
+          | 'rfrb38co'
+          | 'rfrb38wo'
+          | 'rfrb38rc'
+          | 'rfrb38lc'
+          | 'rfrb38tg'
+          | 'rfrb44co'
+          | 'rfrb44wo'
+          | 'rfrb44rc'
+          | 'rfrb44lc'
+          | 'rfrb44tg'
+          | 'rfrb49co'
+          | 'rfrb49wo'
+          | 'rfrb49rc'
+          | 'rfrb49lc'
+          | 'rfrb49tg'
+          | 'rfps00co'
+          | 'rfps00wo'
+          | 'rfps00rc'
+          | 'rfps00lc'
+          | 'rfps00tg'
+          | 'rfps03co'
+          | 'rfps03wo'
+          | 'rfps03rc'
+          | 'rfps03lc'
+          | 'rfps03tg'
+          | 'rfps07co'
+          | 'rfps07wo'
+          | 'rfps07rc'
+          | 'rfps07lc'
+          | 'rfps07tg'
+          | 'rfps11co'
+          | 'rfps11wo'
+          | 'rfps11rc'
+          | 'rfps11lc'
+          | 'rfps11tg'
+          | 'rfps13co'
+          | 'rfps13wo'
+          | 'rfps13rc'
+          | 'rfps13lc'
+          | 'rfps13tg'
+          | 'rfps15co'
+          | 'rfps15wo'
+          | 'rfps15rc'
+          | 'rfps15lc'
+          | 'rfps15tg'
+          | 'rfps19co'
+          | 'rfps19wo'
+          | 'rfps19rc'
+          | 'rfps19lc'
+          | 'rfps19tg'
+          | 'rfps21co'
+          | 'rfps21wo'
+          | 'rfps21rc'
+          | 'rfps21lc'
+          | 'rfps21tg'
+          | 'rfps25co'
+          | 'rfps25wo'
+          | 'rfps25rc'
+          | 'rfps25lc'
+          | 'rfps25tg'
+          | 'rfps30co'
+          | 'rfps30wo'
+          | 'rfps30rc'
+          | 'rfps30lc'
+          | 'rfps30tg';
         /**
          * Color of roof exterior surface
          */
         roof_color?: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color';
         /**
-         * Absorptance of exterior surface (only used if roof_color is cool_color)
+         * Solar absorptance of the roof exterior surface (only used if roof_color is cool_color)
          */
         roof_absorptance?: number;
         /**
+         * Indicates whether roof_absorptance is the initial value or the 3-year aged value from a CRRC product rating (only used if roof_color is cool_color)
+         */
+        roof_absorptance_condition?: 'initial' | '3-year';
+        /**
          * Type of roof
          */
-        roof_type: (
-            | UnconditionedAttic
-            | CathedralCeiling
-            | BelowOtherUnit
-            | FlatRoof
-            | ManufacturedHomeBowstringRoof
-            ) &
-            string;
+        roof_type: (UnconditionedAttic | CathedralCeiling | BelowOtherUnit | FlatRoof | ManufacturedHomeBowstringRoof) &
+          string;
         /**
          * Ceiling construction assembly code (required unless roof_type is cath_ceiling, flat_roof or below_other_unit)
          */
         ceiling_assembly_code?:
-            | 'ecwf00'
-            | 'ecwf03'
-            | 'ecwf06'
-            | 'ecwf09'
-            | 'ecwf11'
-            | 'ecwf13'
-            | 'ecwf15'
-            | 'ecwf19'
-            | 'ecwf21'
-            | 'ecwf25'
-            | 'ecwf30'
-            | 'ecwf35'
-            | 'ecwf38'
-            | 'ecwf44'
-            | 'ecwf49'
-            | 'ecwf55'
-            | 'ecwf60'
-            | 'bcwf00'
-            | 'bcwf03'
-            | 'bcwf06'
-            | 'bcwf09'
-            | 'bcwf11'
-            | 'bcwf13'
-            | 'bcwf15'
-            | 'bcwf19'
-            | 'bcwf21'
-            | 'bcwf25'
-            | 'bcwf30';
+          | 'ecwf00'
+          | 'ecwf03'
+          | 'ecwf06'
+          | 'ecwf09'
+          | 'ecwf11'
+          | 'ecwf13'
+          | 'ecwf15'
+          | 'ecwf19'
+          | 'ecwf21'
+          | 'ecwf25'
+          | 'ecwf30'
+          | 'ecwf35'
+          | 'ecwf38'
+          | 'ecwf44'
+          | 'ecwf49'
+          | 'ecwf55'
+          | 'ecwf60'
+          | 'bcwf00'
+          | 'bcwf03'
+          | 'bcwf06'
+          | 'bcwf09'
+          | 'bcwf11'
+          | 'bcwf13'
+          | 'bcwf15'
+          | 'bcwf19'
+          | 'bcwf21'
+          | 'bcwf25'
+          | 'bcwf30';
         /**
          * Knee wall inputs
          */
@@ -530,32 +495,27 @@ export interface HEScoreJSONSchema {
           /**
            * Knee wall assembly code
            */
-          assembly_code:
-              | 'kwwf00'
-              | 'kwwf03'
-              | 'kwwf07'
-              | 'kwwf11'
-              | 'kwwf13'
-              | 'kwwf15'
-              | 'kwwf19'
-              | 'kwwf21';
+          assembly_code: 'kwwf00' | 'kwwf03' | 'kwwf07' | 'kwwf11' | 'kwwf13' | 'kwwf15' | 'kwwf19' | 'kwwf21';
         };
         /**
-         * Inputs about the skylights on this roof
+         * @minItems 1
+         *
+         * Items: Inputs about the skylights on this roof
          */
-        zone_skylight?: {
-          /**
-           * Area of skylights (square feet)
-           */
-          skylight_area: number;
-          /**
-           * Construction method to use for skylights
-           */
-          skylight_method: 'code' | 'custom';
-          /**
-           * Assembly code for skylights (only used if skylight_method is code)
-           */
-          skylight_code?:
+        zone_skylight?: [
+          {
+            /**
+             * Area of skylights (square feet)
+             */
+            skylight_area: number;
+            /**
+             * Construction method to use for skylights
+             */
+            skylight_method: 'code' | 'custom';
+            /**
+             * Assembly code for skylights (only used if skylight_method is code)
+             */
+            skylight_code?:
               | 'scna'
               | 'scnw'
               | 'stna'
@@ -574,327 +534,32 @@ export interface HEScoreJSONSchema {
               | 'dseaw'
               | 'dseaaw'
               | 'thmabw';
-          /**
-           * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
-           */
-          skylight_u_value?: number;
-          /**
-           * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
-           */
-          skylight_shgc?: number;
-          /**
-           * Does this skylight have a solar screen?
-           */
-          solar_screen?: boolean;
-        };
-      }
-    ]
-        | [
-      {
-        /**
-         * Name of this roof instance
-         */
-        roof_name: 'roof1' | 'roof2';
-        /**
-         * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit, bowstring_roof
-         */
-        ceiling_area?: number;
-        /**
-         * Area of the roof, used if roof_type = cath_ceiling, flat_roof
-         */
-        roof_area?: number;
-        /**
-         * Roof construction assembly code (required unless roof_type is bowstring_roof or below_other_unit)
-         */
-        roof_assembly_code?:
-            | 'rfwf00co'
-            | 'rfwf00wo'
-            | 'rfwf00rc'
-            | 'rfwf00lc'
-            | 'rfwf00tg'
-            | 'rfwf03co'
-            | 'rfwf03wo'
-            | 'rfwf03rc'
-            | 'rfwf03lc'
-            | 'rfwf03tg'
-            | 'rfwf07co'
-            | 'rfwf07wo'
-            | 'rfwf07rc'
-            | 'rfwf07lc'
-            | 'rfwf07tg'
-            | 'rfwf11co'
-            | 'rfwf11wo'
-            | 'rfwf11rc'
-            | 'rfwf11lc'
-            | 'rfwf11tg'
-            | 'rfwf13co'
-            | 'rfwf13wo'
-            | 'rfwf13rc'
-            | 'rfwf13lc'
-            | 'rfwf13tg'
-            | 'rfwf15co'
-            | 'rfwf15wo'
-            | 'rfwf15rc'
-            | 'rfwf15lc'
-            | 'rfwf15tg'
-            | 'rfwf19co'
-            | 'rfwf19wo'
-            | 'rfwf19rc'
-            | 'rfwf19lc'
-            | 'rfwf19tg'
-            | 'rfwf21co'
-            | 'rfwf21wo'
-            | 'rfwf21rc'
-            | 'rfwf21lc'
-            | 'rfwf21tg'
-            | 'rfwf25co'
-            | 'rfwf25wo'
-            | 'rfwf25rc'
-            | 'rfwf25lc'
-            | 'rfwf25tg'
-            | 'rfwf27co'
-            | 'rfwf27wo'
-            | 'rfwf27rc'
-            | 'rfwf27lc'
-            | 'rfwf27tg'
-            | 'rfwf30co'
-            | 'rfwf30wo'
-            | 'rfwf30rc'
-            | 'rfwf30lc'
-            | 'rfwf30tg'
-            | 'rfwf35co'
-            | 'rfwf35wo'
-            | 'rfwf35rc'
-            | 'rfwf35lc'
-            | 'rfwf35tg'
-            | 'rfwf38co'
-            | 'rfwf38wo'
-            | 'rfwf38rc'
-            | 'rfwf38lc'
-            | 'rfwf38tg'
-            | 'rfwf44co'
-            | 'rfwf44wo'
-            | 'rfwf44rc'
-            | 'rfwf44lc'
-            | 'rfwf44tg'
-            | 'rfwf49co'
-            | 'rfwf49wo'
-            | 'rfwf49rc'
-            | 'rfwf49lc'
-            | 'rfwf49tg'
-            | 'rfrb00co'
-            | 'rfrb00wo'
-            | 'rfrb00rc'
-            | 'rfrb00lc'
-            | 'rfrb00tg'
-            | 'rfrb03co'
-            | 'rfrb03wo'
-            | 'rfrb03rc'
-            | 'rfrb03lc'
-            | 'rfrb03tg'
-            | 'rfrb07co'
-            | 'rfrb07wo'
-            | 'rfrb07rc'
-            | 'rfrb07lc'
-            | 'rfrb07tg'
-            | 'rfrb11co'
-            | 'rfrb11wo'
-            | 'rfrb11rc'
-            | 'rfrb11lc'
-            | 'rfrb11tg'
-            | 'rfrb13co'
-            | 'rfrb13wo'
-            | 'rfrb13rc'
-            | 'rfrb13lc'
-            | 'rfrb13tg'
-            | 'rfrb15co'
-            | 'rfrb15wo'
-            | 'rfrb15rc'
-            | 'rfrb15lc'
-            | 'rfrb15tg'
-            | 'rfrb19co'
-            | 'rfrb19wo'
-            | 'rfrb19rc'
-            | 'rfrb19lc'
-            | 'rfrb19tg'
-            | 'rfrb21co'
-            | 'rfrb21wo'
-            | 'rfrb21rc'
-            | 'rfrb21lc'
-            | 'rfrb21tg'
-            | 'rfrb25co'
-            | 'rfrb25wo'
-            | 'rfrb25rc'
-            | 'rfrb25lc'
-            | 'rfrb25tg'
-            | 'rfrb27co'
-            | 'rfrb27wo'
-            | 'rfrb27rc'
-            | 'rfrb27lc'
-            | 'rfrb27tg'
-            | 'rfrb30co'
-            | 'rfrb30wo'
-            | 'rfrb30rc'
-            | 'rfrb30lc'
-            | 'rfrb30tg'
-            | 'rfrb35co'
-            | 'rfrb35wo'
-            | 'rfrb35rc'
-            | 'rfrb35lc'
-            | 'rfrb35tg'
-            | 'rfrb38co'
-            | 'rfrb38wo'
-            | 'rfrb38rc'
-            | 'rfrb38lc'
-            | 'rfrb38tg'
-            | 'rfrb44co'
-            | 'rfrb44wo'
-            | 'rfrb44rc'
-            | 'rfrb44lc'
-            | 'rfrb44tg'
-            | 'rfrb49co'
-            | 'rfrb49wo'
-            | 'rfrb49rc'
-            | 'rfrb49lc'
-            | 'rfrb49tg'
-            | 'rfps00co'
-            | 'rfps00wo'
-            | 'rfps00rc'
-            | 'rfps00lc'
-            | 'rfps00tg'
-            | 'rfps03co'
-            | 'rfps03wo'
-            | 'rfps03rc'
-            | 'rfps03lc'
-            | 'rfps03tg'
-            | 'rfps07co'
-            | 'rfps07wo'
-            | 'rfps07rc'
-            | 'rfps07lc'
-            | 'rfps07tg'
-            | 'rfps11co'
-            | 'rfps11wo'
-            | 'rfps11rc'
-            | 'rfps11lc'
-            | 'rfps11tg'
-            | 'rfps13co'
-            | 'rfps13wo'
-            | 'rfps13rc'
-            | 'rfps13lc'
-            | 'rfps13tg'
-            | 'rfps15co'
-            | 'rfps15wo'
-            | 'rfps15rc'
-            | 'rfps15lc'
-            | 'rfps15tg'
-            | 'rfps19co'
-            | 'rfps19wo'
-            | 'rfps19rc'
-            | 'rfps19lc'
-            | 'rfps19tg'
-            | 'rfps21co'
-            | 'rfps21wo'
-            | 'rfps21rc'
-            | 'rfps21lc'
-            | 'rfps21tg'
-            | 'rfps25co'
-            | 'rfps25wo'
-            | 'rfps25rc'
-            | 'rfps25lc'
-            | 'rfps25tg'
-            | 'rfps30co'
-            | 'rfps30wo'
-            | 'rfps30rc'
-            | 'rfps30lc'
-            | 'rfps30tg';
-        /**
-         * Color of roof exterior surface
-         */
-        roof_color?: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color';
-        /**
-         * Absorptance of exterior surface (only used if roof_color is cool_color)
-         */
-        roof_absorptance?: number;
-        /**
-         * Type of roof
-         */
-        roof_type: (
-            | UnconditionedAttic
-            | CathedralCeiling
-            | BelowOtherUnit
-            | FlatRoof
-            | ManufacturedHomeBowstringRoof
-            ) &
-            string;
-        /**
-         * Ceiling construction assembly code (required unless roof_type is cath_ceiling, flat_roof or below_other_unit)
-         */
-        ceiling_assembly_code?:
-            | 'ecwf00'
-            | 'ecwf03'
-            | 'ecwf06'
-            | 'ecwf09'
-            | 'ecwf11'
-            | 'ecwf13'
-            | 'ecwf15'
-            | 'ecwf19'
-            | 'ecwf21'
-            | 'ecwf25'
-            | 'ecwf30'
-            | 'ecwf35'
-            | 'ecwf38'
-            | 'ecwf44'
-            | 'ecwf49'
-            | 'ecwf55'
-            | 'ecwf60'
-            | 'bcwf00'
-            | 'bcwf03'
-            | 'bcwf06'
-            | 'bcwf09'
-            | 'bcwf11'
-            | 'bcwf13'
-            | 'bcwf15'
-            | 'bcwf19'
-            | 'bcwf21'
-            | 'bcwf25'
-            | 'bcwf30';
-        /**
-         * Knee wall inputs
-         */
-        knee_wall?: {
-          /**
-           * Knee wall area
-           */
-          area: number;
-          /**
-           * Knee wall assembly code
-           */
-          assembly_code:
-              | 'kwwf00'
-              | 'kwwf03'
-              | 'kwwf07'
-              | 'kwwf11'
-              | 'kwwf13'
-              | 'kwwf15'
-              | 'kwwf19'
-              | 'kwwf21';
-        };
-        /**
-         * Inputs about the skylights on this roof
-         */
-        zone_skylight?: {
-          /**
-           * Area of skylights (square feet)
-           */
-          skylight_area: number;
-          /**
-           * Construction method to use for skylights
-           */
-          skylight_method: 'code' | 'custom';
-          /**
-           * Assembly code for skylights (only used if skylight_method is code)
-           */
-          skylight_code?:
+            /**
+             * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
+             */
+            skylight_u_value?: number;
+            /**
+             * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
+             */
+            skylight_shgc?: number;
+            /**
+             * Does this skylight have a solar screen?
+             */
+            solar_screen?: boolean;
+          },
+          ...{
+            /**
+             * Area of skylights (square feet)
+             */
+            skylight_area: number;
+            /**
+             * Construction method to use for skylights
+             */
+            skylight_method: 'code' | 'custom';
+            /**
+             * Assembly code for skylights (only used if skylight_method is code)
+             */
+            skylight_code?:
               | 'scna'
               | 'scnw'
               | 'stna'
@@ -913,25 +578,22 @@ export interface HEScoreJSONSchema {
               | 'dseaw'
               | 'dseaaw'
               | 'thmabw';
-          /**
-           * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
-           */
-          skylight_u_value?: number;
-          /**
-           * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
-           */
-          skylight_shgc?: number;
-          /**
-           * Does this skylight have a solar screen?
-           */
-          solar_screen?: boolean;
-        };
+            /**
+             * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
+             */
+            skylight_u_value?: number;
+            /**
+             * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
+             */
+            skylight_shgc?: number;
+            /**
+             * Does this skylight have a solar screen?
+             */
+            solar_screen?: boolean;
+          }[]
+        ];
       },
-      {
-        /**
-         * Name of this roof instance
-         */
-        roof_name: 'roof1' | 'roof2';
+      ...{
         /**
          * Area of ceiling (attic floor), used if roof_type = vented_attic, below_other_unit, bowstring_roof
          */
@@ -944,257 +606,255 @@ export interface HEScoreJSONSchema {
          * Roof construction assembly code (required unless roof_type is bowstring_roof or below_other_unit)
          */
         roof_assembly_code?:
-            | 'rfwf00co'
-            | 'rfwf00wo'
-            | 'rfwf00rc'
-            | 'rfwf00lc'
-            | 'rfwf00tg'
-            | 'rfwf03co'
-            | 'rfwf03wo'
-            | 'rfwf03rc'
-            | 'rfwf03lc'
-            | 'rfwf03tg'
-            | 'rfwf07co'
-            | 'rfwf07wo'
-            | 'rfwf07rc'
-            | 'rfwf07lc'
-            | 'rfwf07tg'
-            | 'rfwf11co'
-            | 'rfwf11wo'
-            | 'rfwf11rc'
-            | 'rfwf11lc'
-            | 'rfwf11tg'
-            | 'rfwf13co'
-            | 'rfwf13wo'
-            | 'rfwf13rc'
-            | 'rfwf13lc'
-            | 'rfwf13tg'
-            | 'rfwf15co'
-            | 'rfwf15wo'
-            | 'rfwf15rc'
-            | 'rfwf15lc'
-            | 'rfwf15tg'
-            | 'rfwf19co'
-            | 'rfwf19wo'
-            | 'rfwf19rc'
-            | 'rfwf19lc'
-            | 'rfwf19tg'
-            | 'rfwf21co'
-            | 'rfwf21wo'
-            | 'rfwf21rc'
-            | 'rfwf21lc'
-            | 'rfwf21tg'
-            | 'rfwf25co'
-            | 'rfwf25wo'
-            | 'rfwf25rc'
-            | 'rfwf25lc'
-            | 'rfwf25tg'
-            | 'rfwf27co'
-            | 'rfwf27wo'
-            | 'rfwf27rc'
-            | 'rfwf27lc'
-            | 'rfwf27tg'
-            | 'rfwf30co'
-            | 'rfwf30wo'
-            | 'rfwf30rc'
-            | 'rfwf30lc'
-            | 'rfwf30tg'
-            | 'rfwf35co'
-            | 'rfwf35wo'
-            | 'rfwf35rc'
-            | 'rfwf35lc'
-            | 'rfwf35tg'
-            | 'rfwf38co'
-            | 'rfwf38wo'
-            | 'rfwf38rc'
-            | 'rfwf38lc'
-            | 'rfwf38tg'
-            | 'rfwf44co'
-            | 'rfwf44wo'
-            | 'rfwf44rc'
-            | 'rfwf44lc'
-            | 'rfwf44tg'
-            | 'rfwf49co'
-            | 'rfwf49wo'
-            | 'rfwf49rc'
-            | 'rfwf49lc'
-            | 'rfwf49tg'
-            | 'rfrb00co'
-            | 'rfrb00wo'
-            | 'rfrb00rc'
-            | 'rfrb00lc'
-            | 'rfrb00tg'
-            | 'rfrb03co'
-            | 'rfrb03wo'
-            | 'rfrb03rc'
-            | 'rfrb03lc'
-            | 'rfrb03tg'
-            | 'rfrb07co'
-            | 'rfrb07wo'
-            | 'rfrb07rc'
-            | 'rfrb07lc'
-            | 'rfrb07tg'
-            | 'rfrb11co'
-            | 'rfrb11wo'
-            | 'rfrb11rc'
-            | 'rfrb11lc'
-            | 'rfrb11tg'
-            | 'rfrb13co'
-            | 'rfrb13wo'
-            | 'rfrb13rc'
-            | 'rfrb13lc'
-            | 'rfrb13tg'
-            | 'rfrb15co'
-            | 'rfrb15wo'
-            | 'rfrb15rc'
-            | 'rfrb15lc'
-            | 'rfrb15tg'
-            | 'rfrb19co'
-            | 'rfrb19wo'
-            | 'rfrb19rc'
-            | 'rfrb19lc'
-            | 'rfrb19tg'
-            | 'rfrb21co'
-            | 'rfrb21wo'
-            | 'rfrb21rc'
-            | 'rfrb21lc'
-            | 'rfrb21tg'
-            | 'rfrb25co'
-            | 'rfrb25wo'
-            | 'rfrb25rc'
-            | 'rfrb25lc'
-            | 'rfrb25tg'
-            | 'rfrb27co'
-            | 'rfrb27wo'
-            | 'rfrb27rc'
-            | 'rfrb27lc'
-            | 'rfrb27tg'
-            | 'rfrb30co'
-            | 'rfrb30wo'
-            | 'rfrb30rc'
-            | 'rfrb30lc'
-            | 'rfrb30tg'
-            | 'rfrb35co'
-            | 'rfrb35wo'
-            | 'rfrb35rc'
-            | 'rfrb35lc'
-            | 'rfrb35tg'
-            | 'rfrb38co'
-            | 'rfrb38wo'
-            | 'rfrb38rc'
-            | 'rfrb38lc'
-            | 'rfrb38tg'
-            | 'rfrb44co'
-            | 'rfrb44wo'
-            | 'rfrb44rc'
-            | 'rfrb44lc'
-            | 'rfrb44tg'
-            | 'rfrb49co'
-            | 'rfrb49wo'
-            | 'rfrb49rc'
-            | 'rfrb49lc'
-            | 'rfrb49tg'
-            | 'rfps00co'
-            | 'rfps00wo'
-            | 'rfps00rc'
-            | 'rfps00lc'
-            | 'rfps00tg'
-            | 'rfps03co'
-            | 'rfps03wo'
-            | 'rfps03rc'
-            | 'rfps03lc'
-            | 'rfps03tg'
-            | 'rfps07co'
-            | 'rfps07wo'
-            | 'rfps07rc'
-            | 'rfps07lc'
-            | 'rfps07tg'
-            | 'rfps11co'
-            | 'rfps11wo'
-            | 'rfps11rc'
-            | 'rfps11lc'
-            | 'rfps11tg'
-            | 'rfps13co'
-            | 'rfps13wo'
-            | 'rfps13rc'
-            | 'rfps13lc'
-            | 'rfps13tg'
-            | 'rfps15co'
-            | 'rfps15wo'
-            | 'rfps15rc'
-            | 'rfps15lc'
-            | 'rfps15tg'
-            | 'rfps19co'
-            | 'rfps19wo'
-            | 'rfps19rc'
-            | 'rfps19lc'
-            | 'rfps19tg'
-            | 'rfps21co'
-            | 'rfps21wo'
-            | 'rfps21rc'
-            | 'rfps21lc'
-            | 'rfps21tg'
-            | 'rfps25co'
-            | 'rfps25wo'
-            | 'rfps25rc'
-            | 'rfps25lc'
-            | 'rfps25tg'
-            | 'rfps30co'
-            | 'rfps30wo'
-            | 'rfps30rc'
-            | 'rfps30lc'
-            | 'rfps30tg';
+          | 'rfwf00co'
+          | 'rfwf00wo'
+          | 'rfwf00rc'
+          | 'rfwf00lc'
+          | 'rfwf00tg'
+          | 'rfwf03co'
+          | 'rfwf03wo'
+          | 'rfwf03rc'
+          | 'rfwf03lc'
+          | 'rfwf03tg'
+          | 'rfwf07co'
+          | 'rfwf07wo'
+          | 'rfwf07rc'
+          | 'rfwf07lc'
+          | 'rfwf07tg'
+          | 'rfwf11co'
+          | 'rfwf11wo'
+          | 'rfwf11rc'
+          | 'rfwf11lc'
+          | 'rfwf11tg'
+          | 'rfwf13co'
+          | 'rfwf13wo'
+          | 'rfwf13rc'
+          | 'rfwf13lc'
+          | 'rfwf13tg'
+          | 'rfwf15co'
+          | 'rfwf15wo'
+          | 'rfwf15rc'
+          | 'rfwf15lc'
+          | 'rfwf15tg'
+          | 'rfwf19co'
+          | 'rfwf19wo'
+          | 'rfwf19rc'
+          | 'rfwf19lc'
+          | 'rfwf19tg'
+          | 'rfwf21co'
+          | 'rfwf21wo'
+          | 'rfwf21rc'
+          | 'rfwf21lc'
+          | 'rfwf21tg'
+          | 'rfwf25co'
+          | 'rfwf25wo'
+          | 'rfwf25rc'
+          | 'rfwf25lc'
+          | 'rfwf25tg'
+          | 'rfwf27co'
+          | 'rfwf27wo'
+          | 'rfwf27rc'
+          | 'rfwf27lc'
+          | 'rfwf27tg'
+          | 'rfwf30co'
+          | 'rfwf30wo'
+          | 'rfwf30rc'
+          | 'rfwf30lc'
+          | 'rfwf30tg'
+          | 'rfwf35co'
+          | 'rfwf35wo'
+          | 'rfwf35rc'
+          | 'rfwf35lc'
+          | 'rfwf35tg'
+          | 'rfwf38co'
+          | 'rfwf38wo'
+          | 'rfwf38rc'
+          | 'rfwf38lc'
+          | 'rfwf38tg'
+          | 'rfwf44co'
+          | 'rfwf44wo'
+          | 'rfwf44rc'
+          | 'rfwf44lc'
+          | 'rfwf44tg'
+          | 'rfwf49co'
+          | 'rfwf49wo'
+          | 'rfwf49rc'
+          | 'rfwf49lc'
+          | 'rfwf49tg'
+          | 'rfrb00co'
+          | 'rfrb00wo'
+          | 'rfrb00rc'
+          | 'rfrb00lc'
+          | 'rfrb00tg'
+          | 'rfrb03co'
+          | 'rfrb03wo'
+          | 'rfrb03rc'
+          | 'rfrb03lc'
+          | 'rfrb03tg'
+          | 'rfrb07co'
+          | 'rfrb07wo'
+          | 'rfrb07rc'
+          | 'rfrb07lc'
+          | 'rfrb07tg'
+          | 'rfrb11co'
+          | 'rfrb11wo'
+          | 'rfrb11rc'
+          | 'rfrb11lc'
+          | 'rfrb11tg'
+          | 'rfrb13co'
+          | 'rfrb13wo'
+          | 'rfrb13rc'
+          | 'rfrb13lc'
+          | 'rfrb13tg'
+          | 'rfrb15co'
+          | 'rfrb15wo'
+          | 'rfrb15rc'
+          | 'rfrb15lc'
+          | 'rfrb15tg'
+          | 'rfrb19co'
+          | 'rfrb19wo'
+          | 'rfrb19rc'
+          | 'rfrb19lc'
+          | 'rfrb19tg'
+          | 'rfrb21co'
+          | 'rfrb21wo'
+          | 'rfrb21rc'
+          | 'rfrb21lc'
+          | 'rfrb21tg'
+          | 'rfrb25co'
+          | 'rfrb25wo'
+          | 'rfrb25rc'
+          | 'rfrb25lc'
+          | 'rfrb25tg'
+          | 'rfrb27co'
+          | 'rfrb27wo'
+          | 'rfrb27rc'
+          | 'rfrb27lc'
+          | 'rfrb27tg'
+          | 'rfrb30co'
+          | 'rfrb30wo'
+          | 'rfrb30rc'
+          | 'rfrb30lc'
+          | 'rfrb30tg'
+          | 'rfrb35co'
+          | 'rfrb35wo'
+          | 'rfrb35rc'
+          | 'rfrb35lc'
+          | 'rfrb35tg'
+          | 'rfrb38co'
+          | 'rfrb38wo'
+          | 'rfrb38rc'
+          | 'rfrb38lc'
+          | 'rfrb38tg'
+          | 'rfrb44co'
+          | 'rfrb44wo'
+          | 'rfrb44rc'
+          | 'rfrb44lc'
+          | 'rfrb44tg'
+          | 'rfrb49co'
+          | 'rfrb49wo'
+          | 'rfrb49rc'
+          | 'rfrb49lc'
+          | 'rfrb49tg'
+          | 'rfps00co'
+          | 'rfps00wo'
+          | 'rfps00rc'
+          | 'rfps00lc'
+          | 'rfps00tg'
+          | 'rfps03co'
+          | 'rfps03wo'
+          | 'rfps03rc'
+          | 'rfps03lc'
+          | 'rfps03tg'
+          | 'rfps07co'
+          | 'rfps07wo'
+          | 'rfps07rc'
+          | 'rfps07lc'
+          | 'rfps07tg'
+          | 'rfps11co'
+          | 'rfps11wo'
+          | 'rfps11rc'
+          | 'rfps11lc'
+          | 'rfps11tg'
+          | 'rfps13co'
+          | 'rfps13wo'
+          | 'rfps13rc'
+          | 'rfps13lc'
+          | 'rfps13tg'
+          | 'rfps15co'
+          | 'rfps15wo'
+          | 'rfps15rc'
+          | 'rfps15lc'
+          | 'rfps15tg'
+          | 'rfps19co'
+          | 'rfps19wo'
+          | 'rfps19rc'
+          | 'rfps19lc'
+          | 'rfps19tg'
+          | 'rfps21co'
+          | 'rfps21wo'
+          | 'rfps21rc'
+          | 'rfps21lc'
+          | 'rfps21tg'
+          | 'rfps25co'
+          | 'rfps25wo'
+          | 'rfps25rc'
+          | 'rfps25lc'
+          | 'rfps25tg'
+          | 'rfps30co'
+          | 'rfps30wo'
+          | 'rfps30rc'
+          | 'rfps30lc'
+          | 'rfps30tg';
         /**
          * Color of roof exterior surface
          */
         roof_color?: 'white' | 'light' | 'medium' | 'medium_dark' | 'dark' | 'cool_color';
         /**
-         * Absorptance of exterior surface (only used if roof_color is cool_color)
+         * Solar absorptance of the roof exterior surface (only used if roof_color is cool_color)
          */
         roof_absorptance?: number;
         /**
+         * Indicates whether roof_absorptance is the initial value or the 3-year aged value from a CRRC product rating (only used if roof_color is cool_color)
+         */
+        roof_absorptance_condition?: 'initial' | '3-year';
+        /**
          * Type of roof
          */
-        roof_type: (
-            | UnconditionedAttic
-            | CathedralCeiling
-            | BelowOtherUnit
-            | FlatRoof
-            | ManufacturedHomeBowstringRoof
-            ) &
-            string;
+        roof_type: (UnconditionedAttic | CathedralCeiling | BelowOtherUnit | FlatRoof | ManufacturedHomeBowstringRoof) &
+          string;
         /**
          * Ceiling construction assembly code (required unless roof_type is cath_ceiling, flat_roof or below_other_unit)
          */
         ceiling_assembly_code?:
-            | 'ecwf00'
-            | 'ecwf03'
-            | 'ecwf06'
-            | 'ecwf09'
-            | 'ecwf11'
-            | 'ecwf13'
-            | 'ecwf15'
-            | 'ecwf19'
-            | 'ecwf21'
-            | 'ecwf25'
-            | 'ecwf30'
-            | 'ecwf35'
-            | 'ecwf38'
-            | 'ecwf44'
-            | 'ecwf49'
-            | 'ecwf55'
-            | 'ecwf60'
-            | 'bcwf00'
-            | 'bcwf03'
-            | 'bcwf06'
-            | 'bcwf09'
-            | 'bcwf11'
-            | 'bcwf13'
-            | 'bcwf15'
-            | 'bcwf19'
-            | 'bcwf21'
-            | 'bcwf25'
-            | 'bcwf30';
+          | 'ecwf00'
+          | 'ecwf03'
+          | 'ecwf06'
+          | 'ecwf09'
+          | 'ecwf11'
+          | 'ecwf13'
+          | 'ecwf15'
+          | 'ecwf19'
+          | 'ecwf21'
+          | 'ecwf25'
+          | 'ecwf30'
+          | 'ecwf35'
+          | 'ecwf38'
+          | 'ecwf44'
+          | 'ecwf49'
+          | 'ecwf55'
+          | 'ecwf60'
+          | 'bcwf00'
+          | 'bcwf03'
+          | 'bcwf06'
+          | 'bcwf09'
+          | 'bcwf11'
+          | 'bcwf13'
+          | 'bcwf15'
+          | 'bcwf19'
+          | 'bcwf21'
+          | 'bcwf25'
+          | 'bcwf30';
         /**
          * Knee wall inputs
          */
@@ -1206,32 +866,27 @@ export interface HEScoreJSONSchema {
           /**
            * Knee wall assembly code
            */
-          assembly_code:
-              | 'kwwf00'
-              | 'kwwf03'
-              | 'kwwf07'
-              | 'kwwf11'
-              | 'kwwf13'
-              | 'kwwf15'
-              | 'kwwf19'
-              | 'kwwf21';
+          assembly_code: 'kwwf00' | 'kwwf03' | 'kwwf07' | 'kwwf11' | 'kwwf13' | 'kwwf15' | 'kwwf19' | 'kwwf21';
         };
         /**
-         * Inputs about the skylights on this roof
+         * @minItems 1
+         *
+         * Items: Inputs about the skylights on this roof
          */
-        zone_skylight?: {
-          /**
-           * Area of skylights (square feet)
-           */
-          skylight_area: number;
-          /**
-           * Construction method to use for skylights
-           */
-          skylight_method: 'code' | 'custom';
-          /**
-           * Assembly code for skylights (only used if skylight_method is code)
-           */
-          skylight_code?:
+        zone_skylight?: [
+          {
+            /**
+             * Area of skylights (square feet)
+             */
+            skylight_area: number;
+            /**
+             * Construction method to use for skylights
+             */
+            skylight_method: 'code' | 'custom';
+            /**
+             * Assembly code for skylights (only used if skylight_method is code)
+             */
+            skylight_code?:
               | 'scna'
               | 'scnw'
               | 'stna'
@@ -1250,35 +905,73 @@ export interface HEScoreJSONSchema {
               | 'dseaw'
               | 'dseaaw'
               | 'thmabw';
-          /**
-           * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
-           */
-          skylight_u_value?: number;
-          /**
-           * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
-           */
-          skylight_shgc?: number;
-          /**
-           * Does this skylight have a solar screen?
-           */
-          solar_screen?: boolean;
-        };
-      }
+            /**
+             * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
+             */
+            skylight_u_value?: number;
+            /**
+             * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
+             */
+            skylight_shgc?: number;
+            /**
+             * Does this skylight have a solar screen?
+             */
+            solar_screen?: boolean;
+          },
+          ...{
+            /**
+             * Area of skylights (square feet)
+             */
+            skylight_area: number;
+            /**
+             * Construction method to use for skylights
+             */
+            skylight_method: 'code' | 'custom';
+            /**
+             * Assembly code for skylights (only used if skylight_method is code)
+             */
+            skylight_code?:
+              | 'scna'
+              | 'scnw'
+              | 'stna'
+              | 'stnw'
+              | 'dcaa'
+              | 'dcab'
+              | 'dcaw'
+              | 'dtaa'
+              | 'dtab'
+              | 'dtaw'
+              | 'dpeaw'
+              | 'dpeaab'
+              | 'dpeaaw'
+              | 'dseaa'
+              | 'dseab'
+              | 'dseaw'
+              | 'dseaaw'
+              | 'thmabw';
+            /**
+             * U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)
+             */
+            skylight_u_value?: number;
+            /**
+             * Solar heat gain coefficient of skylights (only used if skylight_method is custom)
+             */
+            skylight_shgc?: number;
+            /**
+             * Does this skylight have a solar screen?
+             */
+            solar_screen?: boolean;
+          }[]
+        ];
+      }[]
     ];
     /**
      * Inputs about the construction of the floor(s)
      *
-     * @minItems 0
-     * @maxItems 2
+     * @minItems 1
      */
-    zone_floor:
-        | []
-        | [
+    zone_floor: [
       {
-        /**
-         * Name of this floor instance
-         */
-        floor_name: 'floor1' | 'floor2';
         /**
          * Area of this foundation type
          */
@@ -1287,15 +980,15 @@ export interface HEScoreJSONSchema {
          * Type of foundation
          */
         foundation_type: (
-            | SlabOnGradeFoundation
-            | UnconditionedBasement
-            | ConditionedBasement
-            | UnventedCrawlspace
-            | VentedCrawlspace
-            | AboveOtherUnit
-            | ManufacturedHomeBellyAndWing
-            ) &
-            string;
+          | SlabOnGradeFoundation
+          | UnconditionedBasement
+          | ConditionedBasement
+          | UnventedCrawlspace
+          | VentedCrawlspace
+          | AboveOtherUnit
+          | ManufacturedHomeBellyAndWing
+        ) &
+          string;
         /**
          * Foundation wall / slab edge insulation R-value (sf-hr-F/Btu)
          */
@@ -1304,81 +997,26 @@ export interface HEScoreJSONSchema {
          * Floor construction assembly code (only used if foundation_type is not slab_on_grade, above_other_unit, or cond_basement)
          */
         floor_assembly_code?:
-            | 'efwf00ca'
-            | 'efwf03ca'
-            | 'efwf07ca'
-            | 'efwf11ca'
-            | 'efwf13ca'
-            | 'efwf15ca'
-            | 'efwf19ca'
-            | 'efwf21ca'
-            | 'efwf25ca'
-            | 'efwf30ca'
-            | 'efwf35ca'
-            | 'efwf38ca'
-            | 'efbw00'
-            | 'efbw11'
-            | 'efbw13'
-            | 'efbw19'
-            | 'efbw22'
-            | 'efbw30';
-      }
-    ]
-        | [
-      {
-        /**
-         * Name of this floor instance
-         */
-        floor_name: 'floor1' | 'floor2';
-        /**
-         * Area of this foundation type
-         */
-        floor_area: number;
-        /**
-         * Type of foundation
-         */
-        foundation_type: (
-            | SlabOnGradeFoundation
-            | UnconditionedBasement
-            | ConditionedBasement
-            | UnventedCrawlspace
-            | VentedCrawlspace
-            | AboveOtherUnit
-            | ManufacturedHomeBellyAndWing
-            ) &
-            string;
-        /**
-         * Foundation wall / slab edge insulation R-value (sf-hr-F/Btu)
-         */
-        foundation_insulation_level?: number;
-        /**
-         * Floor construction assembly code (only used if foundation_type is not slab_on_grade, above_other_unit, or cond_basement)
-         */
-        floor_assembly_code?:
-            | 'efwf00ca'
-            | 'efwf03ca'
-            | 'efwf07ca'
-            | 'efwf11ca'
-            | 'efwf13ca'
-            | 'efwf15ca'
-            | 'efwf19ca'
-            | 'efwf21ca'
-            | 'efwf25ca'
-            | 'efwf30ca'
-            | 'efwf35ca'
-            | 'efwf38ca'
-            | 'efbw00'
-            | 'efbw11'
-            | 'efbw13'
-            | 'efbw19'
-            | 'efbw22'
-            | 'efbw30';
+          | 'efwf00ca'
+          | 'efwf03ca'
+          | 'efwf07ca'
+          | 'efwf11ca'
+          | 'efwf13ca'
+          | 'efwf15ca'
+          | 'efwf19ca'
+          | 'efwf21ca'
+          | 'efwf25ca'
+          | 'efwf30ca'
+          | 'efwf35ca'
+          | 'efwf38ca'
+          | 'efbw00'
+          | 'efbw11'
+          | 'efbw13'
+          | 'efbw19'
+          | 'efbw22'
+          | 'efbw30';
       },
-      {
-        /**
-         * Name of this floor instance
-         */
-        floor_name: 'floor1' | 'floor2';
+      ...{
         /**
          * Area of this foundation type
          */
@@ -1387,15 +1025,15 @@ export interface HEScoreJSONSchema {
          * Type of foundation
          */
         foundation_type: (
-            | SlabOnGradeFoundation
-            | UnconditionedBasement
-            | ConditionedBasement
-            | UnventedCrawlspace
-            | VentedCrawlspace
-            | AboveOtherUnit
-            | ManufacturedHomeBellyAndWing
-            ) &
-            string;
+          | SlabOnGradeFoundation
+          | UnconditionedBasement
+          | ConditionedBasement
+          | UnventedCrawlspace
+          | VentedCrawlspace
+          | AboveOtherUnit
+          | ManufacturedHomeBellyAndWing
+        ) &
+          string;
         /**
          * Foundation wall / slab edge insulation R-value (sf-hr-F/Btu)
          */
@@ -1404,25 +1042,25 @@ export interface HEScoreJSONSchema {
          * Floor construction assembly code (only used if foundation_type is not slab_on_grade, above_other_unit, or cond_basement)
          */
         floor_assembly_code?:
-            | 'efwf00ca'
-            | 'efwf03ca'
-            | 'efwf07ca'
-            | 'efwf11ca'
-            | 'efwf13ca'
-            | 'efwf15ca'
-            | 'efwf19ca'
-            | 'efwf21ca'
-            | 'efwf25ca'
-            | 'efwf30ca'
-            | 'efwf35ca'
-            | 'efwf38ca'
-            | 'efbw00'
-            | 'efbw11'
-            | 'efbw13'
-            | 'efbw19'
-            | 'efbw22'
-            | 'efbw30';
-      }
+          | 'efwf00ca'
+          | 'efwf03ca'
+          | 'efwf07ca'
+          | 'efwf11ca'
+          | 'efwf13ca'
+          | 'efwf15ca'
+          | 'efwf19ca'
+          | 'efwf21ca'
+          | 'efwf25ca'
+          | 'efwf30ca'
+          | 'efwf35ca'
+          | 'efwf38ca'
+          | 'efbw00'
+          | 'efbw11'
+          | 'efbw13'
+          | 'efbw19'
+          | 'efbw22'
+          | 'efbw30';
+      }[]
     ];
     /**
      * Inputs about the construction of the walls
@@ -1440,207 +1078,210 @@ export interface HEScoreJSONSchema {
          * Wall construction assembly code
          */
         wall_assembly_code?:
-            | 'ewwf00wo'
-            | 'ewwf00st'
-            | 'ewwf00vi'
-            | 'ewwf00al'
-            | 'ewwf00br'
-            | 'ewwf03wo'
-            | 'ewwf03st'
-            | 'ewwf03vi'
-            | 'ewwf03al'
-            | 'ewwf03br'
-            | 'ewwf07wo'
-            | 'ewwf07st'
-            | 'ewwf07vi'
-            | 'ewwf07al'
-            | 'ewwf07br'
-            | 'ewwf11wo'
-            | 'ewwf11st'
-            | 'ewwf11vi'
-            | 'ewwf11al'
-            | 'ewwf11br'
-            | 'ewwf13wo'
-            | 'ewwf13st'
-            | 'ewwf13vi'
-            | 'ewwf13al'
-            | 'ewwf13br'
-            | 'ewwf15wo'
-            | 'ewwf15st'
-            | 'ewwf15vi'
-            | 'ewwf15al'
-            | 'ewwf15br'
-            | 'ewwf19wo'
-            | 'ewwf19st'
-            | 'ewwf19vi'
-            | 'ewwf19al'
-            | 'ewwf19br'
-            | 'ewwf21wo'
-            | 'ewwf21st'
-            | 'ewwf21vi'
-            | 'ewwf21al'
-            | 'ewwf21br'
-            | 'ewsf00wo'
-            | 'ewsf00st'
-            | 'ewsf00vi'
-            | 'ewsf00al'
-            | 'ewsf00br'
-            | 'ewsf03wo'
-            | 'ewsf03st'
-            | 'ewsf03vi'
-            | 'ewsf03al'
-            | 'ewsf03br'
-            | 'ewsf07wo'
-            | 'ewsf07st'
-            | 'ewsf07vi'
-            | 'ewsf07al'
-            | 'ewsf07br'
-            | 'ewsf11wo'
-            | 'ewsf11st'
-            | 'ewsf11vi'
-            | 'ewsf11al'
-            | 'ewsf11br'
-            | 'ewsf13wo'
-            | 'ewsf13st'
-            | 'ewsf13vi'
-            | 'ewsf13al'
-            | 'ewsf13br'
-            | 'ewsf15wo'
-            | 'ewsf15st'
-            | 'ewsf15vi'
-            | 'ewsf15al'
-            | 'ewsf15br'
-            | 'ewsf19wo'
-            | 'ewsf19st'
-            | 'ewsf19vi'
-            | 'ewsf19al'
-            | 'ewsf19br'
-            | 'ewsf21wo'
-            | 'ewsf21st'
-            | 'ewsf21vi'
-            | 'ewsf21al'
-            | 'ewsf21br'
-            | 'ewps00wo'
-            | 'ewps00st'
-            | 'ewps00vi'
-            | 'ewps00al'
-            | 'ewps00br'
-            | 'ewps03wo'
-            | 'ewps03st'
-            | 'ewps03vi'
-            | 'ewps03al'
-            | 'ewps03br'
-            | 'ewps07wo'
-            | 'ewps07st'
-            | 'ewps07vi'
-            | 'ewps07al'
-            | 'ewps07br'
-            | 'ewps11wo'
-            | 'ewps11st'
-            | 'ewps11vi'
-            | 'ewps11al'
-            | 'ewps11br'
-            | 'ewps13wo'
-            | 'ewps13st'
-            | 'ewps13vi'
-            | 'ewps13al'
-            | 'ewps13br'
-            | 'ewps15wo'
-            | 'ewps15st'
-            | 'ewps15vi'
-            | 'ewps15al'
-            | 'ewps15br'
-            | 'ewps19wo'
-            | 'ewps19st'
-            | 'ewps19vi'
-            | 'ewps19al'
-            | 'ewps19br'
-            | 'ewps21wo'
-            | 'ewps21st'
-            | 'ewps21vi'
-            | 'ewps21al'
-            | 'ewps21br'
-            | 'ewov19wo'
-            | 'ewov19st'
-            | 'ewov19vi'
-            | 'ewov19al'
-            | 'ewov19br'
-            | 'ewov21wo'
-            | 'ewov21st'
-            | 'ewov21vi'
-            | 'ewov21al'
-            | 'ewov21br'
-            | 'ewov25wo'
-            | 'ewov25st'
-            | 'ewov25vi'
-            | 'ewov25al'
-            | 'ewov25br'
-            | 'ewov27wo'
-            | 'ewov27st'
-            | 'ewov27vi'
-            | 'ewov27al'
-            | 'ewov27br'
-            | 'ewov33wo'
-            | 'ewov33st'
-            | 'ewov33vi'
-            | 'ewov33al'
-            | 'ewov33br'
-            | 'ewov35wo'
-            | 'ewov35st'
-            | 'ewov35vi'
-            | 'ewov35al'
-            | 'ewov35br'
-            | 'ewov38wo'
-            | 'ewov38st'
-            | 'ewov38vi'
-            | 'ewov38al'
-            | 'ewov38br'
-            | 'ewbr00nn'
-            | 'ewbr05nn'
-            | 'ewbr10nn'
-            | 'ewcb00st'
-            | 'ewcb00br'
-            | 'ewcb00nn'
-            | 'ewcb03st'
-            | 'ewcb03br'
-            | 'ewcb03nn'
-            | 'ewcb06st'
-            | 'ewcb06br'
-            | 'ewcb06nn'
-            | 'ewsb00st'
-            | 'iwwf00'
-            | 'iwwf03'
-            | 'iwwf07'
-            | 'iwwf11'
-            | 'iwwf13'
-            | 'iwwf15'
-            | 'iwwf19'
-            | 'iwwf21';
+          | 'ewwf00wo'
+          | 'ewwf00st'
+          | 'ewwf00vi'
+          | 'ewwf00al'
+          | 'ewwf00br'
+          | 'ewwf03wo'
+          | 'ewwf03st'
+          | 'ewwf03vi'
+          | 'ewwf03al'
+          | 'ewwf03br'
+          | 'ewwf07wo'
+          | 'ewwf07st'
+          | 'ewwf07vi'
+          | 'ewwf07al'
+          | 'ewwf07br'
+          | 'ewwf11wo'
+          | 'ewwf11st'
+          | 'ewwf11vi'
+          | 'ewwf11al'
+          | 'ewwf11br'
+          | 'ewwf13wo'
+          | 'ewwf13st'
+          | 'ewwf13vi'
+          | 'ewwf13al'
+          | 'ewwf13br'
+          | 'ewwf15wo'
+          | 'ewwf15st'
+          | 'ewwf15vi'
+          | 'ewwf15al'
+          | 'ewwf15br'
+          | 'ewwf19wo'
+          | 'ewwf19st'
+          | 'ewwf19vi'
+          | 'ewwf19al'
+          | 'ewwf19br'
+          | 'ewwf21wo'
+          | 'ewwf21st'
+          | 'ewwf21vi'
+          | 'ewwf21al'
+          | 'ewwf21br'
+          | 'ewsf00wo'
+          | 'ewsf00st'
+          | 'ewsf00vi'
+          | 'ewsf00al'
+          | 'ewsf00br'
+          | 'ewsf03wo'
+          | 'ewsf03st'
+          | 'ewsf03vi'
+          | 'ewsf03al'
+          | 'ewsf03br'
+          | 'ewsf07wo'
+          | 'ewsf07st'
+          | 'ewsf07vi'
+          | 'ewsf07al'
+          | 'ewsf07br'
+          | 'ewsf11wo'
+          | 'ewsf11st'
+          | 'ewsf11vi'
+          | 'ewsf11al'
+          | 'ewsf11br'
+          | 'ewsf13wo'
+          | 'ewsf13st'
+          | 'ewsf13vi'
+          | 'ewsf13al'
+          | 'ewsf13br'
+          | 'ewsf15wo'
+          | 'ewsf15st'
+          | 'ewsf15vi'
+          | 'ewsf15al'
+          | 'ewsf15br'
+          | 'ewsf19wo'
+          | 'ewsf19st'
+          | 'ewsf19vi'
+          | 'ewsf19al'
+          | 'ewsf19br'
+          | 'ewsf21wo'
+          | 'ewsf21st'
+          | 'ewsf21vi'
+          | 'ewsf21al'
+          | 'ewsf21br'
+          | 'ewps00wo'
+          | 'ewps00st'
+          | 'ewps00vi'
+          | 'ewps00al'
+          | 'ewps00br'
+          | 'ewps03wo'
+          | 'ewps03st'
+          | 'ewps03vi'
+          | 'ewps03al'
+          | 'ewps03br'
+          | 'ewps07wo'
+          | 'ewps07st'
+          | 'ewps07vi'
+          | 'ewps07al'
+          | 'ewps07br'
+          | 'ewps11wo'
+          | 'ewps11st'
+          | 'ewps11vi'
+          | 'ewps11al'
+          | 'ewps11br'
+          | 'ewps13wo'
+          | 'ewps13st'
+          | 'ewps13vi'
+          | 'ewps13al'
+          | 'ewps13br'
+          | 'ewps15wo'
+          | 'ewps15st'
+          | 'ewps15vi'
+          | 'ewps15al'
+          | 'ewps15br'
+          | 'ewps19wo'
+          | 'ewps19st'
+          | 'ewps19vi'
+          | 'ewps19al'
+          | 'ewps19br'
+          | 'ewps21wo'
+          | 'ewps21st'
+          | 'ewps21vi'
+          | 'ewps21al'
+          | 'ewps21br'
+          | 'ewov19wo'
+          | 'ewov19st'
+          | 'ewov19vi'
+          | 'ewov19al'
+          | 'ewov19br'
+          | 'ewov21wo'
+          | 'ewov21st'
+          | 'ewov21vi'
+          | 'ewov21al'
+          | 'ewov21br'
+          | 'ewov25wo'
+          | 'ewov25st'
+          | 'ewov25vi'
+          | 'ewov25al'
+          | 'ewov25br'
+          | 'ewov27wo'
+          | 'ewov27st'
+          | 'ewov27vi'
+          | 'ewov27al'
+          | 'ewov27br'
+          | 'ewov33wo'
+          | 'ewov33st'
+          | 'ewov33vi'
+          | 'ewov33al'
+          | 'ewov33br'
+          | 'ewov35wo'
+          | 'ewov35st'
+          | 'ewov35vi'
+          | 'ewov35al'
+          | 'ewov35br'
+          | 'ewov38wo'
+          | 'ewov38st'
+          | 'ewov38vi'
+          | 'ewov38al'
+          | 'ewov38br'
+          | 'ewbr00nn'
+          | 'ewbr05nn'
+          | 'ewbr10nn'
+          | 'ewcb00st'
+          | 'ewcb00br'
+          | 'ewcb00nn'
+          | 'ewcb03st'
+          | 'ewcb03br'
+          | 'ewcb03nn'
+          | 'ewcb06st'
+          | 'ewcb06br'
+          | 'ewcb06nn'
+          | 'ewsb00st'
+          | 'iwwf00'
+          | 'iwwf03'
+          | 'iwwf07'
+          | 'iwwf11'
+          | 'iwwf13'
+          | 'iwwf15'
+          | 'iwwf19'
+          | 'iwwf21';
         /**
          * What is on the other side of the wall
          */
         adjacent_to:
-            | 'outside'
-            | 'other_unit'
-            | 'other_heated_space'
-            | 'other_multifamily_buffer_space'
-            | 'other_non_freezing_space';
+          | 'outside'
+          | 'other_unit'
+          | 'other_heated_space'
+          | 'other_multifamily_buffer_space'
+          | 'other_non_freezing_space';
         /**
-         * Inputs about the windows on this wall
+         * @minItems 1
+         *
+         * Items: Inputs about the windows on this wall
          */
-        zone_window?: {
-          /**
-           * Area of windows on this wall (square feet)
-           */
-          window_area: number;
-          /**
-           * Construction method to use for this window
-           */
-          window_method?: 'code' | 'custom';
-          /**
-           * assembly code for this window (only used if window_method is code)
-           */
-          window_code?:
+        zone_window?: [
+          {
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
               | 'scna'
               | 'scnw'
               | 'stna'
@@ -1659,19 +1300,64 @@ export interface HEScoreJSONSchema {
               | 'dseaw'
               | 'dseaaw'
               | 'thmabw';
-          /**
-           * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
-           */
-          window_u_value?: number;
-          /**
-           * Solar heat gain coefficient of this window (only used if window_method is custom)
-           */
-          window_shgc?: number;
-          /**
-           * Does this window have a solar screen?
-           */
-          solar_screen?: boolean;
-        };
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          },
+          ...{
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
+              | 'scna'
+              | 'scnw'
+              | 'stna'
+              | 'stnw'
+              | 'dcaa'
+              | 'dcab'
+              | 'dcaw'
+              | 'dtaa'
+              | 'dtab'
+              | 'dtaw'
+              | 'dpeaw'
+              | 'dpeaab'
+              | 'dpeaaw'
+              | 'dseaa'
+              | 'dseab'
+              | 'dseaw'
+              | 'dseaaw'
+              | 'thmabw';
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          }[]
+        ];
       },
       {
         /**
@@ -1682,207 +1368,210 @@ export interface HEScoreJSONSchema {
          * Wall construction assembly code
          */
         wall_assembly_code?:
-            | 'ewwf00wo'
-            | 'ewwf00st'
-            | 'ewwf00vi'
-            | 'ewwf00al'
-            | 'ewwf00br'
-            | 'ewwf03wo'
-            | 'ewwf03st'
-            | 'ewwf03vi'
-            | 'ewwf03al'
-            | 'ewwf03br'
-            | 'ewwf07wo'
-            | 'ewwf07st'
-            | 'ewwf07vi'
-            | 'ewwf07al'
-            | 'ewwf07br'
-            | 'ewwf11wo'
-            | 'ewwf11st'
-            | 'ewwf11vi'
-            | 'ewwf11al'
-            | 'ewwf11br'
-            | 'ewwf13wo'
-            | 'ewwf13st'
-            | 'ewwf13vi'
-            | 'ewwf13al'
-            | 'ewwf13br'
-            | 'ewwf15wo'
-            | 'ewwf15st'
-            | 'ewwf15vi'
-            | 'ewwf15al'
-            | 'ewwf15br'
-            | 'ewwf19wo'
-            | 'ewwf19st'
-            | 'ewwf19vi'
-            | 'ewwf19al'
-            | 'ewwf19br'
-            | 'ewwf21wo'
-            | 'ewwf21st'
-            | 'ewwf21vi'
-            | 'ewwf21al'
-            | 'ewwf21br'
-            | 'ewsf00wo'
-            | 'ewsf00st'
-            | 'ewsf00vi'
-            | 'ewsf00al'
-            | 'ewsf00br'
-            | 'ewsf03wo'
-            | 'ewsf03st'
-            | 'ewsf03vi'
-            | 'ewsf03al'
-            | 'ewsf03br'
-            | 'ewsf07wo'
-            | 'ewsf07st'
-            | 'ewsf07vi'
-            | 'ewsf07al'
-            | 'ewsf07br'
-            | 'ewsf11wo'
-            | 'ewsf11st'
-            | 'ewsf11vi'
-            | 'ewsf11al'
-            | 'ewsf11br'
-            | 'ewsf13wo'
-            | 'ewsf13st'
-            | 'ewsf13vi'
-            | 'ewsf13al'
-            | 'ewsf13br'
-            | 'ewsf15wo'
-            | 'ewsf15st'
-            | 'ewsf15vi'
-            | 'ewsf15al'
-            | 'ewsf15br'
-            | 'ewsf19wo'
-            | 'ewsf19st'
-            | 'ewsf19vi'
-            | 'ewsf19al'
-            | 'ewsf19br'
-            | 'ewsf21wo'
-            | 'ewsf21st'
-            | 'ewsf21vi'
-            | 'ewsf21al'
-            | 'ewsf21br'
-            | 'ewps00wo'
-            | 'ewps00st'
-            | 'ewps00vi'
-            | 'ewps00al'
-            | 'ewps00br'
-            | 'ewps03wo'
-            | 'ewps03st'
-            | 'ewps03vi'
-            | 'ewps03al'
-            | 'ewps03br'
-            | 'ewps07wo'
-            | 'ewps07st'
-            | 'ewps07vi'
-            | 'ewps07al'
-            | 'ewps07br'
-            | 'ewps11wo'
-            | 'ewps11st'
-            | 'ewps11vi'
-            | 'ewps11al'
-            | 'ewps11br'
-            | 'ewps13wo'
-            | 'ewps13st'
-            | 'ewps13vi'
-            | 'ewps13al'
-            | 'ewps13br'
-            | 'ewps15wo'
-            | 'ewps15st'
-            | 'ewps15vi'
-            | 'ewps15al'
-            | 'ewps15br'
-            | 'ewps19wo'
-            | 'ewps19st'
-            | 'ewps19vi'
-            | 'ewps19al'
-            | 'ewps19br'
-            | 'ewps21wo'
-            | 'ewps21st'
-            | 'ewps21vi'
-            | 'ewps21al'
-            | 'ewps21br'
-            | 'ewov19wo'
-            | 'ewov19st'
-            | 'ewov19vi'
-            | 'ewov19al'
-            | 'ewov19br'
-            | 'ewov21wo'
-            | 'ewov21st'
-            | 'ewov21vi'
-            | 'ewov21al'
-            | 'ewov21br'
-            | 'ewov25wo'
-            | 'ewov25st'
-            | 'ewov25vi'
-            | 'ewov25al'
-            | 'ewov25br'
-            | 'ewov27wo'
-            | 'ewov27st'
-            | 'ewov27vi'
-            | 'ewov27al'
-            | 'ewov27br'
-            | 'ewov33wo'
-            | 'ewov33st'
-            | 'ewov33vi'
-            | 'ewov33al'
-            | 'ewov33br'
-            | 'ewov35wo'
-            | 'ewov35st'
-            | 'ewov35vi'
-            | 'ewov35al'
-            | 'ewov35br'
-            | 'ewov38wo'
-            | 'ewov38st'
-            | 'ewov38vi'
-            | 'ewov38al'
-            | 'ewov38br'
-            | 'ewbr00nn'
-            | 'ewbr05nn'
-            | 'ewbr10nn'
-            | 'ewcb00st'
-            | 'ewcb00br'
-            | 'ewcb00nn'
-            | 'ewcb03st'
-            | 'ewcb03br'
-            | 'ewcb03nn'
-            | 'ewcb06st'
-            | 'ewcb06br'
-            | 'ewcb06nn'
-            | 'ewsb00st'
-            | 'iwwf00'
-            | 'iwwf03'
-            | 'iwwf07'
-            | 'iwwf11'
-            | 'iwwf13'
-            | 'iwwf15'
-            | 'iwwf19'
-            | 'iwwf21';
+          | 'ewwf00wo'
+          | 'ewwf00st'
+          | 'ewwf00vi'
+          | 'ewwf00al'
+          | 'ewwf00br'
+          | 'ewwf03wo'
+          | 'ewwf03st'
+          | 'ewwf03vi'
+          | 'ewwf03al'
+          | 'ewwf03br'
+          | 'ewwf07wo'
+          | 'ewwf07st'
+          | 'ewwf07vi'
+          | 'ewwf07al'
+          | 'ewwf07br'
+          | 'ewwf11wo'
+          | 'ewwf11st'
+          | 'ewwf11vi'
+          | 'ewwf11al'
+          | 'ewwf11br'
+          | 'ewwf13wo'
+          | 'ewwf13st'
+          | 'ewwf13vi'
+          | 'ewwf13al'
+          | 'ewwf13br'
+          | 'ewwf15wo'
+          | 'ewwf15st'
+          | 'ewwf15vi'
+          | 'ewwf15al'
+          | 'ewwf15br'
+          | 'ewwf19wo'
+          | 'ewwf19st'
+          | 'ewwf19vi'
+          | 'ewwf19al'
+          | 'ewwf19br'
+          | 'ewwf21wo'
+          | 'ewwf21st'
+          | 'ewwf21vi'
+          | 'ewwf21al'
+          | 'ewwf21br'
+          | 'ewsf00wo'
+          | 'ewsf00st'
+          | 'ewsf00vi'
+          | 'ewsf00al'
+          | 'ewsf00br'
+          | 'ewsf03wo'
+          | 'ewsf03st'
+          | 'ewsf03vi'
+          | 'ewsf03al'
+          | 'ewsf03br'
+          | 'ewsf07wo'
+          | 'ewsf07st'
+          | 'ewsf07vi'
+          | 'ewsf07al'
+          | 'ewsf07br'
+          | 'ewsf11wo'
+          | 'ewsf11st'
+          | 'ewsf11vi'
+          | 'ewsf11al'
+          | 'ewsf11br'
+          | 'ewsf13wo'
+          | 'ewsf13st'
+          | 'ewsf13vi'
+          | 'ewsf13al'
+          | 'ewsf13br'
+          | 'ewsf15wo'
+          | 'ewsf15st'
+          | 'ewsf15vi'
+          | 'ewsf15al'
+          | 'ewsf15br'
+          | 'ewsf19wo'
+          | 'ewsf19st'
+          | 'ewsf19vi'
+          | 'ewsf19al'
+          | 'ewsf19br'
+          | 'ewsf21wo'
+          | 'ewsf21st'
+          | 'ewsf21vi'
+          | 'ewsf21al'
+          | 'ewsf21br'
+          | 'ewps00wo'
+          | 'ewps00st'
+          | 'ewps00vi'
+          | 'ewps00al'
+          | 'ewps00br'
+          | 'ewps03wo'
+          | 'ewps03st'
+          | 'ewps03vi'
+          | 'ewps03al'
+          | 'ewps03br'
+          | 'ewps07wo'
+          | 'ewps07st'
+          | 'ewps07vi'
+          | 'ewps07al'
+          | 'ewps07br'
+          | 'ewps11wo'
+          | 'ewps11st'
+          | 'ewps11vi'
+          | 'ewps11al'
+          | 'ewps11br'
+          | 'ewps13wo'
+          | 'ewps13st'
+          | 'ewps13vi'
+          | 'ewps13al'
+          | 'ewps13br'
+          | 'ewps15wo'
+          | 'ewps15st'
+          | 'ewps15vi'
+          | 'ewps15al'
+          | 'ewps15br'
+          | 'ewps19wo'
+          | 'ewps19st'
+          | 'ewps19vi'
+          | 'ewps19al'
+          | 'ewps19br'
+          | 'ewps21wo'
+          | 'ewps21st'
+          | 'ewps21vi'
+          | 'ewps21al'
+          | 'ewps21br'
+          | 'ewov19wo'
+          | 'ewov19st'
+          | 'ewov19vi'
+          | 'ewov19al'
+          | 'ewov19br'
+          | 'ewov21wo'
+          | 'ewov21st'
+          | 'ewov21vi'
+          | 'ewov21al'
+          | 'ewov21br'
+          | 'ewov25wo'
+          | 'ewov25st'
+          | 'ewov25vi'
+          | 'ewov25al'
+          | 'ewov25br'
+          | 'ewov27wo'
+          | 'ewov27st'
+          | 'ewov27vi'
+          | 'ewov27al'
+          | 'ewov27br'
+          | 'ewov33wo'
+          | 'ewov33st'
+          | 'ewov33vi'
+          | 'ewov33al'
+          | 'ewov33br'
+          | 'ewov35wo'
+          | 'ewov35st'
+          | 'ewov35vi'
+          | 'ewov35al'
+          | 'ewov35br'
+          | 'ewov38wo'
+          | 'ewov38st'
+          | 'ewov38vi'
+          | 'ewov38al'
+          | 'ewov38br'
+          | 'ewbr00nn'
+          | 'ewbr05nn'
+          | 'ewbr10nn'
+          | 'ewcb00st'
+          | 'ewcb00br'
+          | 'ewcb00nn'
+          | 'ewcb03st'
+          | 'ewcb03br'
+          | 'ewcb03nn'
+          | 'ewcb06st'
+          | 'ewcb06br'
+          | 'ewcb06nn'
+          | 'ewsb00st'
+          | 'iwwf00'
+          | 'iwwf03'
+          | 'iwwf07'
+          | 'iwwf11'
+          | 'iwwf13'
+          | 'iwwf15'
+          | 'iwwf19'
+          | 'iwwf21';
         /**
          * What is on the other side of the wall
          */
         adjacent_to:
-            | 'outside'
-            | 'other_unit'
-            | 'other_heated_space'
-            | 'other_multifamily_buffer_space'
-            | 'other_non_freezing_space';
+          | 'outside'
+          | 'other_unit'
+          | 'other_heated_space'
+          | 'other_multifamily_buffer_space'
+          | 'other_non_freezing_space';
         /**
-         * Inputs about the windows on this wall
+         * @minItems 1
+         *
+         * Items: Inputs about the windows on this wall
          */
-        zone_window?: {
-          /**
-           * Area of windows on this wall (square feet)
-           */
-          window_area: number;
-          /**
-           * Construction method to use for this window
-           */
-          window_method?: 'code' | 'custom';
-          /**
-           * assembly code for this window (only used if window_method is code)
-           */
-          window_code?:
+        zone_window?: [
+          {
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
               | 'scna'
               | 'scnw'
               | 'stna'
@@ -1901,19 +1590,64 @@ export interface HEScoreJSONSchema {
               | 'dseaw'
               | 'dseaaw'
               | 'thmabw';
-          /**
-           * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
-           */
-          window_u_value?: number;
-          /**
-           * Solar heat gain coefficient of this window (only used if window_method is custom)
-           */
-          window_shgc?: number;
-          /**
-           * Does this window have a solar screen?
-           */
-          solar_screen?: boolean;
-        };
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          },
+          ...{
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
+              | 'scna'
+              | 'scnw'
+              | 'stna'
+              | 'stnw'
+              | 'dcaa'
+              | 'dcab'
+              | 'dcaw'
+              | 'dtaa'
+              | 'dtab'
+              | 'dtaw'
+              | 'dpeaw'
+              | 'dpeaab'
+              | 'dpeaaw'
+              | 'dseaa'
+              | 'dseab'
+              | 'dseaw'
+              | 'dseaaw'
+              | 'thmabw';
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          }[]
+        ];
       },
       {
         /**
@@ -1924,207 +1658,210 @@ export interface HEScoreJSONSchema {
          * Wall construction assembly code
          */
         wall_assembly_code?:
-            | 'ewwf00wo'
-            | 'ewwf00st'
-            | 'ewwf00vi'
-            | 'ewwf00al'
-            | 'ewwf00br'
-            | 'ewwf03wo'
-            | 'ewwf03st'
-            | 'ewwf03vi'
-            | 'ewwf03al'
-            | 'ewwf03br'
-            | 'ewwf07wo'
-            | 'ewwf07st'
-            | 'ewwf07vi'
-            | 'ewwf07al'
-            | 'ewwf07br'
-            | 'ewwf11wo'
-            | 'ewwf11st'
-            | 'ewwf11vi'
-            | 'ewwf11al'
-            | 'ewwf11br'
-            | 'ewwf13wo'
-            | 'ewwf13st'
-            | 'ewwf13vi'
-            | 'ewwf13al'
-            | 'ewwf13br'
-            | 'ewwf15wo'
-            | 'ewwf15st'
-            | 'ewwf15vi'
-            | 'ewwf15al'
-            | 'ewwf15br'
-            | 'ewwf19wo'
-            | 'ewwf19st'
-            | 'ewwf19vi'
-            | 'ewwf19al'
-            | 'ewwf19br'
-            | 'ewwf21wo'
-            | 'ewwf21st'
-            | 'ewwf21vi'
-            | 'ewwf21al'
-            | 'ewwf21br'
-            | 'ewsf00wo'
-            | 'ewsf00st'
-            | 'ewsf00vi'
-            | 'ewsf00al'
-            | 'ewsf00br'
-            | 'ewsf03wo'
-            | 'ewsf03st'
-            | 'ewsf03vi'
-            | 'ewsf03al'
-            | 'ewsf03br'
-            | 'ewsf07wo'
-            | 'ewsf07st'
-            | 'ewsf07vi'
-            | 'ewsf07al'
-            | 'ewsf07br'
-            | 'ewsf11wo'
-            | 'ewsf11st'
-            | 'ewsf11vi'
-            | 'ewsf11al'
-            | 'ewsf11br'
-            | 'ewsf13wo'
-            | 'ewsf13st'
-            | 'ewsf13vi'
-            | 'ewsf13al'
-            | 'ewsf13br'
-            | 'ewsf15wo'
-            | 'ewsf15st'
-            | 'ewsf15vi'
-            | 'ewsf15al'
-            | 'ewsf15br'
-            | 'ewsf19wo'
-            | 'ewsf19st'
-            | 'ewsf19vi'
-            | 'ewsf19al'
-            | 'ewsf19br'
-            | 'ewsf21wo'
-            | 'ewsf21st'
-            | 'ewsf21vi'
-            | 'ewsf21al'
-            | 'ewsf21br'
-            | 'ewps00wo'
-            | 'ewps00st'
-            | 'ewps00vi'
-            | 'ewps00al'
-            | 'ewps00br'
-            | 'ewps03wo'
-            | 'ewps03st'
-            | 'ewps03vi'
-            | 'ewps03al'
-            | 'ewps03br'
-            | 'ewps07wo'
-            | 'ewps07st'
-            | 'ewps07vi'
-            | 'ewps07al'
-            | 'ewps07br'
-            | 'ewps11wo'
-            | 'ewps11st'
-            | 'ewps11vi'
-            | 'ewps11al'
-            | 'ewps11br'
-            | 'ewps13wo'
-            | 'ewps13st'
-            | 'ewps13vi'
-            | 'ewps13al'
-            | 'ewps13br'
-            | 'ewps15wo'
-            | 'ewps15st'
-            | 'ewps15vi'
-            | 'ewps15al'
-            | 'ewps15br'
-            | 'ewps19wo'
-            | 'ewps19st'
-            | 'ewps19vi'
-            | 'ewps19al'
-            | 'ewps19br'
-            | 'ewps21wo'
-            | 'ewps21st'
-            | 'ewps21vi'
-            | 'ewps21al'
-            | 'ewps21br'
-            | 'ewov19wo'
-            | 'ewov19st'
-            | 'ewov19vi'
-            | 'ewov19al'
-            | 'ewov19br'
-            | 'ewov21wo'
-            | 'ewov21st'
-            | 'ewov21vi'
-            | 'ewov21al'
-            | 'ewov21br'
-            | 'ewov25wo'
-            | 'ewov25st'
-            | 'ewov25vi'
-            | 'ewov25al'
-            | 'ewov25br'
-            | 'ewov27wo'
-            | 'ewov27st'
-            | 'ewov27vi'
-            | 'ewov27al'
-            | 'ewov27br'
-            | 'ewov33wo'
-            | 'ewov33st'
-            | 'ewov33vi'
-            | 'ewov33al'
-            | 'ewov33br'
-            | 'ewov35wo'
-            | 'ewov35st'
-            | 'ewov35vi'
-            | 'ewov35al'
-            | 'ewov35br'
-            | 'ewov38wo'
-            | 'ewov38st'
-            | 'ewov38vi'
-            | 'ewov38al'
-            | 'ewov38br'
-            | 'ewbr00nn'
-            | 'ewbr05nn'
-            | 'ewbr10nn'
-            | 'ewcb00st'
-            | 'ewcb00br'
-            | 'ewcb00nn'
-            | 'ewcb03st'
-            | 'ewcb03br'
-            | 'ewcb03nn'
-            | 'ewcb06st'
-            | 'ewcb06br'
-            | 'ewcb06nn'
-            | 'ewsb00st'
-            | 'iwwf00'
-            | 'iwwf03'
-            | 'iwwf07'
-            | 'iwwf11'
-            | 'iwwf13'
-            | 'iwwf15'
-            | 'iwwf19'
-            | 'iwwf21';
+          | 'ewwf00wo'
+          | 'ewwf00st'
+          | 'ewwf00vi'
+          | 'ewwf00al'
+          | 'ewwf00br'
+          | 'ewwf03wo'
+          | 'ewwf03st'
+          | 'ewwf03vi'
+          | 'ewwf03al'
+          | 'ewwf03br'
+          | 'ewwf07wo'
+          | 'ewwf07st'
+          | 'ewwf07vi'
+          | 'ewwf07al'
+          | 'ewwf07br'
+          | 'ewwf11wo'
+          | 'ewwf11st'
+          | 'ewwf11vi'
+          | 'ewwf11al'
+          | 'ewwf11br'
+          | 'ewwf13wo'
+          | 'ewwf13st'
+          | 'ewwf13vi'
+          | 'ewwf13al'
+          | 'ewwf13br'
+          | 'ewwf15wo'
+          | 'ewwf15st'
+          | 'ewwf15vi'
+          | 'ewwf15al'
+          | 'ewwf15br'
+          | 'ewwf19wo'
+          | 'ewwf19st'
+          | 'ewwf19vi'
+          | 'ewwf19al'
+          | 'ewwf19br'
+          | 'ewwf21wo'
+          | 'ewwf21st'
+          | 'ewwf21vi'
+          | 'ewwf21al'
+          | 'ewwf21br'
+          | 'ewsf00wo'
+          | 'ewsf00st'
+          | 'ewsf00vi'
+          | 'ewsf00al'
+          | 'ewsf00br'
+          | 'ewsf03wo'
+          | 'ewsf03st'
+          | 'ewsf03vi'
+          | 'ewsf03al'
+          | 'ewsf03br'
+          | 'ewsf07wo'
+          | 'ewsf07st'
+          | 'ewsf07vi'
+          | 'ewsf07al'
+          | 'ewsf07br'
+          | 'ewsf11wo'
+          | 'ewsf11st'
+          | 'ewsf11vi'
+          | 'ewsf11al'
+          | 'ewsf11br'
+          | 'ewsf13wo'
+          | 'ewsf13st'
+          | 'ewsf13vi'
+          | 'ewsf13al'
+          | 'ewsf13br'
+          | 'ewsf15wo'
+          | 'ewsf15st'
+          | 'ewsf15vi'
+          | 'ewsf15al'
+          | 'ewsf15br'
+          | 'ewsf19wo'
+          | 'ewsf19st'
+          | 'ewsf19vi'
+          | 'ewsf19al'
+          | 'ewsf19br'
+          | 'ewsf21wo'
+          | 'ewsf21st'
+          | 'ewsf21vi'
+          | 'ewsf21al'
+          | 'ewsf21br'
+          | 'ewps00wo'
+          | 'ewps00st'
+          | 'ewps00vi'
+          | 'ewps00al'
+          | 'ewps00br'
+          | 'ewps03wo'
+          | 'ewps03st'
+          | 'ewps03vi'
+          | 'ewps03al'
+          | 'ewps03br'
+          | 'ewps07wo'
+          | 'ewps07st'
+          | 'ewps07vi'
+          | 'ewps07al'
+          | 'ewps07br'
+          | 'ewps11wo'
+          | 'ewps11st'
+          | 'ewps11vi'
+          | 'ewps11al'
+          | 'ewps11br'
+          | 'ewps13wo'
+          | 'ewps13st'
+          | 'ewps13vi'
+          | 'ewps13al'
+          | 'ewps13br'
+          | 'ewps15wo'
+          | 'ewps15st'
+          | 'ewps15vi'
+          | 'ewps15al'
+          | 'ewps15br'
+          | 'ewps19wo'
+          | 'ewps19st'
+          | 'ewps19vi'
+          | 'ewps19al'
+          | 'ewps19br'
+          | 'ewps21wo'
+          | 'ewps21st'
+          | 'ewps21vi'
+          | 'ewps21al'
+          | 'ewps21br'
+          | 'ewov19wo'
+          | 'ewov19st'
+          | 'ewov19vi'
+          | 'ewov19al'
+          | 'ewov19br'
+          | 'ewov21wo'
+          | 'ewov21st'
+          | 'ewov21vi'
+          | 'ewov21al'
+          | 'ewov21br'
+          | 'ewov25wo'
+          | 'ewov25st'
+          | 'ewov25vi'
+          | 'ewov25al'
+          | 'ewov25br'
+          | 'ewov27wo'
+          | 'ewov27st'
+          | 'ewov27vi'
+          | 'ewov27al'
+          | 'ewov27br'
+          | 'ewov33wo'
+          | 'ewov33st'
+          | 'ewov33vi'
+          | 'ewov33al'
+          | 'ewov33br'
+          | 'ewov35wo'
+          | 'ewov35st'
+          | 'ewov35vi'
+          | 'ewov35al'
+          | 'ewov35br'
+          | 'ewov38wo'
+          | 'ewov38st'
+          | 'ewov38vi'
+          | 'ewov38al'
+          | 'ewov38br'
+          | 'ewbr00nn'
+          | 'ewbr05nn'
+          | 'ewbr10nn'
+          | 'ewcb00st'
+          | 'ewcb00br'
+          | 'ewcb00nn'
+          | 'ewcb03st'
+          | 'ewcb03br'
+          | 'ewcb03nn'
+          | 'ewcb06st'
+          | 'ewcb06br'
+          | 'ewcb06nn'
+          | 'ewsb00st'
+          | 'iwwf00'
+          | 'iwwf03'
+          | 'iwwf07'
+          | 'iwwf11'
+          | 'iwwf13'
+          | 'iwwf15'
+          | 'iwwf19'
+          | 'iwwf21';
         /**
          * What is on the other side of the wall
          */
         adjacent_to:
-            | 'outside'
-            | 'other_unit'
-            | 'other_heated_space'
-            | 'other_multifamily_buffer_space'
-            | 'other_non_freezing_space';
+          | 'outside'
+          | 'other_unit'
+          | 'other_heated_space'
+          | 'other_multifamily_buffer_space'
+          | 'other_non_freezing_space';
         /**
-         * Inputs about the windows on this wall
+         * @minItems 1
+         *
+         * Items: Inputs about the windows on this wall
          */
-        zone_window?: {
-          /**
-           * Area of windows on this wall (square feet)
-           */
-          window_area: number;
-          /**
-           * Construction method to use for this window
-           */
-          window_method?: 'code' | 'custom';
-          /**
-           * assembly code for this window (only used if window_method is code)
-           */
-          window_code?:
+        zone_window?: [
+          {
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
               | 'scna'
               | 'scnw'
               | 'stna'
@@ -2143,19 +1880,64 @@ export interface HEScoreJSONSchema {
               | 'dseaw'
               | 'dseaaw'
               | 'thmabw';
-          /**
-           * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
-           */
-          window_u_value?: number;
-          /**
-           * Solar heat gain coefficient of this window (only used if window_method is custom)
-           */
-          window_shgc?: number;
-          /**
-           * Does this window have a solar screen?
-           */
-          solar_screen?: boolean;
-        };
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          },
+          ...{
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
+              | 'scna'
+              | 'scnw'
+              | 'stna'
+              | 'stnw'
+              | 'dcaa'
+              | 'dcab'
+              | 'dcaw'
+              | 'dtaa'
+              | 'dtab'
+              | 'dtaw'
+              | 'dpeaw'
+              | 'dpeaab'
+              | 'dpeaaw'
+              | 'dseaa'
+              | 'dseab'
+              | 'dseaw'
+              | 'dseaaw'
+              | 'thmabw';
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          }[]
+        ];
       },
       {
         /**
@@ -2166,207 +1948,210 @@ export interface HEScoreJSONSchema {
          * Wall construction assembly code
          */
         wall_assembly_code?:
-            | 'ewwf00wo'
-            | 'ewwf00st'
-            | 'ewwf00vi'
-            | 'ewwf00al'
-            | 'ewwf00br'
-            | 'ewwf03wo'
-            | 'ewwf03st'
-            | 'ewwf03vi'
-            | 'ewwf03al'
-            | 'ewwf03br'
-            | 'ewwf07wo'
-            | 'ewwf07st'
-            | 'ewwf07vi'
-            | 'ewwf07al'
-            | 'ewwf07br'
-            | 'ewwf11wo'
-            | 'ewwf11st'
-            | 'ewwf11vi'
-            | 'ewwf11al'
-            | 'ewwf11br'
-            | 'ewwf13wo'
-            | 'ewwf13st'
-            | 'ewwf13vi'
-            | 'ewwf13al'
-            | 'ewwf13br'
-            | 'ewwf15wo'
-            | 'ewwf15st'
-            | 'ewwf15vi'
-            | 'ewwf15al'
-            | 'ewwf15br'
-            | 'ewwf19wo'
-            | 'ewwf19st'
-            | 'ewwf19vi'
-            | 'ewwf19al'
-            | 'ewwf19br'
-            | 'ewwf21wo'
-            | 'ewwf21st'
-            | 'ewwf21vi'
-            | 'ewwf21al'
-            | 'ewwf21br'
-            | 'ewsf00wo'
-            | 'ewsf00st'
-            | 'ewsf00vi'
-            | 'ewsf00al'
-            | 'ewsf00br'
-            | 'ewsf03wo'
-            | 'ewsf03st'
-            | 'ewsf03vi'
-            | 'ewsf03al'
-            | 'ewsf03br'
-            | 'ewsf07wo'
-            | 'ewsf07st'
-            | 'ewsf07vi'
-            | 'ewsf07al'
-            | 'ewsf07br'
-            | 'ewsf11wo'
-            | 'ewsf11st'
-            | 'ewsf11vi'
-            | 'ewsf11al'
-            | 'ewsf11br'
-            | 'ewsf13wo'
-            | 'ewsf13st'
-            | 'ewsf13vi'
-            | 'ewsf13al'
-            | 'ewsf13br'
-            | 'ewsf15wo'
-            | 'ewsf15st'
-            | 'ewsf15vi'
-            | 'ewsf15al'
-            | 'ewsf15br'
-            | 'ewsf19wo'
-            | 'ewsf19st'
-            | 'ewsf19vi'
-            | 'ewsf19al'
-            | 'ewsf19br'
-            | 'ewsf21wo'
-            | 'ewsf21st'
-            | 'ewsf21vi'
-            | 'ewsf21al'
-            | 'ewsf21br'
-            | 'ewps00wo'
-            | 'ewps00st'
-            | 'ewps00vi'
-            | 'ewps00al'
-            | 'ewps00br'
-            | 'ewps03wo'
-            | 'ewps03st'
-            | 'ewps03vi'
-            | 'ewps03al'
-            | 'ewps03br'
-            | 'ewps07wo'
-            | 'ewps07st'
-            | 'ewps07vi'
-            | 'ewps07al'
-            | 'ewps07br'
-            | 'ewps11wo'
-            | 'ewps11st'
-            | 'ewps11vi'
-            | 'ewps11al'
-            | 'ewps11br'
-            | 'ewps13wo'
-            | 'ewps13st'
-            | 'ewps13vi'
-            | 'ewps13al'
-            | 'ewps13br'
-            | 'ewps15wo'
-            | 'ewps15st'
-            | 'ewps15vi'
-            | 'ewps15al'
-            | 'ewps15br'
-            | 'ewps19wo'
-            | 'ewps19st'
-            | 'ewps19vi'
-            | 'ewps19al'
-            | 'ewps19br'
-            | 'ewps21wo'
-            | 'ewps21st'
-            | 'ewps21vi'
-            | 'ewps21al'
-            | 'ewps21br'
-            | 'ewov19wo'
-            | 'ewov19st'
-            | 'ewov19vi'
-            | 'ewov19al'
-            | 'ewov19br'
-            | 'ewov21wo'
-            | 'ewov21st'
-            | 'ewov21vi'
-            | 'ewov21al'
-            | 'ewov21br'
-            | 'ewov25wo'
-            | 'ewov25st'
-            | 'ewov25vi'
-            | 'ewov25al'
-            | 'ewov25br'
-            | 'ewov27wo'
-            | 'ewov27st'
-            | 'ewov27vi'
-            | 'ewov27al'
-            | 'ewov27br'
-            | 'ewov33wo'
-            | 'ewov33st'
-            | 'ewov33vi'
-            | 'ewov33al'
-            | 'ewov33br'
-            | 'ewov35wo'
-            | 'ewov35st'
-            | 'ewov35vi'
-            | 'ewov35al'
-            | 'ewov35br'
-            | 'ewov38wo'
-            | 'ewov38st'
-            | 'ewov38vi'
-            | 'ewov38al'
-            | 'ewov38br'
-            | 'ewbr00nn'
-            | 'ewbr05nn'
-            | 'ewbr10nn'
-            | 'ewcb00st'
-            | 'ewcb00br'
-            | 'ewcb00nn'
-            | 'ewcb03st'
-            | 'ewcb03br'
-            | 'ewcb03nn'
-            | 'ewcb06st'
-            | 'ewcb06br'
-            | 'ewcb06nn'
-            | 'ewsb00st'
-            | 'iwwf00'
-            | 'iwwf03'
-            | 'iwwf07'
-            | 'iwwf11'
-            | 'iwwf13'
-            | 'iwwf15'
-            | 'iwwf19'
-            | 'iwwf21';
+          | 'ewwf00wo'
+          | 'ewwf00st'
+          | 'ewwf00vi'
+          | 'ewwf00al'
+          | 'ewwf00br'
+          | 'ewwf03wo'
+          | 'ewwf03st'
+          | 'ewwf03vi'
+          | 'ewwf03al'
+          | 'ewwf03br'
+          | 'ewwf07wo'
+          | 'ewwf07st'
+          | 'ewwf07vi'
+          | 'ewwf07al'
+          | 'ewwf07br'
+          | 'ewwf11wo'
+          | 'ewwf11st'
+          | 'ewwf11vi'
+          | 'ewwf11al'
+          | 'ewwf11br'
+          | 'ewwf13wo'
+          | 'ewwf13st'
+          | 'ewwf13vi'
+          | 'ewwf13al'
+          | 'ewwf13br'
+          | 'ewwf15wo'
+          | 'ewwf15st'
+          | 'ewwf15vi'
+          | 'ewwf15al'
+          | 'ewwf15br'
+          | 'ewwf19wo'
+          | 'ewwf19st'
+          | 'ewwf19vi'
+          | 'ewwf19al'
+          | 'ewwf19br'
+          | 'ewwf21wo'
+          | 'ewwf21st'
+          | 'ewwf21vi'
+          | 'ewwf21al'
+          | 'ewwf21br'
+          | 'ewsf00wo'
+          | 'ewsf00st'
+          | 'ewsf00vi'
+          | 'ewsf00al'
+          | 'ewsf00br'
+          | 'ewsf03wo'
+          | 'ewsf03st'
+          | 'ewsf03vi'
+          | 'ewsf03al'
+          | 'ewsf03br'
+          | 'ewsf07wo'
+          | 'ewsf07st'
+          | 'ewsf07vi'
+          | 'ewsf07al'
+          | 'ewsf07br'
+          | 'ewsf11wo'
+          | 'ewsf11st'
+          | 'ewsf11vi'
+          | 'ewsf11al'
+          | 'ewsf11br'
+          | 'ewsf13wo'
+          | 'ewsf13st'
+          | 'ewsf13vi'
+          | 'ewsf13al'
+          | 'ewsf13br'
+          | 'ewsf15wo'
+          | 'ewsf15st'
+          | 'ewsf15vi'
+          | 'ewsf15al'
+          | 'ewsf15br'
+          | 'ewsf19wo'
+          | 'ewsf19st'
+          | 'ewsf19vi'
+          | 'ewsf19al'
+          | 'ewsf19br'
+          | 'ewsf21wo'
+          | 'ewsf21st'
+          | 'ewsf21vi'
+          | 'ewsf21al'
+          | 'ewsf21br'
+          | 'ewps00wo'
+          | 'ewps00st'
+          | 'ewps00vi'
+          | 'ewps00al'
+          | 'ewps00br'
+          | 'ewps03wo'
+          | 'ewps03st'
+          | 'ewps03vi'
+          | 'ewps03al'
+          | 'ewps03br'
+          | 'ewps07wo'
+          | 'ewps07st'
+          | 'ewps07vi'
+          | 'ewps07al'
+          | 'ewps07br'
+          | 'ewps11wo'
+          | 'ewps11st'
+          | 'ewps11vi'
+          | 'ewps11al'
+          | 'ewps11br'
+          | 'ewps13wo'
+          | 'ewps13st'
+          | 'ewps13vi'
+          | 'ewps13al'
+          | 'ewps13br'
+          | 'ewps15wo'
+          | 'ewps15st'
+          | 'ewps15vi'
+          | 'ewps15al'
+          | 'ewps15br'
+          | 'ewps19wo'
+          | 'ewps19st'
+          | 'ewps19vi'
+          | 'ewps19al'
+          | 'ewps19br'
+          | 'ewps21wo'
+          | 'ewps21st'
+          | 'ewps21vi'
+          | 'ewps21al'
+          | 'ewps21br'
+          | 'ewov19wo'
+          | 'ewov19st'
+          | 'ewov19vi'
+          | 'ewov19al'
+          | 'ewov19br'
+          | 'ewov21wo'
+          | 'ewov21st'
+          | 'ewov21vi'
+          | 'ewov21al'
+          | 'ewov21br'
+          | 'ewov25wo'
+          | 'ewov25st'
+          | 'ewov25vi'
+          | 'ewov25al'
+          | 'ewov25br'
+          | 'ewov27wo'
+          | 'ewov27st'
+          | 'ewov27vi'
+          | 'ewov27al'
+          | 'ewov27br'
+          | 'ewov33wo'
+          | 'ewov33st'
+          | 'ewov33vi'
+          | 'ewov33al'
+          | 'ewov33br'
+          | 'ewov35wo'
+          | 'ewov35st'
+          | 'ewov35vi'
+          | 'ewov35al'
+          | 'ewov35br'
+          | 'ewov38wo'
+          | 'ewov38st'
+          | 'ewov38vi'
+          | 'ewov38al'
+          | 'ewov38br'
+          | 'ewbr00nn'
+          | 'ewbr05nn'
+          | 'ewbr10nn'
+          | 'ewcb00st'
+          | 'ewcb00br'
+          | 'ewcb00nn'
+          | 'ewcb03st'
+          | 'ewcb03br'
+          | 'ewcb03nn'
+          | 'ewcb06st'
+          | 'ewcb06br'
+          | 'ewcb06nn'
+          | 'ewsb00st'
+          | 'iwwf00'
+          | 'iwwf03'
+          | 'iwwf07'
+          | 'iwwf11'
+          | 'iwwf13'
+          | 'iwwf15'
+          | 'iwwf19'
+          | 'iwwf21';
         /**
          * What is on the other side of the wall
          */
         adjacent_to:
-            | 'outside'
-            | 'other_unit'
-            | 'other_heated_space'
-            | 'other_multifamily_buffer_space'
-            | 'other_non_freezing_space';
+          | 'outside'
+          | 'other_unit'
+          | 'other_heated_space'
+          | 'other_multifamily_buffer_space'
+          | 'other_non_freezing_space';
         /**
-         * Inputs about the windows on this wall
+         * @minItems 1
+         *
+         * Items: Inputs about the windows on this wall
          */
-        zone_window?: {
-          /**
-           * Area of windows on this wall (square feet)
-           */
-          window_area: number;
-          /**
-           * Construction method to use for this window
-           */
-          window_method?: 'code' | 'custom';
-          /**
-           * assembly code for this window (only used if window_method is code)
-           */
-          window_code?:
+        zone_window?: [
+          {
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
               | 'scna'
               | 'scnw'
               | 'stna'
@@ -2385,38 +2170,73 @@ export interface HEScoreJSONSchema {
               | 'dseaw'
               | 'dseaaw'
               | 'thmabw';
-          /**
-           * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
-           */
-          window_u_value?: number;
-          /**
-           * Solar heat gain coefficient of this window (only used if window_method is custom)
-           */
-          window_shgc?: number;
-          /**
-           * Does this window have a solar screen?
-           */
-          solar_screen?: boolean;
-        };
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          },
+          ...{
+            /**
+             * Area of windows on this wall (square feet)
+             */
+            window_area: number;
+            /**
+             * Construction method to use for this window
+             */
+            window_method?: 'code' | 'custom';
+            /**
+             * assembly code for this window (only used if window_method is code)
+             */
+            window_code?:
+              | 'scna'
+              | 'scnw'
+              | 'stna'
+              | 'stnw'
+              | 'dcaa'
+              | 'dcab'
+              | 'dcaw'
+              | 'dtaa'
+              | 'dtab'
+              | 'dtaw'
+              | 'dpeaw'
+              | 'dpeaab'
+              | 'dpeaaw'
+              | 'dseaa'
+              | 'dseab'
+              | 'dseaw'
+              | 'dseaaw'
+              | 'thmabw';
+            /**
+             * U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)
+             */
+            window_u_value?: number;
+            /**
+             * Solar heat gain coefficient of this window (only used if window_method is custom)
+             */
+            window_shgc?: number;
+            /**
+             * Does this window have a solar screen?
+             */
+            solar_screen?: boolean;
+          }[]
+        ];
       }
     ];
   };
   systems: {
     /**
      * @minItems 1
-     * @maxItems 2
      */
-    hvac:
-        | [
+    hvac: [
       {
-        /**
-         * Name of this system instance
-         */
-        hvac_name: 'hvac1' | 'hvac2';
-        /**
-         * Fraction of conditioned floor area served by this system
-         */
-        hvac_fraction: number;
         /**
          * Inputs about the heating system
          */
@@ -2425,17 +2245,21 @@ export interface HEScoreJSONSchema {
            * Heating equipment type
            */
           type: (
-              | None
-              | CentralFurnace
-              | RoomThroughTheWallFurnace
-              | Boiler
-              | HeatPump
-              | BaseboardHeater
-              | GroundCoupledHeatPump
-              | MinisplitDuctlessHeatPump
-              | WoodStove
-              ) &
-              string;
+            | None
+            | CentralFurnace
+            | RoomThroughTheWallFurnace
+            | Boiler
+            | HeatPump
+            | BaseboardHeater
+            | GroundCoupledHeatPump
+            | MinisplitDuctlessHeatPump
+            | WoodStove
+          ) &
+            string;
+          /**
+           * Fraction of heating load served by this system
+           */
+          fraction?: number;
           /**
            * Primary heating fuel
            */
@@ -2459,90 +2283,19 @@ export interface HEScoreJSONSchema {
            * Cooling equipment type
            */
           type: (
-              | RoomAirConditioner
-              | CentralAirConditioner
-              | ElectricHeatPump
-              | GroundCoupledHeatPump1
-              | DirectEvaporativeCooling
-              | MinisplitDuctlessHeatPump1
-              | None1
-              ) &
-              string;
+            | RoomAirConditioner
+            | CentralAirConditioner
+            | ElectricHeatPump
+            | GroundCoupledHeatPump1
+            | DirectEvaporativeCooling
+            | MinisplitDuctlessHeatPump1
+            | None1
+          ) &
+            string;
           /**
-           * Method to determine cooling efficiency
+           * Fraction of cooling load served by this system
            */
-          efficiency_method?: 'user' | 'shipment_weighted';
-          /**
-           * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
-           */
-          year?: number;
-          efficiency?: number;
-          efficiency_unit?: 'eer' | 'ceer' | 'seer' | 'seer2';
-        };
-        hvac_distribution?: HvacDistribution;
-      }
-    ]
-        | [
-      {
-        /**
-         * Name of this system instance
-         */
-        hvac_name: 'hvac1' | 'hvac2';
-        /**
-         * Fraction of conditioned floor area served by this system
-         */
-        hvac_fraction: number;
-        /**
-         * Inputs about the heating system
-         */
-        heating: {
-          /**
-           * Heating equipment type
-           */
-          type: (
-              | None
-              | CentralFurnace
-              | RoomThroughTheWallFurnace
-              | Boiler
-              | HeatPump
-              | BaseboardHeater
-              | GroundCoupledHeatPump
-              | MinisplitDuctlessHeatPump
-              | WoodStove
-              ) &
-              string;
-          /**
-           * Primary heating fuel
-           */
-          fuel_primary?: (Gas | PropaneLPG | Oil | Electric | Wood | Pellets) & string;
-          /**
-           * Method to determine heating efficiency
-           */
-          efficiency_method?: 'user' | 'shipment_weighted';
-          /**
-           * Year equipment was manufactured (only used if efficiency_method is shipment_weighted)
-           */
-          year?: number;
-          efficiency?: number;
-          efficiency_unit?: 'afue' | 'cop' | 'hspf' | 'hspf2';
-        };
-        /**
-         * Inputs about the cooling system
-         */
-        cooling: {
-          /**
-           * Cooling equipment type
-           */
-          type: (
-              | RoomAirConditioner
-              | CentralAirConditioner
-              | ElectricHeatPump
-              | GroundCoupledHeatPump1
-              | DirectEvaporativeCooling
-              | MinisplitDuctlessHeatPump1
-              | None1
-              ) &
-              string;
+          fraction?: number;
           /**
            * Method to determine cooling efficiency
            */
@@ -2556,15 +2309,7 @@ export interface HEScoreJSONSchema {
         };
         hvac_distribution?: HvacDistribution;
       },
-      {
-        /**
-         * Name of this system instance
-         */
-        hvac_name: 'hvac1' | 'hvac2';
-        /**
-         * Fraction of conditioned floor area served by this system
-         */
-        hvac_fraction: number;
+      ...{
         /**
          * Inputs about the heating system
          */
@@ -2573,17 +2318,21 @@ export interface HEScoreJSONSchema {
            * Heating equipment type
            */
           type: (
-              | None
-              | CentralFurnace
-              | RoomThroughTheWallFurnace
-              | Boiler
-              | HeatPump
-              | BaseboardHeater
-              | GroundCoupledHeatPump
-              | MinisplitDuctlessHeatPump
-              | WoodStove
-              ) &
-              string;
+            | None
+            | CentralFurnace
+            | RoomThroughTheWallFurnace
+            | Boiler
+            | HeatPump
+            | BaseboardHeater
+            | GroundCoupledHeatPump
+            | MinisplitDuctlessHeatPump
+            | WoodStove
+          ) &
+            string;
+          /**
+           * Fraction of heating load served by this system
+           */
+          fraction?: number;
           /**
            * Primary heating fuel
            */
@@ -2607,15 +2356,19 @@ export interface HEScoreJSONSchema {
            * Cooling equipment type
            */
           type: (
-              | RoomAirConditioner
-              | CentralAirConditioner
-              | ElectricHeatPump
-              | GroundCoupledHeatPump1
-              | DirectEvaporativeCooling
-              | MinisplitDuctlessHeatPump1
-              | None1
-              ) &
-              string;
+            | RoomAirConditioner
+            | CentralAirConditioner
+            | ElectricHeatPump
+            | GroundCoupledHeatPump1
+            | DirectEvaporativeCooling
+            | MinisplitDuctlessHeatPump1
+            | None1
+          ) &
+            string;
+          /**
+           * Fraction of cooling load served by this system
+           */
+          fraction?: number;
           /**
            * Method to determine cooling efficiency
            */
@@ -2628,7 +2381,7 @@ export interface HEScoreJSONSchema {
           efficiency_unit?: 'eer' | 'ceer' | 'seer' | 'seer2';
         };
         hvac_distribution?: HvacDistribution;
-      }
+      }[]
     ];
     domestic_hot_water: {
       /**
@@ -2661,44 +2414,73 @@ export interface HEScoreJSONSchema {
       efficiency_unit?: 'ef' | 'uef';
     };
     generation?: {
-      solar_electric?: {
-        /**
-         * Is the capacity known?
-         */
-        capacity_known: boolean;
-        /**
-         * DC capacity of system (kW) (only used if capacity_known is true)
-         */
-        system_capacity?: number;
-        /**
-         * Number of panels in the system (only used if capacity_known is false)
-         */
-        num_panels?: number;
-        /**
-         * Total number of units sharing the PV system
-         */
-        number_units_sharing_system?: number;
-        /**
-         * Year system was installed
-         */
-        year: number;
-        /**
-         * Direction panels face
-         */
-        array_azimuth:
-            | 'north'
-            | 'north_east'
-            | 'east'
-            | 'south_east'
-            | 'south'
-            | 'south_west'
-            | 'west'
-            | 'north_west';
-        /**
-         * Tilt of panels
-         */
-        array_tilt: 'flat' | 'low_slope' | 'medium_slope' | 'steep_slope';
-      };
+      /**
+       * @minItems 1
+       */
+      solar_electric?: [
+        {
+          /**
+           * Is the capacity known?
+           */
+          capacity_known: boolean;
+          /**
+           * DC capacity of system (kW) (only used if capacity_known is true)
+           */
+          system_capacity?: number;
+          /**
+           * Number of panels in the system (only used if capacity_known is false)
+           */
+          num_panels?: number;
+          /**
+           * Total number of units sharing the PV system
+           */
+          number_units_sharing_system?: number;
+          /**
+           * Year system was installed
+           */
+          year: number;
+          /**
+           * Direction panels face
+           */
+          array_azimuth:
+            'north' | 'north_east' | 'east' | 'south_east' | 'south' | 'south_west' | 'west' | 'north_west';
+          /**
+           * Tilt of panels
+           */
+          array_tilt: 'flat' | 'low_slope' | 'medium_slope' | 'steep_slope';
+        },
+        ...{
+          /**
+           * Is the capacity known?
+           */
+          capacity_known: boolean;
+          /**
+           * DC capacity of system (kW) (only used if capacity_known is true)
+           */
+          system_capacity?: number;
+          /**
+           * Number of panels in the system (only used if capacity_known is false)
+           */
+          num_panels?: number;
+          /**
+           * Total number of units sharing the PV system
+           */
+          number_units_sharing_system?: number;
+          /**
+           * Year system was installed
+           */
+          year: number;
+          /**
+           * Direction panels face
+           */
+          array_azimuth:
+            'north' | 'north_east' | 'east' | 'south_east' | 'south' | 'south_west' | 'west' | 'north_west';
+          /**
+           * Tilt of panels
+           */
+          array_tilt: 'flat' | 'low_slope' | 'medium_slope' | 'steep_slope';
+        }[]
+      ];
     };
   };
 }
@@ -2720,61 +2502,24 @@ export interface HvacDistribution {
   sealed?: boolean;
   /**
    * @minItems 1
-   * @maxItems 3
    */
-  duct:
-      | [
+  duct: [
     {
-      /**
-       * Name of distribution system
-       */
-      name?: 'duct1' | 'duct2' | 'duct3';
       /**
        * Location of distribution system
        */
       location?: (
-          | ConditionedSpace
-          | UnconditionedBasement1
-          | VentedCrawlspace1
-          | UnventedCrawlspaceUnconditionedGarage
-          | UnconditionedAttic1
-          | UnderSlab
-          | InExteriorWall
-          | ManufacturedHomeBelly
-          | Outside
-          ) &
-          string;
-      /**
-       * Fraction of total duct length
-       */
-      fraction?: number;
-      /**
-       * Are the ducts insulated?
-       */
-      insulated?: boolean;
-    }
-  ]
-      | [
-    {
-      /**
-       * Name of distribution system
-       */
-      name?: 'duct1' | 'duct2' | 'duct3';
-      /**
-       * Location of distribution system
-       */
-      location?: (
-          | ConditionedSpace
-          | UnconditionedBasement1
-          | VentedCrawlspace1
-          | UnventedCrawlspaceUnconditionedGarage
-          | UnconditionedAttic1
-          | UnderSlab
-          | InExteriorWall
-          | ManufacturedHomeBelly
-          | Outside
-          ) &
-          string;
+        | ConditionedSpace
+        | UnconditionedBasement1
+        | VentedCrawlspace1
+        | UnventedCrawlspaceUnconditionedGarage
+        | UnconditionedAttic1
+        | UnderSlab
+        | InExteriorWall
+        | ManufacturedHomeBelly
+        | Outside
+      ) &
+        string;
       /**
        * Fraction of total duct length
        */
@@ -2784,26 +2529,22 @@ export interface HvacDistribution {
        */
       insulated?: boolean;
     },
-    {
-      /**
-       * Name of distribution system
-       */
-      name?: 'duct1' | 'duct2' | 'duct3';
+    ...{
       /**
        * Location of distribution system
        */
       location?: (
-          | ConditionedSpace
-          | UnconditionedBasement1
-          | VentedCrawlspace1
-          | UnventedCrawlspaceUnconditionedGarage
-          | UnconditionedAttic1
-          | UnderSlab
-          | InExteriorWall
-          | ManufacturedHomeBelly
-          | Outside
-          ) &
-          string;
+        | ConditionedSpace
+        | UnconditionedBasement1
+        | VentedCrawlspace1
+        | UnventedCrawlspaceUnconditionedGarage
+        | UnconditionedAttic1
+        | UnderSlab
+        | InExteriorWall
+        | ManufacturedHomeBelly
+        | Outside
+      ) &
+        string;
       /**
        * Fraction of total duct length
        */
@@ -2812,96 +2553,7 @@ export interface HvacDistribution {
        * Are the ducts insulated?
        */
       insulated?: boolean;
-    }
-  ]
-      | [
-    {
-      /**
-       * Name of distribution system
-       */
-      name?: 'duct1' | 'duct2' | 'duct3';
-      /**
-       * Location of distribution system
-       */
-      location?: (
-          | ConditionedSpace
-          | UnconditionedBasement1
-          | VentedCrawlspace1
-          | UnventedCrawlspaceUnconditionedGarage
-          | UnconditionedAttic1
-          | UnderSlab
-          | InExteriorWall
-          | ManufacturedHomeBelly
-          | Outside
-          ) &
-          string;
-      /**
-       * Fraction of total duct length
-       */
-      fraction?: number;
-      /**
-       * Are the ducts insulated?
-       */
-      insulated?: boolean;
-    },
-    {
-      /**
-       * Name of distribution system
-       */
-      name?: 'duct1' | 'duct2' | 'duct3';
-      /**
-       * Location of distribution system
-       */
-      location?: (
-          | ConditionedSpace
-          | UnconditionedBasement1
-          | VentedCrawlspace1
-          | UnventedCrawlspaceUnconditionedGarage
-          | UnconditionedAttic1
-          | UnderSlab
-          | InExteriorWall
-          | ManufacturedHomeBelly
-          | Outside
-          ) &
-          string;
-      /**
-       * Fraction of total duct length
-       */
-      fraction?: number;
-      /**
-       * Are the ducts insulated?
-       */
-      insulated?: boolean;
-    },
-    {
-      /**
-       * Name of distribution system
-       */
-      name?: 'duct1' | 'duct2' | 'duct3';
-      /**
-       * Location of distribution system
-       */
-      location?: (
-          | ConditionedSpace
-          | UnconditionedBasement1
-          | VentedCrawlspace1
-          | UnventedCrawlspaceUnconditionedGarage
-          | UnconditionedAttic1
-          | UnderSlab
-          | InExteriorWall
-          | ManufacturedHomeBelly
-          | Outside
-          ) &
-          string;
-      /**
-       * Fraction of total duct length
-       */
-      fraction?: number;
-      /**
-       * Are the ducts insulated?
-       */
-      insulated?: boolean;
-    }
+    }[]
   ];
   [k: string]: unknown;
 }

@@ -1,13 +1,13 @@
 {
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "$id": "https://github.com/NREL/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json",
+    "$id": "https://github.com/NatLabRockies/hescore-hpxml/blob/master/hescorehpxml/schemas/hescore_json.schema.json",
     "type": "object",
     "title": "HEScore JSON Schema",
     "additionalProperties": false,
     "properties": {
         "version": {
             "type": "string",
-            "const": "5.0",
+            "const": "6.0",
             "description": "The version of the building unit schema. Use semantic versioning."
         },
         "address": {
@@ -264,6 +264,11 @@
                     "minimum": 0,
                     "maximum": 25000,
                     "description": "Building air leakage measured with a blower door (CFM50) (only used if blower_door_test is true)"
+                },
+                "electric_panel_size": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Size of the electric panel (amps)"
                 }
             },
             "allOf": [
@@ -351,20 +356,11 @@
                     "type": "array",
                     "description": "Inputs about the construction of the roof(s)",
                     "additionalItems": false,
-                    "minItems": 0,
-                    "maxItems": 2,
+                    "minItems": 1,
                     "items": {
                         "type": "object",
                         "additionalProperties": false,
                         "properties": {
-                            "roof_name": {
-                                "type": "string",
-                                "enum": [
-                                    "roof1",
-                                    "roof2"
-                                ],
-                                "description": "Name of this roof instance"
-                            },
                             "ceiling_area": {
                                 "type": "number",
                                 "minimum": 1,
@@ -599,7 +595,15 @@
                                 "type": "number",
                                 "minimum": 0,
                                 "maximum": 1,
-                                "description": "Absorptance of exterior surface (only used if roof_color is cool_color)"
+                                "description": "Solar absorptance of the roof exterior surface (only used if roof_color is cool_color)"
+                            },
+                            "roof_absorptance_condition": {
+                                "type": "string",
+                                "enum": [
+                                    "initial",
+                                    "3-year"
+                                ],
+                                "description": "Indicates whether roof_absorptance is the initial value or the 3-year aged value from a CRRC product rating (only used if roof_color is cool_color)"
                             },
                             "roof_type": {
                                 "type": "string",
@@ -693,139 +697,143 @@
                                 }
                             },
                             "zone_skylight": {
-                                "type": "object",
-                                "description": "Inputs about the skylights on this roof",
-                                "additionalProperties": false,
-                                "properties": {
-                                    "skylight_area": {
-                                        "type": "number",
-                                        "exclusiveMinimum": 0,
-                                        "maximum": 300,
-                                        "description": "Area of skylights (square feet)"
-                                    },
-                                    "skylight_method": {
-                                        "type": "string",
-                                        "enum": [
-                                            "code",
-                                            "custom"
-                                        ],
-                                        "description": "Construction method to use for skylights"
-                                    },
-                                    "skylight_code": {
-                                        "type": "string",
-                                        "enum": [
-                                            "scna",
-                                            "scnw",
-                                            "stna",
-                                            "stnw",
-                                            "dcaa",
-                                            "dcab",
-                                            "dcaw",
-                                            "dtaa",
-                                            "dtab",
-                                            "dtaw",
-                                            "dpeaw",
-                                            "dpeaab",
-                                            "dpeaaw",
-                                            "dseaa",
-                                            "dseab",
-                                            "dseaw",
-                                            "dseaaw",
-                                            "thmabw"
-                                        ],
-                                        "description": "Assembly code for skylights (only used if skylight_method is code)"
-                                    },
-                                    "skylight_u_value": {
-                                        "type": "number",
-                                        "minimum": 0.01,
-                                        "maximum": 5,
-                                        "description": "U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)"
-                                    },
-                                    "skylight_shgc": {
-                                        "type": "number",
-                                        "exclusiveMinimum": 0,
-                                        "exclusiveMaximum": 1,
-                                        "description": "Solar heat gain coefficient of skylights (only used if skylight_method is custom)"
-                                    },
-                                    "solar_screen": {
-                                        "type": "boolean",
-                                        "description": "Does this skylight have a solar screen?"
-                                    }
-                                },
-                                "required": [
-                                    "skylight_area",
-                                    "skylight_method"
-                                ],
-                                "allOf": [
-                                    {
-                                        "if": {
-                                            "properties": {
-                                                "skylight_method": {
-                                                    "const": "code"
-                                                }
-                                            },
-                                            "required": [
-                                                "skylight_method"
-                                            ]
+                                "type": "array",
+                                "additionalItems": false,
+                                "minItems": 1,
+                                "items": {
+                                    "type": "object",
+                                    "description": "Inputs about the skylights on this roof",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "skylight_area": {
+                                            "type": "number",
+                                            "exclusiveMinimum": 0,
+                                            "maximum": 300,
+                                            "description": "Area of skylights (square feet)"
                                         },
-                                        "then": {
-                                            "allOf": [
-                                                {
-                                                    "required": [
-                                                        "skylight_code"
-                                                    ]
-                                                },
-                                                {
-                                                    "not": {
-                                                        "required": [
-                                                            "skylight_u_value"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    "not": {
-                                                        "required": [
-                                                            "skylight_shgc"
-                                                        ]
-                                                    }
-                                                }
-                                            ]
+                                        "skylight_method": {
+                                            "type": "string",
+                                            "enum": [
+                                                "code",
+                                                "custom"
+                                            ],
+                                            "description": "Construction method to use for skylights"
+                                        },
+                                        "skylight_code": {
+                                            "type": "string",
+                                            "enum": [
+                                                "scna",
+                                                "scnw",
+                                                "stna",
+                                                "stnw",
+                                                "dcaa",
+                                                "dcab",
+                                                "dcaw",
+                                                "dtaa",
+                                                "dtab",
+                                                "dtaw",
+                                                "dpeaw",
+                                                "dpeaab",
+                                                "dpeaaw",
+                                                "dseaa",
+                                                "dseab",
+                                                "dseaw",
+                                                "dseaaw",
+                                                "thmabw"
+                                            ],
+                                            "description": "Assembly code for skylights (only used if skylight_method is code)"
+                                        },
+                                        "skylight_u_value": {
+                                            "type": "number",
+                                            "minimum": 0.01,
+                                            "maximum": 5,
+                                            "description": "U-value of skylights (Btu/sf-hr-F) (only used if skylight_method is custom)"
+                                        },
+                                        "skylight_shgc": {
+                                            "type": "number",
+                                            "exclusiveMinimum": 0,
+                                            "exclusiveMaximum": 1,
+                                            "description": "Solar heat gain coefficient of skylights (only used if skylight_method is custom)"
+                                        },
+                                        "solar_screen": {
+                                            "type": "boolean",
+                                            "description": "Does this skylight have a solar screen?"
                                         }
                                     },
-                                    {
-                                        "if": {
-                                            "properties": {
-                                                "skylight_method": {
-                                                    "const": "custom"
-                                                }
-                                            },
-                                            "required": [
-                                                "skylight_method"
-                                            ]
-                                        },
-                                        "then": {
-                                            "allOf": [
-                                                {
-                                                    "required": [
-                                                        "skylight_u_value",
-                                                        "skylight_shgc"
-                                                    ]
+                                    "required": [
+                                        "skylight_area",
+                                        "skylight_method"
+                                    ],
+                                    "allOf": [
+                                        {
+                                            "if": {
+                                                "properties": {
+                                                    "skylight_method": {
+                                                        "const": "code"
+                                                    }
                                                 },
-                                                {
-                                                    "not": {
+                                                "required": [
+                                                    "skylight_method"
+                                                ]
+                                            },
+                                            "then": {
+                                                "allOf": [
+                                                    {
                                                         "required": [
                                                             "skylight_code"
                                                         ]
+                                                    },
+                                                    {
+                                                        "not": {
+                                                            "required": [
+                                                                "skylight_u_value"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "not": {
+                                                            "required": [
+                                                                "skylight_shgc"
+                                                            ]
+                                                        }
                                                     }
-                                                }
-                                            ]
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "if": {
+                                                "properties": {
+                                                    "skylight_method": {
+                                                        "const": "custom"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "skylight_method"
+                                                ]
+                                            },
+                                            "then": {
+                                                "allOf": [
+                                                    {
+                                                        "required": [
+                                                            "skylight_u_value",
+                                                            "skylight_shgc"
+                                                        ]
+                                                    },
+                                                    {
+                                                        "not": {
+                                                            "required": [
+                                                                "skylight_code"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
                                         }
-                                    }
-                                ]
+                                    ]
+                                }
                             }
                         },
                         "required": [
-                            "roof_name",
                             "roof_type"
                         ],
                         "allOf": [
@@ -1075,7 +1083,8 @@
                                 },
                                 "then": {
                                     "required": [
-                                        "roof_absorptance"
+                                        "roof_absorptance",
+                                        "roof_absorptance_condition"
                                     ]
                                 }
                             },
@@ -1095,7 +1104,8 @@
                                 "then": {
                                     "not": {
                                         "required": [
-                                            "roof_absorptance"
+                                            "roof_absorptance",
+                                            "roof_absorptance_condition"
                                         ]
                                     }
                                 }
@@ -1124,25 +1134,15 @@
                     "type": "array",
                     "description": "Inputs about the construction of the floor(s)",
                     "additionalItems": false,
-                    "minItems": 0,
-                    "maxItems": 2,
+                    "minItems": 1,
                     "items": {
                         "type": "object",
                         "required": [
-                            "floor_name",
                             "floor_area",
                             "foundation_type"
                         ],
                         "additionalProperties": false,
                         "properties": {
-                            "floor_name": {
-                                "type": "string",
-                                "enum": [
-                                    "floor1",
-                                    "floor2"
-                                ],
-                                "description": "Name of this floor instance"
-                            },
                             "floor_area": {
                                 "type": "number",
                                 "minimum": 1,
@@ -1586,123 +1586,128 @@
                                 "description": "What is on the other side of the wall"
                             },
                             "zone_window": {
-                                "type": "object",
-                                "description": "Inputs about the windows on this wall",
-                                "additionalProperties": false,
-                                "required": [
-                                    "window_area"
-                                ],
-                                "properties": {
-                                    "window_area": {
-                                        "type": "number",
-                                        "minimum": 0,
-                                        "maximum": 999,
-                                        "description": "Area of windows on this wall (square feet)"
-                                    },
-                                    "window_method": {
-                                        "type": "string",
-                                        "enum": [
-                                            "code",
-                                            "custom"
-                                        ],
-                                        "description": "Construction method to use for this window"
-                                    },
-                                    "window_code": {
-                                        "type": "string",
-                                        "enum": [
-                                            "scna",
-                                            "scnw",
-                                            "stna",
-                                            "stnw",
-                                            "dcaa",
-                                            "dcab",
-                                            "dcaw",
-                                            "dtaa",
-                                            "dtab",
-                                            "dtaw",
-                                            "dpeaw",
-                                            "dpeaab",
-                                            "dpeaaw",
-                                            "dseaa",
-                                            "dseab",
-                                            "dseaw",
-                                            "dseaaw",
-                                            "thmabw"
-                                        ],
-                                        "description": "assembly code for this window (only used if window_method is code)"
-                                    },
-                                    "window_u_value": {
-                                        "type": "number",
-                                        "minimum": 0.01,
-                                        "maximum": 5,
-                                        "description": "U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)"
-                                    },
-                                    "window_shgc": {
-                                        "type": "number",
-                                        "exclusiveMinimum": 0,
-                                        "exclusiveMaximum": 1,
-                                        "description": "Solar heat gain coefficient of this window (only used if window_method is custom)"
-                                    },
-                                    "solar_screen": {
-                                        "type": "boolean",
-                                        "description": "Does this window have a solar screen?"
-                                    }
-                                },
-                                "if": {
-                                    "properties": {
-                                        "window_area": {
-                                            "type": "number",
-                                            "exclusiveMinimum": 0
-                                        }
-                                    }
-                                },
-                                "then": {
+                                "type": "array",
+                                "additionalItems": false,
+                                "minItems": 1,
+                                "items": {
+                                    "type": "object",
+                                    "description": "Inputs about the windows on this wall",
+                                    "additionalProperties": false,
                                     "required": [
                                         "window_area"
                                     ],
+                                    "properties": {
+                                        "window_area": {
+                                            "type": "number",
+                                            "minimum": 0,
+                                            "maximum": 999,
+                                            "description": "Area of windows on this wall (square feet)"
+                                        },
+                                        "window_method": {
+                                            "type": "string",
+                                            "enum": [
+                                                "code",
+                                                "custom"
+                                            ],
+                                            "description": "Construction method to use for this window"
+                                        },
+                                        "window_code": {
+                                            "type": "string",
+                                            "enum": [
+                                                "scna",
+                                                "scnw",
+                                                "stna",
+                                                "stnw",
+                                                "dcaa",
+                                                "dcab",
+                                                "dcaw",
+                                                "dtaa",
+                                                "dtab",
+                                                "dtaw",
+                                                "dpeaw",
+                                                "dpeaab",
+                                                "dpeaaw",
+                                                "dseaa",
+                                                "dseab",
+                                                "dseaw",
+                                                "dseaaw",
+                                                "thmabw"
+                                            ],
+                                            "description": "assembly code for this window (only used if window_method is code)"
+                                        },
+                                        "window_u_value": {
+                                            "type": "number",
+                                            "minimum": 0.01,
+                                            "maximum": 5,
+                                            "description": "U-value of this window (Btu/sf-hr-F) (only used if window_method is custom)"
+                                        },
+                                        "window_shgc": {
+                                            "type": "number",
+                                            "exclusiveMinimum": 0,
+                                            "exclusiveMaximum": 1,
+                                            "description": "Solar heat gain coefficient of this window (only used if window_method is custom)"
+                                        },
+                                        "solar_screen": {
+                                            "type": "boolean",
+                                            "description": "Does this window have a solar screen?"
+                                        }
+                                    },
                                     "if": {
                                         "properties": {
-                                            "window_method": {
-                                                "const": "code"
+                                            "window_area": {
+                                                "type": "number",
+                                                "exclusiveMinimum": 0
                                             }
                                         }
                                     },
                                     "then": {
                                         "required": [
-                                            "window_code"
+                                            "window_area"
                                         ],
-                                        "not": {
-                                            "anyOf": [
-                                                {
-                                                    "required": [
-                                                        "window_u_value"
-                                                    ]
-                                                },
-                                                {
-                                                    "required": [
-                                                        "window_shgc"
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "else": {
                                         "if": {
                                             "properties": {
                                                 "window_method": {
-                                                    "const": "custom"
+                                                    "const": "code"
                                                 }
                                             }
                                         },
                                         "then": {
                                             "required": [
-                                                "window_u_value",
-                                                "window_shgc"
+                                                "window_code"
                                             ],
                                             "not": {
-                                                "required": [
-                                                    "window_code"
+                                                "anyOf": [
+                                                    {
+                                                        "required": [
+                                                            "window_u_value"
+                                                        ]
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "window_shgc"
+                                                        ]
+                                                    }
                                                 ]
+                                            }
+                                        },
+                                        "else": {
+                                            "if": {
+                                                "properties": {
+                                                    "window_method": {
+                                                        "const": "custom"
+                                                    }
+                                                }
+                                            },
+                                            "then": {
+                                                "required": [
+                                                    "window_u_value",
+                                                    "window_shgc"
+                                                ],
+                                                "not": {
+                                                    "required": [
+                                                        "window_code"
+                                                    ]
+                                                }
                                             }
                                         }
                                     }
@@ -1907,31 +1912,14 @@
                     "type": "array",
                     "additionalItems": false,
                     "minItems": 1,
-                    "maxItems": 2,
                     "items": {
                         "type": "object",
                         "required": [
-                            "hvac_name",
-                            "hvac_fraction",
-                            "heating",
-                            "cooling"
+                          "heating",
+                          "cooling"
                         ],
                         "additionalProperties": false,
                         "properties": {
-                            "hvac_name": {
-                                "type": "string",
-                                "enum": [
-                                    "hvac1",
-                                    "hvac2"
-                                ],
-                                "description": "Name of this system instance"
-                            },
-                            "hvac_fraction": {
-                                "type": "number",
-                                "exclusiveMinimum": 0,
-                                "maximum": 1,
-                                "description": "Fraction of conditioned floor area served by this system"
-                            },
                             "heating": {
                                 "type": "object",
                                 "description": "Inputs about the heating system",
@@ -1981,6 +1969,12 @@
                                             }
                                         ],
                                         "description": "Heating equipment type"
+                                    },
+                                    "fraction": {
+                                        "type": "number",
+                                        "exclusiveMinimum": 0,
+                                        "maximum": 1,
+                                        "description": "Fraction of heating load served by this system"
                                     },
                                     "fuel_primary": {
                                         "type": "string",
@@ -2041,6 +2035,35 @@
                                     }
                                 },
                                 "allOf": [
+                                    {
+                                        "description": "fraction is required when there is a heating system",
+                                        "if": {
+                                            "properties": {
+                                                "type": {
+                                                    "const": "none"
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ]
+                                        },
+                                        "then": {
+                                            "allOf": [
+                                                {
+                                                    "not": {
+                                                        "required": [
+                                                            "fraction"
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "else": {
+                                            "required": [
+                                                "fraction"
+                                            ]
+                                        }
+                                    },
                                     {
                                         "if": {
                                             "required": [
@@ -2173,7 +2196,11 @@
                                             "if": {
                                                 "properties": {
                                                     "fuel_primary": {
-                                                        "const": "electric"
+                                                        "enum": [
+                                                            "electric",
+                                                            "cord_wood",
+                                                            "pellet_wood"
+                                                        ]
                                                     }
                                                 },
                                                 "required": [
@@ -2455,6 +2482,12 @@
                                         ],
                                         "description": "Cooling equipment type"
                                     },
+                                    "fraction": {
+                                        "type": "number",
+                                        "exclusiveMinimum": 0,
+                                        "maximum": 1,
+                                        "description": "Fraction of cooling load served by this system"
+                                    },
                                     "efficiency_method": {
                                         "type": "string",
                                         "enum": [
@@ -2484,6 +2517,35 @@
                                     }
                                 },
                                 "allOf": [
+                                    {
+                                        "description": "fraction is required when there is a cooling system",
+                                        "if": {
+                                            "properties": {
+                                                "type": {
+                                                    "const": "none"
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ]
+                                        },
+                                        "then": {
+                                            "allOf": [
+                                                {
+                                                    "not": {
+                                                        "required": [
+                                                            "fraction"
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "else": {
+                                            "required": [
+                                                "fraction"
+                                            ]
+                                        }
+                                    },
                                     {
                                         "if": {
                                             "required": [
@@ -3558,7 +3620,7 @@
                                     },
                                     "efficiency": {
                                         "type": "number",
-                                        "minimum": 1,
+                                        "minimum": 2,
                                         "maximum": 5
                                     },
                                     "fuel_primary": {
@@ -3574,97 +3636,102 @@
                     "additionalProperties": false,
                     "properties": {
                         "solar_electric": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                                "capacity_known": {
-                                    "type": "boolean",
-                                    "description": "Is the capacity known?"
-                                },
-                                "system_capacity": {
-                                    "type": "number",
-                                    "description": "DC capacity of system (kW) (only used if capacity_known is true)"
-                                },
-                                "num_panels": {
-                                    "type": "integer",
-                                    "description": "Number of panels in the system (only used if capacity_known is false)"
-                                },
-                                "number_units_sharing_system": {
-                                    "type": "integer",
-                                    "minimum": 1,
-                                    "description": "Total number of units sharing the PV system"
-                                },
-                                "year": {
-                                    "type": "integer",
-                                    "minimum": 2000,
-                                    "description": "Year system was installed"
-                                },
-                                "array_azimuth": {
-                                    "type": "string",
-                                    "enum": [
-                                        "north",
-                                        "north_east",
-                                        "east",
-                                        "south_east",
-                                        "south",
-                                        "south_west",
-                                        "west",
-                                        "north_west"
-                                    ],
-                                    "description": "Direction panels face"
-                                },
-                                "array_tilt": {
-                                    "type": "string",
-                                    "enum": [
-                                        "flat",
-                                        "low_slope",
-                                        "medium_slope",
-                                        "steep_slope"
-                                    ],
-                                    "description": "Tilt of panels"
-                                }
-                            },
-                            "required": [
-                                "capacity_known",
-                                "year",
-                                "array_azimuth",
-                                "array_tilt"
-                            ],
-                            "if": {
+                            "type": "array",
+                            "additionalItems": false,
+                            "minItems": 1,
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
                                 "properties": {
                                     "capacity_known": {
-                                        "const": true
+                                        "type": "boolean",
+                                        "description": "Is the capacity known?"
+                                    },
+                                    "system_capacity": {
+                                        "type": "number",
+                                        "description": "DC capacity of system (kW) (only used if capacity_known is true)"
+                                    },
+                                    "num_panels": {
+                                        "type": "integer",
+                                        "description": "Number of panels in the system (only used if capacity_known is false)"
+                                    },
+                                    "number_units_sharing_system": {
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "description": "Total number of units sharing the PV system"
+                                    },
+                                    "year": {
+                                        "type": "integer",
+                                        "minimum": 2000,
+                                        "description": "Year system was installed"
+                                    },
+                                    "array_azimuth": {
+                                        "type": "string",
+                                        "enum": [
+                                            "north",
+                                            "north_east",
+                                            "east",
+                                            "south_east",
+                                            "south",
+                                            "south_west",
+                                            "west",
+                                            "north_west"
+                                        ],
+                                        "description": "Direction panels face"
+                                    },
+                                    "array_tilt": {
+                                        "type": "string",
+                                        "enum": [
+                                            "flat",
+                                            "low_slope",
+                                            "medium_slope",
+                                            "steep_slope"
+                                        ],
+                                        "description": "Tilt of panels"
                                     }
-                                }
-                            },
-                            "then": {
+                                },
                                 "required": [
                                     "capacity_known",
-                                    "system_capacity"
+                                    "year",
+                                    "array_azimuth",
+                                    "array_tilt"
                                 ],
-                                "not": {
-                                    "required": [
-                                        "num_panels"
-                                    ]
-                                }
-                            },
-                            "else": {
                                 "if": {
                                     "properties": {
                                         "capacity_known": {
-                                            "const": false
+                                            "const": true
                                         }
                                     }
                                 },
                                 "then": {
                                     "required": [
                                         "capacity_known",
-                                        "num_panels"
+                                        "system_capacity"
                                     ],
                                     "not": {
                                         "required": [
-                                            "system_capacity"
+                                            "num_panels"
                                         ]
+                                    }
+                                },
+                                "else": {
+                                    "if": {
+                                        "properties": {
+                                            "capacity_known": {
+                                                "const": false
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "required": [
+                                            "capacity_known",
+                                            "num_panels"
+                                        ],
+                                        "not": {
+                                            "required": [
+                                                "system_capacity"
+                                            ]
+                                        }
                                     }
                                 }
                             }
@@ -4137,21 +4204,23 @@
                             "generation": {
                                 "properties": {
                                     "solar_electric": {
-                                        "properties": {
-                                            "system_capacity": {
-                                                "type": "number",
-                                                "minimum": 0.05,
-                                                "maximum": 200
+                                        "items": {
+                                            "properties": {
+                                                "system_capacity": {
+                                                    "type": "number",
+                                                    "minimum": 0.05,
+                                                    "maximum": 200
+                                                },
+                                                "num_panels": {
+                                                    "type": "number",
+                                                    "minimum": 1,
+                                                    "maximum": 1000
+                                                }
                                             },
-                                            "num_panels": {
-                                                "type": "number",
-                                                "minimum": 1,
-                                                "maximum": 1000
-                                            }
-                                        },
-                                        "required": [
-                                            "number_units_sharing_system"
-                                        ]
+                                            "required": [
+                                                "number_units_sharing_system"
+                                            ]
+                                        }
                                     }
                                 }
                             }
@@ -4166,22 +4235,24 @@
                             "generation": {
                                 "properties": {
                                     "solar_electric": {
-                                        "properties": {
-                                            "system_capacity": {
-                                                "type": "number",
-                                                "minimum": 0.05,
-                                                "maximum": 20
+                                        "items": {
+                                            "properties": {
+                                                "system_capacity": {
+                                                    "type": "number",
+                                                    "minimum": 0.05,
+                                                    "maximum": 20
+                                                },
+                                                "num_panels": {
+                                                    "type": "number",
+                                                    "minimum": 1,
+                                                    "maximum": 100
+                                                }
                                             },
-                                            "num_panels": {
-                                                "type": "number",
-                                                "minimum": 1,
-                                                "maximum": 100
+                                            "not": {
+                                                "required": [
+                                                    "number_units_sharing_system"
+                                                ]
                                             }
-                                        },
-                                        "not": {
-                                            "required": [
-                                                "number_units_sharing_system"
-                                            ]
                                         }
                                     }
                                 }
@@ -4684,20 +4755,10 @@
                     "type": "array",
                     "additionalItems": false,
                     "minItems": 1,
-                    "maxItems": 3,
                     "items": {
                         "type": "object",
                         "additionalProperties": false,
                         "properties": {
-                            "name": {
-                                "type": "string",
-                                "enum": [
-                                    "duct1",
-                                    "duct2",
-                                    "duct3"
-                                ],
-                                "description": "Name of distribution system"
-                            },
                             "location": {
                                 "type": "string",
                                 "oneOf": [
@@ -4754,7 +4815,6 @@
                         "allOf": [
                             {
                                 "required": [
-                                    "name",
                                     "fraction"
                                 ]
                             },

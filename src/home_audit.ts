@@ -3,7 +3,7 @@ import { Building } from "./types/Building.type"
 import Ajv2019 from "ajv/dist/2019"
 import { ErrorObject as AjvErrorObject } from 'ajv/dist/types'
 import addFormats from 'ajv-formats'
-import { MANDATORY_MESSAGE, translateErrors, translateHomeValues } from './translate_legacy'
+import { MANDATORY_MESSAGE } from './translate_legacy'
 
 type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
@@ -90,18 +90,6 @@ export function validate(homeValues: DeepPartial<Building>): ErrorMessages
     }
 
     return _errorMessages;
-}
-
-/**
- * Legacy validate_home_audit method
- * @deprecated
- * @param homeValues
- * @returns error messages
- */
-export function validate_home_audit(homeValues: any) {
-    const building = translateHomeValues(homeValues);
-    const errors = validate(building);
-    return translateErrors(building, errors);
 }
 
 /**
@@ -384,13 +372,15 @@ function checkWindowAreaValid(walls: Wall[], floors: Floor[], about:About): void
         return
     }
 
-    const total_window_area = getSumOfObjectPropertiesByFieldName(walls.map(({zone_window}) => zone_window || {}), 'window_area')
+    const total_window_area = getSumOfObjectPropertiesByFieldName(walls.flatMap(({zone_window}) => zone_window || []), 'window_area')
 
     if(total_window_area > wall_area) {
-        walls.forEach(({zone_window}, index) => {
-            if(zone_window && zone_window.window_area) {
-                addMessage_warning(`/zone/zone_wall/${index}/zone_window/window_area`, `Total window area exceeds the total wall area of ${Math.ceil(wall_area)} sqft.`)
-            }
+        walls.forEach(({zone_window}, wallIndex) => {
+            zone_window?.forEach((window, windowIndex) => {
+                if(window.window_area) {
+                    addMessage_warning(`/zone/zone_wall/${wallIndex}/zone_window/${windowIndex}/window_area`, `Total window area exceeds the total wall area of ${Math.ceil(wall_area)} sqft.`)
+                }
+            })
         })
     }
 }
@@ -484,16 +474,17 @@ function checkSkylightArea(roofs: Roof[], conditioned_footprint: number): void
     // Skylights must be smaller than the conditioned footprint
     let zone_skylight_area = 0
     roofs.forEach((roof) => {
-        const {zone_skylight} = roof
-        if(zone_skylight && zone_skylight.skylight_area) {
-            zone_skylight_area += zone_skylight.skylight_area
-        }
+        roof.zone_skylight?.forEach((skylight) => {
+            zone_skylight_area += skylight.skylight_area || 0
+        })
     })
     if(zone_skylight_area > conditioned_footprint) {
-        roofs.forEach((roof, index) => {
-            if(roof.zone_skylight && roof.zone_skylight.skylight_area) {
-                addMessage_warning(`/zone/zone_roof/${index}/zone_skylight/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
-            }
+        roofs.forEach((roof, roofIndex) => {
+            roof.zone_skylight?.forEach((skylight, skylightIndex) => {
+                if(skylight.skylight_area) {
+                    addMessage_warning(`/zone/zone_roof/${roofIndex}/zone_skylight/${skylightIndex}/skylight_area`, `Total skylight area exceeds the maximum allowed ${conditioned_footprint} sqft`)
+                }
+            })
         })
     }
 }
@@ -717,7 +708,8 @@ function getSystemCrossValidation(homeValues:Building): void
     const {systems} = homeValues;
     const {hvac:hvacs, domestic_hot_water} = systems;
     if(hvacs) {
-        checkHvacFraction(hvacs)
+        checkHeatingFraction(hvacs)
+        checkCoolingFraction(hvacs)
         hvacs.forEach(({heating, cooling, hvac_distribution}:HVACSystem, index) => {
             if (heating) {
                 checkHeatingFuelValidForHeatingType(heating, index)
@@ -745,15 +737,30 @@ function getSystemCrossValidation(homeValues:Building): void
 }
 
 /**
- * Check that the HVAC fraction is equal to 1 (100%)
+ * Check that the total Heating Fraction across all HVAC systems is equal to 1 (100%)
  */
-function checkHvacFraction(hvac_systems:HVACSystem[]): void
+function checkHeatingFraction(hvac_systems:HVACSystem[]): void
 {
-    const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(hvac_systems, 'hvac_fraction')
+    const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(hvac_systems.map(({heating}) => heating), 'fraction')
     if(Math.abs(total_fraction -1) > 0.001) {
-        hvac_systems.forEach((hvac_system, index) => {
-            if (hvac_system.hvac_fraction) {
-                addMessage_warning(`/systems/hvac/${index}/hvac_fraction`, `Total HVAC Fraction must equal 100%`)
+        hvac_systems.forEach(({heating}, index) => {
+            if (heating.fraction) {
+                addMessage_warning(`/systems/hvac/${index}/heating/fraction`, `Total Heating Fraction must equal 100%`)
+            }
+        })
+    }
+}
+
+/**
+ * Check that the total Cooling Fraction across all HVAC systems is equal to 1 (100%)
+ */
+function checkCoolingFraction(hvac_systems:HVACSystem[]): void
+{
+    const total_fraction = getDecimalSumOfObjectPropertiesByFieldName(hvac_systems.map(({cooling}) => cooling), 'fraction')
+    if(Math.abs(total_fraction -1) > 0.001) {
+        hvac_systems.forEach(({cooling}, index) => {
+            if (cooling.fraction) {
+                addMessage_warning(`/systems/hvac/${index}/cooling/fraction`, `Total Cooling Fraction must equal 100%`)
             }
         })
     }
@@ -783,8 +790,8 @@ const HEATING_FUEL_TO_TYPE = {
         'baseboard',
         'boiler'
     ],
-    'cord_wood': ['wood_stove'],
-    'pellet_wood': ['wood_stove'],
+    'cord_wood': ['wood_stove', 'central_furnace', 'wall_furnace', 'boiler'],
+    'pellet_wood': ['wood_stove', 'central_furnace', 'wall_furnace', 'boiler'],
 }
 function checkHeatingFuelValidForHeatingType({fuel_primary, type}:HeatingSystem, index:number): void
 {
@@ -840,13 +847,15 @@ function checkHeatingCoolingTypeValid(heating_type:HeatingType, cooling_type:Coo
 /**
  * Check that the efficiency method is valid for the heating type
  */
+const HEATING_TYPES_SKIPPING_EFFICIENCY = ['central_furnace', 'wall_furnace', 'boiler']
+const HEATING_FUELS_SKIPPING_EFFICIENCY = ['electric', 'cord_wood', 'pellet_wood']
 function checkHeatingEfficiencyValid({type, fuel_primary, efficiency_method}:HeatingSystem, index:number): void
 {
     if(efficiency_method &&
         ([null, undefined, 'baseboard', 'wood_stove', 'none'].includes(type) ||
-        (type === 'central_furnace' && fuel_primary === 'electric'))
+        (HEATING_TYPES_SKIPPING_EFFICIENCY.includes(type) && !!fuel_primary && HEATING_FUELS_SKIPPING_EFFICIENCY.includes(fuel_primary)))
     ) {
-        addMessage_warning(`/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace" and fuel is "electric", or if heating type is "baseboard", "wood stove", "none", or empty`)
+        addMessage_warning(`/systems/hvac/${index}/heating/efficiency_method`, `Efficiency method should not be set if heating type is "central furnace", "wall furnace", or "boiler" and fuel is "electric", "cord wood", or "pellet wood", or if heating type is "baseboard", "wood stove", "none", or empty`)
     }
     if(efficiency_method === 'shipment_weighted') {
         if(type === 'wall_furnace' && fuel_primary !== 'natural_gas') {
