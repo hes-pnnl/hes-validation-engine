@@ -29,7 +29,7 @@ const ALWAYS_MANDATORY_CASCADE = {
         'blower_door_test',
         'conditioned_floor_area',
         'floor_to_ceiling_height',
-        'num_floor_above_grade',
+        'dwelling_unit_type',
         'number_bedrooms',
         'orientation',
         'shape',
